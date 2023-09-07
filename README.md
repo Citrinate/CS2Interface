@@ -34,7 +34,7 @@ Example:
 
 This `bool` type configuration setting can be added to your individual bot config files.  If set to `true`, the CS2 Interface will automatically start after the bot comes online.
 
-> Note: It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  To prevent interference between the two when enabling auto-start, it's important to also set `Paused` to `true`.  This will prevent ASF's CardFarmer module from starting automatically.  Even with `Paused` set to `true`, your bot will still farm cards normally whenever the CS2 Interface is stopped.
+> Note: It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup and so it's important to also set `Paused` to `true`.  This will prevent ASF's CardFarmer module from starting automatically.  If you want to farm cards you can still do so using the `cstop` or `resume` commands, and the CS2 Interface will automatically resume after card farming is complete.
 
 By default, this is set to `false`
 

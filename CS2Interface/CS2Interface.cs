@@ -42,7 +42,7 @@ namespace CS2Interface {
 				switch (configProperty.Key) {
 					case "AutoStartCS2Interface" when configProperty.Value.Type == JTokenType.Boolean: {
 						bot.ArchiLogger.LogGenericInfo("AutoStartCS2Interface : " + configProperty.Value);
-						AutoStart.TryAdd(bot.BotName, configProperty.Value.ToObject<bool>());
+						AutoStart[bot.BotName] = configProperty.Value.ToObject<bool>();
 						break;
 					}
 				}
@@ -67,7 +67,7 @@ namespace CS2Interface {
 			return Task.FromResult(0);
 		}
 
-		public async Task OnBotLoggedOn(Bot bot) {
+		private async Task TryAutoStart(Bot bot) {
 			if (!AutoStart.TryGetValue(bot.BotName, out bool autoStart)) {
 				return;
 			}
@@ -81,8 +81,14 @@ namespace CS2Interface {
 			bot.ArchiLogger.LogGenericInfo(message);
 		}
 
-		public Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
-			return Task.FromResult(0);
+		public async Task OnBotLoggedOn(Bot bot) {
+			await TryAutoStart(bot).ConfigureAwait(false);
+		}
+
+		public async Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
+			if (farmedSomething) {
+				await TryAutoStart(bot).ConfigureAwait(false);
+			}
 		}
 
 		public Task OnBotFarmingStarted(Bot bot) {
