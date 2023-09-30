@@ -321,5 +321,5 @@ namespace CS2Interface {
 
 			return BadRequest(new GenericResponse(false, e.Message));
 		}
-    }
+	}
 }

@@ -7,14 +7,14 @@ using ValveKeyValue;
 
 namespace CS2Interface {
 	internal class GameDataResource {
-        protected Uri Url;
-        internal bool Updated {get; set;} = false;
+		protected Uri Url;
+		internal bool Updated {get; set;} = false;
 
-        internal GameDataResource(string url) {
-            Url = new Uri(url);
-        }
+		internal GameDataResource(string url) {
+			Url = new Uri(url);
+		}
 
-        protected async Task<KVObject?> FetchKVResource(KVSerializerOptions? options = null) {
+		protected async Task<KVObject?> FetchKVResource(KVSerializerOptions? options = null) {
 			HttpClient httpClient = new();
 			using (Stream response = await httpClient.GetStreamAsync(Url).ConfigureAwait(false)) {
 				KVSerializer serializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
@@ -44,5 +44,5 @@ namespace CS2Interface {
 
 			return kvp;
 		}
-    }
+	}
 }

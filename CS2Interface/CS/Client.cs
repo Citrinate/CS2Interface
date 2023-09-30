@@ -118,12 +118,12 @@ namespace CS2Interface {
 			OnGCMessageRecieved?.Invoke(callback);
 
 			var messageMap = new Dictionary<uint, Action<IPacketGCMsg>> {
-                {(uint) EGCBaseClientMsg.k_EMsgGCClientWelcome, OnClientWelcome},
+				{(uint) EGCBaseClientMsg.k_EMsgGCClientWelcome, OnClientWelcome},
 				{(uint) ESOMsg.k_ESOMsg_Create, OnItemCreated},
 				{(uint) ESOMsg.k_ESOMsg_Destroy, OnItemDestroyed},
 				{(uint) ESOMsg.k_ESOMsg_Update, OnItemUpdated},
 				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultiItemUpdated}
-            };
+			};
 
 			Action<IPacketGCMsg>? func;
 			if (!messageMap.TryGetValue(callback.EMsg, out func)) {

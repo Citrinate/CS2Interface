@@ -1,5 +1,4 @@
 using System;
-using ArchiSteamFarm.Core;
 using ProtoBuf;
 using SteamKit2;
 using SteamKit2.GC;

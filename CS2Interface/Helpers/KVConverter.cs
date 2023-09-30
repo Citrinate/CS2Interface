@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using ValveKeyValue;
 
 namespace CS2Interface {
-    public sealed class KVConverter : JsonConverter {
+	public sealed class KVConverter : JsonConverter {
 		public override bool CanConvert(Type objectType) {
 			return objectType == typeof(KVObject);
 		}

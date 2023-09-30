@@ -1,15 +1,15 @@
 using System;
 
 namespace CS2Interface {
-    public abstract partial class IAttribute {
+	public abstract partial class IAttribute {
 		public abstract string Name { get; }
 		public abstract Type Type { get; }
 
 		public abstract uint ToUInt32();
 
-        public abstract float ToSingle();
+		public abstract float ToSingle();
 
-        public override abstract string ToString();
+		public override abstract string ToString();
 	}
 	
 	public sealed class Attribute<TObject> : IAttribute where TObject : notnull {
@@ -22,9 +22,9 @@ namespace CS2Interface {
 			Value = value;
 		}
 
-        public override uint ToUInt32() => (uint) Convert.ChangeType(Value, typeof(uint));
-        public override float ToSingle() => (float) Convert.ChangeType(Value, typeof(float));
+		public override uint ToUInt32() => (uint) Convert.ChangeType(Value, typeof(uint));
+		public override float ToSingle() => (float) Convert.ChangeType(Value, typeof(float));
 
-        public override string ToString() => (string) Convert.ChangeType(Value, typeof(string));
+		public override string ToString() => (string) Convert.ChangeType(Value, typeof(string));
 	}
 }
