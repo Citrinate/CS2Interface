@@ -257,7 +257,7 @@ namespace CS2Interface {
 
 		protected bool SetAdditionalProperties() {
 			if (!(SetItemDef() && SetPaintKitDef() && SetStickerKitDef() && SetMusicDef())) {
-				GameData.Update();
+				GameData.Update(true);
 				
 				return false;
 			}

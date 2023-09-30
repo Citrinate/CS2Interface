@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
-using ValveKeyValue;
 
 namespace CS2Interface {
 	internal static class GameData {
-		internal static GameDataItems ItemsGame = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/e63fc7fdb8dfb4f1873f0db214c0cc16613d5beb/csgo/scripts/items/items_game.txt");
-		internal static GameDataItemsCDN ItemsGameCdn = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/e63fc7fdb8dfb4f1873f0db214c0cc16613d5beb/csgo/scripts/items/items_game_cdn.txt");
-		internal static GameDataText CsgoEnglish = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/e63fc7fdb8dfb4f1873f0db214c0cc16613d5beb/csgo/resource/csgo_english.txt");
+		internal static GameDataItems ItemsGame = new("https://raw.githubusercontent.com/Citrinate/CS2-ItemFileTracking/main/items_game.txt");
+		internal static GameDataItemsCDN ItemsGameCdn = new("https://raw.githubusercontent.com/Citrinate/CS2-ItemFileTracking/main/items_game_cdn.txt");
+		internal static GameDataText CsgoEnglish = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/resource/csgo_english.txt");
 
 		private static bool IsUpdating = false;
 		private static SemaphoreSlim UpdateSemaphore = new SemaphoreSlim(1, 1);
 		private static Timer UpdateTimer = new(async e => await DoUpdate().ConfigureAwait(false), null, Timeout.Infinite, Timeout.Infinite);
+		private static DateTime? DoNotUpdateUntil = null;
 
 		internal static void Update(bool forceUpdate = false) {
-			if (forceUpdate) {
+			if (forceUpdate && (DoNotUpdateUntil == null || DateTime.Now > DoNotUpdateUntil)) {
 				ItemsGame.Updated = false;
 				ItemsGameCdn.Updated = false;
 				CsgoEnglish.Updated = false;
+				DoNotUpdateUntil = DateTime.Now.AddMinutes(15);
+				ASF.ArchiLogger.LogGenericInfo("Refreshing CS2 game data");
 			}
 			
 			if (!ItemsGame.Updated || !ItemsGameCdn.Updated || !CsgoEnglish.Updated) {
