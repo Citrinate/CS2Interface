@@ -8,7 +8,8 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 - Unpack the downloaded .zip file to the `plugins` folder inside your ASF folder.
 - (Re)start ASF, you should get a message indicating that the plugin loaded successfully. 
 
-> Please note, this plugin is only tested to work with ASF-generic.  It may or may not work with other ASF variants.
+> **Note**
+> This plugin is only tested to work with ASF-generic.  It may or may not work with other ASF variants.
 
 ## Usage
 
@@ -24,19 +25,17 @@ Command | Access | Description
 
 ### AutoStartCS2Interface
 
-`"AutoStartCS2Interface": <true/false>,`
+`bool` type with default value of `false`.  This configuration setting can be added to your individual bot config files.  If set to `true`, the CS2 Interface will automatically start after the bot comes online.  When used, `Paused` should also be set to `true`.
 
-Example: 
-```
+```json
 "AutoStartCS2Interface": true,
 "Paused": true,
 ```
 
-This `bool` type configuration setting can be added to your individual bot config files.  If set to `true`, the CS2 Interface will automatically start after the bot comes online.
-
-> Note: It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup and so it's important to also set `Paused` to `true`.  This will prevent ASF's CardFarmer module from starting automatically.  If you want to farm cards you can still do so using the `cstop` or `resume` commands, and the CS2 Interface will automatically resume after card farming is complete.
-
-By default, this is set to `false`
+> **Note**
+> It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also set `Paused` to `true`.  This will prevent ASF's CardFarmer module from starting automatically.
+> 
+> If you want to farm cards you can still do so using the `cstop` or `resume` commands.  The CS2 Interface will automatically resume after card farming is complete.
 
 ---
 
@@ -44,6 +43,7 @@ By default, this is set to `false`
 
 Each bot can only process 1 request at a time.  If multiple `botNames` are provided the first available bot will be chosen to process the request.
 
+> **Note**
 > Once the plugin is installed additional documentation can be found, by default, at: [`/swagger`](http://localhost:1242/swagger)
 
 API | Method | Parameters | Description
