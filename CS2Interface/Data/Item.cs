@@ -1,19 +1,18 @@
 using System;
 using System.Linq;
-using ArchiSteamFarm.Core;
 using Newtonsoft.Json;
 using ValveKeyValue;
 
 namespace CS2Interface {
 	internal class Item {
-		protected uint DefIndex;
-		protected uint PaintIndex;
-		protected uint? StickerID;
-		protected uint? TintID;
-		protected uint? MusicID;
-		protected uint Quality;
-		protected uint Rarity;
-		protected uint Origin;
+		internal uint DefIndex;
+		internal uint PaintIndex;
+		internal uint? StickerID;
+		internal uint? TintID;
+		internal uint? MusicID;
+		internal uint Quality;
+		internal uint Rarity;
+		internal uint Origin;
 
 		[JsonProperty(PropertyName = "full_name")]
 		internal string? FullName;
@@ -80,22 +79,9 @@ namespace CS2Interface {
 		
 		[JsonProperty(PropertyName = "crate_name")]
 		internal string? CrateName;
-		
-		[JsonProperty(PropertyName = "item_def")]
-		[JsonConverter(typeof(KVConverter))]
-		internal KVObject? ItemDef = null;
-		
-		[JsonProperty(PropertyName = "paint_kit_def")]
-		[JsonConverter(typeof(KVConverter))]
-		internal KVObject? PaintKitDef = null;
-		
-		[JsonProperty(PropertyName = "sticker_kit_def")]
-		[JsonConverter(typeof(KVConverter))]
-		internal KVObject? StickerKitDef = null;
-		
-		[JsonProperty(PropertyName = "music_def")]
-		[JsonConverter(typeof(KVConverter))]
-		internal KVObject? MusicDef = null;
+
+		[JsonProperty(PropertyName = "defs")]
+		internal ItemData? ItemData;
 
 		protected static bool ShouldSerializeAdditionalProperties = true;
 		protected static bool ShouldSerializeDefs = true;
@@ -122,167 +108,43 @@ namespace CS2Interface {
 		public bool ShouldSerializeCrateDefIndex() => CrateDefIndex != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateSupplySeries() => CrateSupplySeries != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateName() => CrateName != null && ShouldSerializeAdditionalProperties;
-		public bool ShouldSerializeItemDef() => ItemDef != null && ShouldSerializeDefs;
-		public bool ShouldSerializePaintKitDef() => PaintKitDef != null && ShouldSerializeDefs;
-		public bool ShouldSerializeStickerKitDef() => StickerKitDef != null && ShouldSerializeDefs;
-		public bool ShouldSerializeMusicDef() => MusicDef != null && ShouldSerializeDefs;
+		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
 		internal static void SetSerializationProperties(bool should_serialize_additional_properties, bool should_serialize_defs) {
 			ShouldSerializeAdditionalProperties = should_serialize_additional_properties;
 			ShouldSerializeDefs = should_serialize_defs;
 		}
 
-		private bool SetItemDef() {
-			ItemDef = GameData.ItemsGame.GetDef("items", DefIndex.ToString());
-			if (ItemDef == null) {
-				return false;
-			}
-
-			// Merge with prefab values
-			if (!MergePrefab(ItemDef["prefab"].ToString())) {
-				return false;
-			}
-
-			// Merge with default values
-			KVObject? defaultItemDef = GameData.ItemsGame.GetDef("items", "default");
-			if (defaultItemDef == null) {
-				return false;
-			}
-
-			ItemDef.Merge(defaultItemDef);
-
-			return true;
-		}
-
-		private bool MergePrefab(string? prefab) {
-			if (ItemDef == null) {
-				return false;
-			}
-
-			if (prefab == null) {
-				return true;
-			}
-
-			// Some items have multiple prefabs separated by a space, but only one is valid (it has an entry in ItemsGame)
-			// Ex: "valve weapon_case_key": "valve" isn't valid, but "weapon_case_key" is
-			// Ex: "antwerp2022_sticker_capsule_prefab antwerp2022_sellable_item_with_payment_rules": "antwerp2022_sticker_capsule_prefab" is valid, but "antwerp2022_sellable_item_with_payment_rules" isn't
-			string[] prefabNames = prefab.Split(" ");
-			// Consider the merge successfull if at least one valid prefab was found
-			bool foundValid = false;
-
-			foreach (string prefabName in prefabNames) {
-				KVObject? prefabDef = GameData.ItemsGame.GetDef("prefabs", prefabName, suppressErrorLogs: true);
-				if (prefabDef == null) {
-					continue;
-				}
-
-				foundValid = true;
-				ItemDef.Merge(prefabDef);
-				if (!MergePrefab(prefabDef["prefab"]?.ToString())) {
-					return false;
-				};
-			}
-
-			if (!foundValid) {
-				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't find definition: prefabs[{0}]", prefab));
-			}
-
-			return foundValid;
-		}
-
-		private bool SetPaintKitDef() {
-			if (PaintIndex == 0 && Wear == null) {
-				// This item has no paint kit
-				return true;
-			}
-
-			PaintKitDef = GameData.ItemsGame.GetDef("paint_kits", PaintIndex.ToString());
-			if (PaintKitDef == null) {
-				return false;
-			}
-
-			// Merge with default values
-			KVObject? defaultPaintKitDef = GameData.ItemsGame.GetDef("paint_kits", "0");
-			if (defaultPaintKitDef == null) {
-				return false;
-			}
-
-			PaintKitDef.Merge(defaultPaintKitDef);
-
-			return true;
-		}
-
-		private bool SetStickerKitDef() {
-			if (StickerID == null 
-				|| !(
-					DefIndex == 1209 // Sticker
-					|| DefIndex == 1348 // Sealed Graffiti
-					|| DefIndex == 1349 // Graffiti
-					|| DefIndex == 4609 // Patch
-				)
-			) {
-				// This item has no sticker kit
-				return true;
-			}
-
-			StickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", StickerID.ToString()!);
-			if (StickerKitDef == null) {
-				return false;
-			}
-
-			// Merge with default values
-			KVObject? defaultStickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", "0");
-			if (defaultStickerKitDef == null) {
-				return false;
-			}
-
-			StickerKitDef.Merge(defaultStickerKitDef);
-
-			return true;
-		}
-
-		private bool SetMusicDef() {
-			if (MusicID == null) {
-				// This item has no music definition
-				return true;
-			}
-
-			MusicDef = GameData.ItemsGame.GetDef("music_definitions", MusicID.ToString()!);
-			if (MusicDef == null) {
-				return false;
-			}
-
-			return true;
-		}
-
 		protected bool SetAdditionalProperties() {
-			if (!(SetItemDef() && SetPaintKitDef() && SetStickerKitDef() && SetMusicDef())) {
+			try {
+				ItemData = new(this);
+			} catch (Exception) {
 				GameData.Update(true);
-				
+
 				return false;
 			}
 
 			{ // Set rarity name, which differs based on the type of item
 				string locKey = "loc_key"; // General rarities
-				if (ItemDef!["taxonomy"]?["weapon"]?.ToString() == "1") {
+				if (ItemData.ItemDef.GetValue("taxonomy", "weapon")?.ToString() == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
-				} else if (ItemDef!["item_slot"]?.ToString() == "customplayer") {
+				} else if (ItemData.ItemDef.GetValue("item_slot")?.ToString() == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
 				}
 				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"]?.FirstOrDefault(x => (uint) x["value"] == Rarity)?[locKey].ToString()];
 			}
 
-			TypeName = GameData.CsgoEnglish[ItemDef!["item_type_name"]?.ToString()?.Substring(1)];
+			TypeName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_type_name")?.ToString()?.Substring(1)];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => (uint) x["value"] == Quality)?.Name];
 			OriginName = GameData.GetOriginName(Origin);
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(MusicDef?["loc_name"] ?? StickerKitDef?["item_name"] ?? PaintKitDef?["description_tag"] ?? ItemDef!["item_name"])?.ToString()?.Substring(1)];
+			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?.GetValue("loc_name") ?? ItemData.StickerKitDef?.GetValue("item_name") ?? ItemData.PaintKitDef?.GetValue("description_tag") ?? ItemData.ItemDef.GetValue("item_name"))?.ToString()?.Substring(1)];
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
-			if (ItemDef!["prefab"]?.ToString() == "csgo_tool") {
-				ToolName = GameData.CsgoEnglish[ItemDef!["item_name"]?.ToString()?.Substring(1)];
+			if (ItemData.ItemDef.GetValue("prefab")?.ToString() == "csgo_tool") {
+				ToolName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.ToString()?.Substring(1)];
 			}
 
 			// Set the graffiti color, ignore if tint_id is 0 (Multicolor)
@@ -291,21 +153,21 @@ namespace CS2Interface {
 			}
 
 			// Set various weapon-only attributes
-			if (ItemDef!["taxonomy"]?["weapon"]?.ToString() == "1") {
-				WeaponName = GameData.CsgoEnglish[ItemDef!["item_name"]?.ToString()?.Substring(1)];
+			if (ItemData.ItemDef.GetValue("taxonomy", "weapon")?.ToString() == "1") {
+				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.ToString()?.Substring(1)];
 
 				if (Wear != null) {
 					WearName = GameData.GetWearName(Wear.Value);
-					WearMin = Convert.ToSingle(PaintKitDef!["wear_remap_min"]);
-					WearMax = Convert.ToSingle(PaintKitDef!["wear_remap_max"]);
+					WearMin = Convert.ToSingle(ItemData.PaintKitDef!.GetValue("wear_remap_min"));
+					WearMax = Convert.ToSingle(ItemData.PaintKitDef!.GetValue("wear_remap_max"));
 				}
 
 				// Set the weapon image url
 				string? cdnNameID;
 				if (PaintIndex == 0) {
-					cdnNameID = ItemDef!["name"].ToString(); // Vanilla Knives
+					cdnNameID = ItemData.ItemDef.GetValue("name")?.ToString(); // Vanilla Knives
 				} else {
-					cdnNameID = String.Format("{0}_{1}", ItemDef!["name"].ToString(), PaintKitDef!["name"].ToString()); // Everything else
+					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef.GetValue("name")?.ToString(), ItemData.PaintKitDef!.GetValue("name")?.ToString()); // Everything else
 				}
 				WeaponImageURL = GameData.ItemsGameCdn[cdnNameID];
 			}
@@ -315,7 +177,7 @@ namespace CS2Interface {
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
-				if (PaintIndex == 0 && StickerKitDef == null && MusicDef == null) {
+				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives
 				} else if (WearName != null || TintName != null) {
 					FullName = String.Format("{0} {1} | {2} ({3})", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName).Trim(); // Weapon Skins, Gloves, Graffiti
@@ -327,10 +189,10 @@ namespace CS2Interface {
 			}
 
 			// Set the name id, used for determining related set and crate
-			if (PaintIndex == 0 && StickerKitDef == null && MusicDef == null) {
-				NameID = ItemDef!["name"].ToString(); // Collectibles, Vanilla Knives
+			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
+				NameID = ItemData.ItemDef.GetValue("name")?.ToString(); // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", (MusicDef ?? StickerKitDef ?? PaintKitDef)?["name"].ToString(), ItemDef!["name"].ToString()); // Everything else
+				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?.GetValue("name")?.ToString(), ItemData.ItemDef.GetValue("name")?.ToString()); // Everything else
 			}
 
 			{ // Determine what set, if any, this item belongs to

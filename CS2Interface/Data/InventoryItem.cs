@@ -90,7 +90,7 @@ namespace CS2Interface {
 			}
 			
 			if (GetAttribute("cannot trade")?.ToUInt32() == 1
-				|| ItemDef!["attributes"]?["cannot trade"]?.ToString() == "1"
+				|| ItemData!.ItemDef.GetValue("attributes", "cannot trade")?.ToString() == "1"
 			) {
 				return false;
 			}
@@ -103,7 +103,7 @@ namespace CS2Interface {
 			// Apparently certain case keys can't be put in storage units? untested, might not be necessary
 			// https://github.com/nombersDev/casemove/blob/8289ea35cb6d76c553ee4955adecdf9a02622764/src/main/helpers/classes/steam/items/index.js#L506
 			// https://dev.doctormckay.com/topic/4086-inventory-and-music-kits/#comment-10610
-			if (ItemInfo.flags == 10 && (ItemDef!["prefab"]?.ToString() == "valve weapon_case_key" || ItemDef!["prefab"]?.ToString() == "weapon_case_key")) {
+			if (ItemInfo.flags == 10 && (ItemData!.ItemDef.GetValue("prefab")?.ToString() == "valve weapon_case_key" || ItemData!.ItemDef.GetValue("prefab")?.ToString() == "weapon_case_key")) {
 				return false;
 			}
 
