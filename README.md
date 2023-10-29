@@ -9,7 +9,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 - (Re)start ASF, you should get a message indicating that the plugin loaded successfully. 
 
 > **Note**
-> This plugin is only tested to work with ASF-generic.  It may or may not work with other ASF variants.
+> This plugin is only tested to work with ASF-generic.  It may or may not work with other ASF variants, but feel free to report any issues you may encounter.
 
 ## Usage
 
