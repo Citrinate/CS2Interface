@@ -39,7 +39,7 @@ Command | Access | Description
 
 ---
 
-### IPC Interface Endpoints
+### IPC Interface
 
 Each bot can only process 1 request at a time.  If multiple `botNames` are provided the first available bot will be chosen to process the request.
 
