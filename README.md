@@ -41,18 +41,21 @@ Command | Access | Description
 
 ### IPC Interface
 
-Each bot can only process 1 request at a time.  If multiple `botNames` are provided the first available bot will be chosen to process the request.
+> **Note**
+> Each bot can only process 1 request at a time.
 
 > **Note**
 > Once the plugin is installed additional documentation can be found, by default, at: [`/swagger`](http://localhost:1242/swagger)
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-`/Api/CS2Interface/{botNames}/Start`|`GET`||Starts the CS2 Interface
-`/Api/CS2Interface/{botNames}/Stop`|`GET`||Stops the CS2 Interface
-`/Api/CS2Interface/{botNames}/InspectItem`|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect a CS2 Item
-`/Api/CS2Interface/{botNames}/PlayerProfile/{steamID}`|`GET`||Get a CS2 player profile
+`/Api/CS2Interface/{botNames}/Start`|`GET`| |Starts the CS2 Interface
+`/Api/CS2Interface/{botNames}/Stop`|`GET`| |Stops the CS2 Interface
+`/Api/CS2Interface/{botNames}/InspectItem`|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect a CS2 Item [^1]
+`/Api/CS2Interface/{botNames}/PlayerProfile/{steamID}`|`GET`| |Get a CS2 player profile [^1]
 `/Api/CS2Interface/{botName}/Inventory`|`GET`|`minimal`, `showDefs`|Get the given bot's CS2 inventory
 `/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`|`GET`|`minimal`, `showDefs`|Get the contents of the given bot's crate
-`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`|`GET`||Stores an item into the specified crate
-`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`|`GET`||Retrieves an item from the specified crate
+`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`|`GET`| |Stores an item into the specified crate
+`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`|`GET`| |Retrieves an item from the specified crate
+
+[^1]: Responses are not dependent on the account used to make these requests.  You may provide multiple `botNames`, and the first available bot will be used to make the request.
