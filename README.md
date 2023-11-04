@@ -2,6 +2,8 @@
 
 This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's [IPC interface](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/IPC).
 
+:blue_heart: [Check out my other ArchiSteamFarm plugins](https://github.com/stars/Citrinate/lists/archisteamfarm-plugins)
+
 ## Installation
 
 - Download the .zip file from the [latest release](https://github.com/Citrinate/CS2Interface/releases/latest)
