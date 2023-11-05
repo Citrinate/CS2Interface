@@ -1,10 +1,10 @@
 # Counter-Strike 2 Interface Plugin for ArchiSteamFarm
 
+[![Check out my other ArchiSteamFarm plugins](https://img.shields.io/badge/Check%20out%20my%20other%20ArchiSteamFarm%20plugins-blue?style=social&logo=github)](https://github.com/stars/Citrinate/lists/archisteamfarm-plugins)
+
 ## Introduction
 
 This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's [IPC interface](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/IPC).
-
-:blue_heart: [Check out my other ArchiSteamFarm plugins](https://github.com/stars/Citrinate/lists/archisteamfarm-plugins)
 
 ## Installation
 
