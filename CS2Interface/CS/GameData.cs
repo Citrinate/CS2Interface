@@ -6,9 +6,9 @@ using ArchiSteamFarm.Core;
 
 namespace CS2Interface {
 	internal static class GameData {
-		internal static GameDataItems ItemsGame = new("https://raw.githubusercontent.com/Citrinate/CS2-ItemFileTracking/main/items_game.txt");
-		internal static GameDataItemsCDN ItemsGameCdn = new("https://raw.githubusercontent.com/Citrinate/CS2-ItemFileTracking/main/items_game_cdn.txt");
-		internal static GameDataText CsgoEnglish = new("https://raw.githubusercontent.com/Citrinate/CS2-ItemFileTracking/main/csgo_english.txt");
+		internal static GameDataItems ItemsGame = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game.txt");
+		internal static GameDataItemsCDN ItemsGameCdn = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game_cdn.txt");
+		internal static GameDataText CsgoEnglish = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/resource/csgo_english.txt");
 
 		private static bool IsUpdating = false;
 		private static SemaphoreSlim UpdateSemaphore = new SemaphoreSlim(1, 1);
