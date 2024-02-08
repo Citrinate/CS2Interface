@@ -52,10 +52,11 @@ namespace CS2Interface {
 					await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 					Bot.ArchiLogger.LogGenericError("CS2 Interface failed to start, retrying");
 
-					return await Run(numAttempts--).ConfigureAwait(false);
+					return await Run(numAttempts - 1).ConfigureAwait(false);
 				}
 
 				ForceStop();
+				Bot.Actions.Resume();
 				Bot.ArchiLogger.LogGenericError("CS2 Interface failed to start");
 
 				return (false, String.Format("CS2 Interface failed to start: {0}", e.Message));
