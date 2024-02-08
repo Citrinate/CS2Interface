@@ -12,6 +12,7 @@ namespace CS2Interface {
 	internal enum EClientExceptionType {
 		Failed,
 		BadRequest,
-		Timeout
+		Timeout,
+		FatalError
 	}
 }

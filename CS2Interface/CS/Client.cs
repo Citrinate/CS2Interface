@@ -23,6 +23,7 @@ namespace CS2Interface {
 		private SemaphoreSlim GCSemaphore = new SemaphoreSlim(MaxSimultaneousGCRequests, MaxSimultaneousGCRequests);
 		private SemaphoreSlim ConnectionSemaphore = new SemaphoreSlim(1, 1);
 		internal ConcurrentDictionary<ulong, InventoryItem>? Inventory = null;
+		private bool FatalError = false;
 
 		internal Client(Bot bot, CallbackManager callbackManager) {
 			Bot = bot;
@@ -38,6 +39,10 @@ namespace CS2Interface {
 
 			if (ConnectionSemaphore.CurrentCount != 1) {
 				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is already attempting to run, please wait");
+			}
+
+			if (FatalError) {
+				throw new ClientException(EClientExceptionType.FatalError, "CS2 Client experienced a fatal error");
 			}
 
 			await ConnectionSemaphore.WaitAsync().ConfigureAwait(false);
@@ -122,7 +127,8 @@ namespace CS2Interface {
 				{(uint) ESOMsg.k_ESOMsg_Create, OnItemCreated},
 				{(uint) ESOMsg.k_ESOMsg_Destroy, OnItemDestroyed},
 				{(uint) ESOMsg.k_ESOMsg_Update, OnItemUpdated},
-				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultiItemUpdated}
+				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultiItemUpdated},
+				{(uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientLogonFatalError, OnFatalLogonError}
 			};
 
 			Action<IPacketGCMsg>? func;
@@ -157,6 +163,13 @@ namespace CS2Interface {
 					return;
 				}
 			}
+		}
+
+		private void OnFatalLogonError(IPacketGCMsg packetMsg) {
+			var msg = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_ClientLogonFatalError>(packetMsg);
+
+			Bot.ArchiLogger.LogGenericError(String.Format("Fatal CS2 logon error {0}: {1}", msg.Body.errorcode, msg.Body.message));
+			FatalError = true;
 		}
 
 		private void OnItemCreated(IPacketGCMsg packetMsg) {

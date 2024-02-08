@@ -48,7 +48,7 @@ namespace CS2Interface {
 				}
 			} catch (ClientException e) {
 				Bot.ArchiLogger.LogGenericError(e.Message);
-				if (numAttempts > 0) {
+				if (numAttempts > 0 && e.Type != EClientExceptionType.FatalError) {
 					await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 					Bot.ArchiLogger.LogGenericError("CS2 Interface failed to start, retrying");
 
