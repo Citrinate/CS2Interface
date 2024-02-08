@@ -61,7 +61,12 @@ namespace CS2Interface {
 
 				await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
 
-				var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint) EGCBaseClientMsg.k_EMsgGCClientHello);
+				var msg = new ClientGCMsgProtobuf<CMsgClientHello>((uint) EGCBaseClientMsg.k_EMsgGCClientHello) { Body = {
+					version = 2000244,
+					client_session_need = 0,
+					client_launcher = 0,
+					steam_launcher = 0
+				}};
 				var fetcher = new GCFetcher<CMsgClientHello, CMsgClientWelcome>((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
 
 				Bot.ArchiLogger.LogGenericDebug("Sending hello message");
