@@ -75,7 +75,7 @@ namespace CS2Interface {
 					ASF.ArchiLogger.LogGenericInfo("CS2 game data loaded");
 				}
 			} catch (Exception e) {
-				ASF.ArchiLogger.LogGenericError(e.Message);
+				ASF.ArchiLogger.LogGenericException(e);
 			} finally {
 				UpdateSemaphore.Release();
 			}

@@ -24,7 +24,7 @@ namespace CS2Interface {
 							json.Add(attribute.Name, attribute.ToString());
 						}
 					} catch (Exception e) {
-						ASF.ArchiLogger.LogGenericError(e.Message);
+						ASF.ArchiLogger.LogGenericException(e);
 					}
 				}
 			}

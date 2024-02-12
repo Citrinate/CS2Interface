@@ -33,7 +33,7 @@ namespace CS2Interface {
 						json.Add(child.Name, ConvertKVObjectToJson(child));
 					} catch (Exception e) {
 						// item["523"] (Talon Knife) has duplicates of "inventory_image_data", just ignore the duplicates
-						ASF.ArchiLogger.LogGenericError(e.Message);
+						ASF.ArchiLogger.LogGenericException(e);
 					}
 				}
 
