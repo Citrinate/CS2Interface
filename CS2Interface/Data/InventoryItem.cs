@@ -149,13 +149,13 @@ namespace CS2Interface {
 
 				switch (attribute_def["attribute_type"].Value) {
 					case "uint32":
-						Attributes.Add(attribute_name, new Attribute<uint>(attribute_name, BitConverter.ToUInt32(attribute.value_bytes)));
 					case null when attribute_def["stored_as_integer"].Value == "1":
+						Attributes.Add(attribute_name, new Attribute<uint>(attribute_name, BitConverter.ToUInt32(attribute.value_bytes.ToArray(), 0)));
 						break;
 
 					case "float":
-						Attributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes)));
 					case null when attribute_def["stored_as_integer"].Value == "0":
+						Attributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes.ToArray(), 0)));
 						break;
 
 					case "string":
