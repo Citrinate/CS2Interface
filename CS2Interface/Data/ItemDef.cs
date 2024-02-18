@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class ItemDef {
 		[JsonProperty(PropertyName = "defs", ItemConverterType = typeof(KVConverter))]
-		internal List<KVObject> Defs = new();
+		internal List<KeyValue> Defs = new();
 
-		internal ItemDef(KVObject? def) {
+		internal ItemDef(KeyValue? def) {
 			AddDef(def);
 		}
 
-		internal void AddDef(KVObject? def) {
+		internal void AddDef(KeyValue? def) {
 			if (def == null) {
 				throw new ArgumentNullException();
 			}
@@ -21,11 +21,11 @@ namespace CS2Interface {
 			Defs.Add(def);
 		}
 
-		internal KVValue? GetValue(params string[] keys) {
-			return GetValue(Defs, keys);
+		internal string? GetValue(params string[] keys) {
+			return GetValue(Defs, keys)?.Value;
 		}
 
-		private KVValue? GetValue(IEnumerable<KVObject> defs, IEnumerable<string> keys) {
+		private KeyValue? GetValue(IEnumerable<KeyValue> defs, IEnumerable<string> keys) {
 			if (defs.Count() == 0) {
 				return null;
 			}
@@ -33,10 +33,10 @@ namespace CS2Interface {
 			string key = keys.First();
 
 			if (keys.Count() == 1) {
-				return defs.FirstOrDefault(def => def[key] != null)?[key];
+				return defs.FirstOrDefault(def => def[key] != KeyValue.Invalid)?[key];
 			}
 
-			return GetValue(defs.Where(def => def[key] != null).Select(def => new KVObject(key, def[key])), keys.Skip(1).ToArray());
+			return GetValue(defs.Where(def => def[key] != KeyValue.Invalid).Select(def => def[key]), keys.Skip(1).ToArray());
 		}
 	}
 }

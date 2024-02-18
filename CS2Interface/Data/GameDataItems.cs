@@ -1,16 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class GameDataItems : GameDataResource {
-		private KVObject? Data;
+		private KeyValue? Data;
 
 		internal GameDataItems(string url) : base(url) {}
 
 		internal async Task<bool> Update() {
-			KVObject? data = await FetchKVResource().ConfigureAwait(false);
+			KeyValue? data = await FetchKVResource().ConfigureAwait(false);
 			if (data == null) {
 				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't load game data from: {0}", Url));
 
@@ -23,7 +25,7 @@ namespace CS2Interface {
 			return true;
 		}
 
-		internal KVObject? this[string? key] {
+		internal List<KeyValue>? this[string? key] {
 			get {
 				if (key == null || Data == null) {
 					return null;
@@ -33,12 +35,13 @@ namespace CS2Interface {
 			}
 		}
 
-		internal KVObject? GetDef(string value, string index, bool suppressErrorLogs = false) {
+		internal KeyValue? GetDef(string value, string index, bool suppressErrorLogs = false) {
 			if (Data == null) {
 				return null;
 			}
 
-			var def = this[value]?[index];
+			KeyValue? def = this[value]?.Where(x => x.Name?.ToUpper().Trim() == index.ToUpper().Trim()).FirstOrDefault();
+
 			if (def == null) {
 				if (!suppressErrorLogs) {
 					ASF.ArchiLogger.LogGenericError(String.Format("Couldn't find definition: {0}[{1}]", value, index));
@@ -47,7 +50,7 @@ namespace CS2Interface {
 				return null;
 			}
 
-			return new KVObject(value, def);
+			return def;
 		}
 	}
 }

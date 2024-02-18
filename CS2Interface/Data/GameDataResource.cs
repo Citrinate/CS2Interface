@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class GameDataResource {
@@ -14,12 +14,15 @@ namespace CS2Interface {
 			Url = new Uri(url);
 		}
 
-		protected async Task<KVObject?> FetchKVResource(KVSerializerOptions? options = null) {
+		protected async Task<KeyValue?> FetchKVResource() {
 			HttpClient httpClient = new();
 			using (Stream response = await httpClient.GetStreamAsync(Url).ConfigureAwait(false)) {
-				KVSerializer serializer = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+				KeyValue kv = new KeyValue();
+				if (!kv.ReadAsText(response)) {
+					return null;
+				}
 
-				return serializer.Deserialize(response, options);
+				return kv;
 			}
 		}
 

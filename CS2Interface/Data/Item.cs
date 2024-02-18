@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Newtonsoft.Json;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class Item {
@@ -117,7 +117,7 @@ namespace CS2Interface {
 
 		protected bool SetAdditionalProperties() {
 			try {
-				ItemData = new(this);
+				ItemData = new ItemData(this);
 			} catch (Exception) {
 				GameData.Update(true);
 
@@ -126,25 +126,25 @@ namespace CS2Interface {
 
 			{ // Set rarity name, which differs based on the type of item
 				string locKey = "loc_key"; // General rarities
-				if (ItemData.ItemDef.GetValue("taxonomy", "weapon")?.ToString() == "1") {
+				if (ItemData.ItemDef.GetValue("taxonomy", "weapon") == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
-				} else if (ItemData.ItemDef.GetValue("item_slot")?.ToString() == "customplayer") {
+				} else if (ItemData.ItemDef.GetValue("item_slot") == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
 				}
-				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"]?.FirstOrDefault(x => (uint) x["value"] == Rarity)?[locKey].ToString()];
+				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"]?.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
 			}
 
-			TypeName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_type_name")?.ToString()?.Substring(1)];
-			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => (uint) x["value"] == Quality)?.Name];
+			TypeName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_type_name")?.Substring(1)];
+			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
 			OriginName = GameData.GetOriginName(Origin);
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?.GetValue("loc_name") ?? ItemData.StickerKitDef?.GetValue("item_name") ?? ItemData.PaintKitDef?.GetValue("description_tag") ?? ItemData.ItemDef.GetValue("item_name"))?.ToString()?.Substring(1)];
+			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?.GetValue("loc_name") ?? ItemData.StickerKitDef?.GetValue("item_name") ?? ItemData.PaintKitDef?.GetValue("description_tag") ?? ItemData.ItemDef.GetValue("item_name"))?.Substring(1)];
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
-			if (ItemData.ItemDef.GetValue("prefab")?.ToString() == "csgo_tool") {
-				ToolName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.ToString()?.Substring(1)];
+			if (ItemData.ItemDef.GetValue("prefab") == "csgo_tool") {
+				ToolName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.Substring(1)];
 			}
 
 			// Set the graffiti color, ignore if tint_id is 0 (Multicolor)
@@ -153,8 +153,8 @@ namespace CS2Interface {
 			}
 
 			// Set various weapon-only attributes
-			if (ItemData.ItemDef.GetValue("taxonomy", "weapon")?.ToString() == "1") {
-				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.ToString()?.Substring(1)];
+			if (ItemData.ItemDef.GetValue("taxonomy", "weapon") == "1") {
+				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.Substring(1)];
 
 				if (Wear != null) {
 					WearName = GameData.GetWearName(Wear.Value);
@@ -165,9 +165,9 @@ namespace CS2Interface {
 				// Set the weapon image url
 				string? cdnNameID;
 				if (PaintIndex == 0) {
-					cdnNameID = ItemData.ItemDef.GetValue("name")?.ToString(); // Vanilla Knives
+					cdnNameID = ItemData.ItemDef.GetValue("name"); // Vanilla Knives
 				} else {
-					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef.GetValue("name")?.ToString(), ItemData.PaintKitDef!.GetValue("name")?.ToString()); // Everything else
+					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef.GetValue("name"), ItemData.PaintKitDef!.GetValue("name")); // Everything else
 				}
 				WeaponImageURL = GameData.ItemsGameCdn[cdnNameID];
 			}
@@ -190,29 +190,31 @@ namespace CS2Interface {
 
 			// Set the name id, used for determining related set and crate
 			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
-				NameID = ItemData.ItemDef.GetValue("name")?.ToString(); // Collectibles, Vanilla Knives
+				NameID = ItemData.ItemDef.GetValue("name"); // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?.GetValue("name")?.ToString(), ItemData.ItemDef.GetValue("name")?.ToString()); // Everything else
+				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?.GetValue("name"), ItemData.ItemDef.GetValue("name")); // Everything else
 			}
 
-			{ // Determine what set, if any, this item belongs to
-				KVObject? setItemDef = GameData.ItemsGame["item_sets"]?.FirstOrDefault(x => x["items"][NameID] != null);
-				if (setItemDef != null) {
-					SetNameID = setItemDef.Name;
-					SetName = GameData.CsgoEnglish[setItemDef["name"]?.ToString()?.Substring(1)];
+			if (NameID != null) {
+				{ // Determine what set, if any, this item belongs to
+					KeyValue? setItemDef = GameData.ItemsGame["item_sets"]?.FirstOrDefault(x => x["items"][NameID] != KeyValue.Invalid);
+					if (setItemDef != null) {
+						SetNameID = setItemDef.Name;
+						SetName = GameData.CsgoEnglish[setItemDef["name"].Value?.Substring(1)];
+					}
 				}
-			}
 
-			{ // Determine what crate, if any, this item belongs to.  Doesn't work for souvenir skins, knives, or gloves
-				string? lootListName = GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[NameID] != null)?.Name;
-				lootListName = lootListName == null ? null : GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[lootListName] != null)?.Name ?? lootListName; // Some lists in client_loot_lists are nested (1 or 2 layers), we want the top-most layer
-				string? lootListID = lootListName == null ? null : GameData.ItemsGame["revolving_loot_lists"]?.FirstOrDefault(x => x.Value.ToString() == lootListName)?.Name;
-				KVObject? crateItemDef = lootListID == null ? null : GameData.ItemsGame["items"]?.FirstOrDefault(x => x["attributes"]?["set supply crate series"]?["value"]?.ToString() == lootListID);
-				if (crateItemDef != null) {
-					CrateNameID = crateItemDef["name"]?.ToString();
-					CrateDefIndex = uint.Parse(crateItemDef.Name);
-					CrateSupplySeries = uint.Parse(lootListID!);
-					CrateName = GameData.CsgoEnglish[crateItemDef["item_name"]?.ToString()?.Substring(1)];
+				{ // Determine what crate, if any, this item belongs to.  Doesn't work for souvenir skins, knives, or gloves
+					string? lootListName = GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[NameID] != KeyValue.Invalid)?.Name;
+					lootListName = lootListName == null ? null : GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[lootListName] != KeyValue.Invalid)?.Name ?? lootListName; // Some lists in client_loot_lists are nested (1 or 2 layers), we want the top-most layer
+					string? lootListID = lootListName == null ? null : GameData.ItemsGame["revolving_loot_lists"]?.FirstOrDefault(x => x.Value == lootListName)?.Name;
+					KeyValue? crateItemDef = lootListID == null ? null : GameData.ItemsGame["items"]?.FirstOrDefault(x => x["attributes"]["set supply crate series"]["value"].Value == lootListID);
+					if (crateItemDef != null && crateItemDef.Name != null) {
+						CrateNameID = crateItemDef["name"].Value;
+						CrateDefIndex = uint.Parse(crateItemDef.Name);
+						CrateSupplySeries = uint.Parse(lootListID!);
+						CrateName = GameData.CsgoEnglish[crateItemDef["item_name"].Value?.Substring(1)];
+					}
 				}
 			}
 

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ArchiSteamFarm.Core;
 using Newtonsoft.Json;
+using SteamKit2;
 using SteamKit2.GC.CSGO.Internal;
-using ValveKeyValue;
 
 namespace CS2Interface {
 	internal sealed class InventoryItem : Item {
@@ -90,7 +91,7 @@ namespace CS2Interface {
 			}
 			
 			if (GetAttribute("cannot trade")?.ToUInt32() == 1
-				|| ItemData!.ItemDef.GetValue("attributes", "cannot trade")?.ToString() == "1"
+				|| ItemData!.ItemDef.GetValue("attributes", "cannot trade") == "1"
 			) {
 				return false;
 			}
@@ -103,7 +104,7 @@ namespace CS2Interface {
 			// Apparently certain case keys can't be put in storage units? untested, might not be necessary
 			// https://github.com/nombersDev/casemove/blob/8289ea35cb6d76c553ee4955adecdf9a02622764/src/main/helpers/classes/steam/items/index.js#L506
 			// https://dev.doctormckay.com/topic/4086-inventory-and-music-kits/#comment-10610
-			if (ItemInfo.flags == 10 && (ItemData!.ItemDef.GetValue("prefab")?.ToString() == "valve weapon_case_key" || ItemData!.ItemDef.GetValue("prefab")?.ToString() == "weapon_case_key")) {
+			if (ItemInfo.flags == 10 && (ItemData!.ItemDef.GetValue("prefab") == "valve weapon_case_key" || ItemData!.ItemDef.GetValue("prefab") == "weapon_case_key")) {
 				return false;
 			}
 
@@ -130,31 +131,31 @@ namespace CS2Interface {
 			}
 
 			foreach (CSOEconItemAttribute attribute in attributes) {
-				KVObject? attribute_def = GameData.ItemsGame.GetDef("attributes", attribute.def_index.ToString());
+				KeyValue? attribute_def = GameData.ItemsGame.GetDef("attributes", attribute.def_index.ToString());
 				if (attribute_def == null) {
 					return false;
 				}
 
-				string? attribute_name = attribute_def["name"].ToString();
+				string? attribute_name = attribute_def["name"].Value;
 				if (attribute_name == null) {
 					ASF.ArchiLogger.LogGenericError(String.Format("Missing name for attribute: {0}", attribute.def_index.ToString()));
 
 					return false;
 				}
 
-				if (attribute_def["attribute_type"]?.ToString() == "vector") {
+				if (attribute_def["attribute_type"].Value == "vector") {
 					ASF.ArchiLogger.LogGenericError(String.Format("zzzz vector for: {0}", attribute_name));
 				}
 
-				switch (attribute_def["attribute_type"]?.ToString()) {
+				switch (attribute_def["attribute_type"].Value) {
 					case "uint32":
-					case null when attribute_def["stored_as_integer"]?.ToString() == "1":
 						Attributes.Add(attribute_name, new Attribute<uint>(attribute_name, BitConverter.ToUInt32(attribute.value_bytes)));
+					case null when attribute_def["stored_as_integer"].Value == "1":
 						break;
 
 					case "float":
-					case null when attribute_def["stored_as_integer"]?.ToString() == "0":
 						Attributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes)));
+					case null when attribute_def["stored_as_integer"].Value == "0":
 						break;
 
 					case "string":
@@ -163,7 +164,7 @@ namespace CS2Interface {
 
 					case "vector":
 					default:
-						ASF.ArchiLogger.LogGenericError(String.Format("Unknown attribute type: {0}, value: {1}", attribute_def["attribute_type"].ToString(), Convert.ToBase64String(attribute.value_bytes)));
+						ASF.ArchiLogger.LogGenericError(String.Format("Unknown attribute type: {0}, value: {1}", attribute_def["attribute_type"].Value, Convert.ToBase64String(attribute.value_bytes)));
 						return false;
 				}
 			}

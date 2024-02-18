@@ -1,16 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class GameDataText : GameDataResource {
-		private KVObject? Data;
+		private List<KeyValue>? Data;
 
 		internal GameDataText(string url) : base(url) {}
 
 		internal async Task<bool> Update() {
-			KVObject? data = (await FetchKVResource(new KVSerializerOptions { HasEscapeSequences = true, EnableValveNullByteBugBehavior = true }).ConfigureAwait(false))?.Search("Tokens");
+			List<KeyValue>? data = (await FetchKVResource().ConfigureAwait(false))?.Search("Tokens");
 			if (data == null) {
 				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't load game data from: {0}", Url));
 
@@ -29,7 +31,7 @@ namespace CS2Interface {
 					return null;
 				}
 
-				return Data.SearchFirst(key)?.Value.ToString();
+				return Data.Where(x => x.Name?.ToUpper().Trim() == key.ToUpper().Trim()).FirstOrDefault()?.Value;
 			}
 		}
 	}

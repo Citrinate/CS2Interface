@@ -48,7 +48,6 @@ sync
 dotnet publish CS2Interface -c "Release" -f net8.0 -o "out/generic" "/p:LinkDuringPublish=false"
 mkdir ./out/$plugin_name
 cp ./out/generic/$plugin_name.dll ./out/$plugin_name
-cp ./out/generic/ValveKeyValue.dll ./out/$plugin_name
 if [[ -f "README.md" ]]; then
    if ! command -v pandoc &> /dev/null; then
       cp README.md ./out/$plugin_name

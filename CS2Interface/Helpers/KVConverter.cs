@@ -1,18 +1,19 @@
 using System;
+using System.Globalization;
 using ArchiSteamFarm.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	public sealed class KVConverter : JsonConverter {
 		public override bool CanConvert(Type objectType) {
-			return objectType == typeof(KVObject);
+			return objectType == typeof(KeyValue);
 		}
 			
 		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
 			JToken? json = null;
-			if (value is KVObject vdf) {
+			if (value is KeyValue vdf) {
 				json = ConvertKVObjectToJson(vdf);
 			}
 
@@ -25,10 +26,14 @@ namespace CS2Interface {
 			json.WriteTo(writer);
 		}
 
-		private JToken? ConvertKVObjectToJson (KVObject vdf) {
-			if (vdf.Value.ValueType == KVValueType.Collection) {
+		private JToken? ConvertKVObjectToJson (KeyValue vdf) {
+			if (vdf.Children.Count > 0) {
 				JObject json = new();
-				foreach (KVObject child in vdf.Children) {
+				foreach (KeyValue child in vdf.Children) {
+					if (child.Name == null) {
+						continue;
+					}
+
 					try {
 						json.Add(child.Name, ConvertKVObjectToJson(child));
 					} catch (Exception e) {
@@ -40,14 +45,19 @@ namespace CS2Interface {
 				return json;
 			}
 
-			return vdf.Value.GetTypeCode() switch {
-				TypeCode.Int32 => (int) vdf.Value,
-				TypeCode.Int64 => (long) vdf.Value,
-				TypeCode.UInt64 => vdf.Value.ToString(),
-				TypeCode.Single => (float) vdf.Value,
-				TypeCode.String => vdf.Value.ToString(),
-				_ => null
-			};
+			if (int.TryParse(vdf.Value, out int intValue)) {
+				return intValue;
+			}
+
+			if (long.TryParse(vdf.Value, out long longValue)) {
+				return longValue;
+			}
+
+			if (float.TryParse(vdf.Value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float floatValue)) {
+				return floatValue;
+			}
+
+			return vdf.Value;
 		}
 			
 		public override bool CanRead {
