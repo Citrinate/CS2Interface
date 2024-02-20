@@ -31,7 +31,7 @@ namespace CS2Interface {
 					return null;
 				}
 
-				return Data.Search(key);
+				return Data.Children.Where(x => x.Name == key).SelectMany(x => x.Children).ToList();
 			}
 		}
 

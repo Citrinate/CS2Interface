@@ -12,14 +12,14 @@ namespace CS2Interface {
 		internal GameDataText(string url) : base(url) {}
 
 		internal async Task<bool> Update() {
-			List<KeyValue>? data = (await FetchKVResource().ConfigureAwait(false))?.Search("Tokens");
+			KeyValue? data = await FetchKVResource().ConfigureAwait(false);
 			if (data == null) {
 				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't load game data from: {0}", Url));
 
 				return false;
 			}
 
-			Data = data;
+			Data = data.Children.Where(x => x.Name == "Tokens").SelectMany(x => x.Children).ToList();
 			Updated = true;
 
 			return true;

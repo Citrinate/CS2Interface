@@ -143,10 +143,6 @@ namespace CS2Interface {
 					return false;
 				}
 
-				if (attribute_def["attribute_type"].Value == "vector") {
-					ASF.ArchiLogger.LogGenericError(String.Format("zzzz vector for: {0}", attribute_name));
-				}
-
 				switch (attribute_def["attribute_type"].Value) {
 					case "uint32":
 					case null when attribute_def["stored_as_integer"].Value == "1":
