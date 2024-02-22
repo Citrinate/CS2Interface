@@ -25,7 +25,7 @@ namespace CS2Interface {
 
 		internal string? this[string? key] {
 			get {
-				if (key == null || Data == null) {
+				if (key == null || Data == null || !Data.ContainsKey(key)) {
 					return null;
 				}
 

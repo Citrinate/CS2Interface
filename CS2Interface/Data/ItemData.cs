@@ -1,7 +1,7 @@
 using System;
 using ArchiSteamFarm.Core;
 using Newtonsoft.Json;
-using ValveKeyValue;
+using SteamKit2;
 
 namespace CS2Interface {
 	internal class ItemData {
@@ -33,7 +33,7 @@ namespace CS2Interface {
 			ItemDef itemDef = new(GameData.ItemsGame.GetDef("items", item.DefIndex.ToString()));
 
 			// Add prefab values			
-			if (!MergePrefab(itemDef, itemDef.GetValue("prefab")?.ToString())) {
+			if (!MergePrefab(itemDef, itemDef.GetValue("prefab"))) {
 				throw new InvalidOperationException();
 			}
 
@@ -48,6 +48,8 @@ namespace CS2Interface {
 				return true;
 			}
 
+			// STACK OVERFLOW HERE
+
 			// Some items have multiple prefabs separated by a space, but only one is valid (it has an entry in ItemsGame)
 			// Ex: "valve weapon_case_key": "valve" isn't valid, but "weapon_case_key" is
 			// Ex: "antwerp2022_sticker_capsule_prefab antwerp2022_sellable_item_with_payment_rules": "antwerp2022_sticker_capsule_prefab" is valid, but "antwerp2022_sellable_item_with_payment_rules" isn't
@@ -56,14 +58,14 @@ namespace CS2Interface {
 			bool foundValid = false;
 
 			foreach (string prefabName in prefabNames) {
-				KVObject? prefabDef = GameData.ItemsGame.GetDef("prefabs", prefabName, suppressErrorLogs: true);
+				KeyValue? prefabDef = GameData.ItemsGame.GetDef("prefabs", prefabName, suppressErrorLogs: true);
 				if (prefabDef == null) {
 					continue;
 				}
 
 				foundValid = true;
 				itemDef.AddDef(prefabDef);
-				if (!MergePrefab(itemDef, prefabDef["prefab"]?.ToString())) {
+				if (!MergePrefab(itemDef, prefabDef["prefab"].Value)) {
 					return false;
 				};
 			}
