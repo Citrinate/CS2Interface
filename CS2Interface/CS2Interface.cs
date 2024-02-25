@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
 using ArchiSteamFarm.Steam;
 using ArchiSteamFarm.Plugins.Interfaces;
-using Newtonsoft.Json.Linq;
 using SteamKit2;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace CS2Interface {
 	[Export(typeof(IPlugin))]
@@ -25,7 +25,7 @@ namespace CS2Interface {
 
 		public async Task<string?> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0) => await Commands.Response(bot, access, steamID, message, args).ConfigureAwait(false);
 
-		public Task OnASFInit(IReadOnlyDictionary<string, JToken>? additionalConfigProperties = null) {
+		public Task OnASFInit(IReadOnlyDictionary<string, JsonElement>? additionalConfigProperties = null) {
 			if (additionalConfigProperties == null) {
 				return Task.FromResult(0);
 			}
@@ -33,16 +33,16 @@ namespace CS2Interface {
 			return Task.FromResult(0);
 		}
 
-		public Task OnBotInitModules(Bot bot, IReadOnlyDictionary<string, JToken>? additionalConfigProperties = null) {
+		public Task OnBotInitModules(Bot bot, IReadOnlyDictionary<string, JsonElement>? additionalConfigProperties = null) {
 			if (additionalConfigProperties == null) {
 				return Task.FromResult(0);
 			}
 
-			foreach (KeyValuePair<string, JToken> configProperty in additionalConfigProperties) {
+			foreach (KeyValuePair<string, JsonElement> configProperty in additionalConfigProperties) {
 				switch (configProperty.Key) {
-					case "AutoStartCS2Interface" when configProperty.Value.Type == JTokenType.Boolean: {
-						bot.ArchiLogger.LogGenericInfo("AutoStartCS2Interface : " + configProperty.Value);
-						AutoStart[bot.BotName] = configProperty.Value.ToObject<bool>();
+					case "AutoStartCS2Interface" when (configProperty.Value.ValueKind == JsonValueKind.True || configProperty.Value.ValueKind == JsonValueKind.False): {
+						bot.ArchiLogger.LogGenericInfo("AutoStartCS2Interface : " + configProperty.Value.GetBoolean());
+						AutoStart[bot.BotName] = configProperty.Value.GetBoolean();
 						break;
 					}
 				}

@@ -1,43 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ArchiSteamFarm.Core;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CS2Interface {
-	public sealed class AttributeConverter : JsonConverter {
-		public override bool CanConvert(Type objectType) {
-			return objectType == typeof(Dictionary<string, IAttribute>);
+	public sealed class AttributeConverter : JsonConverter<Dictionary<string, IAttribute>> {
+		
+		public override Dictionary<string, IAttribute> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+			throw new NotImplementedException();
 		}
-			
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
-			JObject json = new();
-			if (value is Dictionary<string, IAttribute> attributes) {
-				foreach (var kvp in attributes) {
-					var attribute = kvp.Value;
-					try {
-						if (attribute.Type == typeof(uint)) {
-							json.Add(attribute.Name, attribute.ToUInt32());
-						} if (attribute.Type == typeof(float)) {
-							json.Add(attribute.Name, attribute.ToSingle());
-						} else if (attribute.Type == typeof(string)) {
-							json.Add(attribute.Name, attribute.ToString());
-						}
-					} catch (Exception e) {
-						ASF.ArchiLogger.LogGenericException(e);
+
+		public override void Write(Utf8JsonWriter writer, Dictionary<string, IAttribute> value, JsonSerializerOptions options) {
+			foreach (var kvp in value) {
+				var attribute = kvp.Value;
+				try {
+					if (attribute.Type == typeof(uint)) {
+						writer.WriteNumber(attribute.Name, attribute.ToUInt32());
+					} if (attribute.Type == typeof(float)) {
+						writer.WriteNumber(attribute.Name, attribute.ToSingle());
+					} else if (attribute.Type == typeof(string)) {
+						writer.WriteString(attribute.Name, attribute.ToString());
 					}
+				} catch (Exception e) {
+					ASF.ArchiLogger.LogGenericException(e);
 				}
 			}
-
-			json.WriteTo(writer);
 		}
-
-		public override bool CanRead {
-			get { return false; }
-		}
-
-		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer) {
-			throw new NotImplementedException();
-		}		
 	}
 }
