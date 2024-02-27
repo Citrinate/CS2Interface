@@ -27,6 +27,8 @@ namespace CS2Interface {
 						case "CSTOP" or "CSSTOP" or "CS2STOP":
 							return ResponseStop(bot, access);
 
+						case "CSA":
+							return ResponseStatus(access, steamID, "ASF");
 						case "CSTATUS" or "CSSTATUS" or "CS2STATUS":
 							return ResponseStatus(bot, access);
 						
