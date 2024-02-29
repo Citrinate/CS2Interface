@@ -12,6 +12,7 @@ namespace CS2Interface {
 		}
 
 		public override void Write(Utf8JsonWriter writer, Dictionary<string, IAttribute> value, JsonSerializerOptions options) {
+			writer.WriteStartObject();
 			foreach (var kvp in value) {
 				var attribute = kvp.Value;
 				try {
@@ -26,6 +27,7 @@ namespace CS2Interface {
 					ASF.ArchiLogger.LogGenericException(e);
 				}
 			}
+			writer.WriteEndObject();
 		}
 	}
 }
