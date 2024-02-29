@@ -4,22 +4,22 @@ using ArchiSteamFarm.Core;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class ItemData {
+	public class ItemData {
 		[JsonInclude]
 		[JsonPropertyName("item_def")]
-		internal ItemDef ItemDef { get; private init; }
+		public ItemDef ItemDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("paint_kit_def")]
-		internal ItemDef? PaintKitDef { get; private init; }
+		public ItemDef? PaintKitDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("sticker_kit_def")]
-		internal ItemDef? StickerKitDef { get; private init; }
+		public ItemDef? StickerKitDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("music_def")]
-		internal ItemDef? MusicDef { get; private init; }
+		public ItemDef? MusicDef { get; private init; }
 
 		public bool ShouldSerializeItemDef() => ItemDef != null;
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;

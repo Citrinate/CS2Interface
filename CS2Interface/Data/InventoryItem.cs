@@ -8,27 +8,27 @@ using SteamKit2;
 using SteamKit2.GC.CSGO.Internal;
 
 namespace CS2Interface {
-	internal sealed class InventoryItem : Item {
+	public sealed class InventoryItem : Item {
 		[JsonInclude]
 		[JsonPropertyName("iteminfo")]
-		internal CSOEconItem ItemInfo { get; private init; }
+		public CSOEconItem ItemInfo { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("attributes")]
 		[JsonConverter (typeof(AttributeConverter))]
-		internal Dictionary<string, IAttribute>? Attributes { get; private set; }
+		public Dictionary<string, IAttribute>? Attributes { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("position")]
-		internal uint? Position { get; private set; }
+		public uint? Position { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("casket_id")]
-		internal ulong? CasketID { get; private set; }
+		public ulong? CasketID { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("moveable")]
-		internal bool? Moveable { get; private set; }
+		public bool? Moveable { get; private set; }
 
 		public bool ShouldSerializeAttributes() => Attributes != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializePosition() => Position != null && ShouldSerializeAdditionalProperties;

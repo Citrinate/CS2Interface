@@ -4,107 +4,107 @@ using System.Text.Json.Serialization;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class Item {
-		internal uint DefIndex;
-		internal uint PaintIndex;
-		internal uint? StickerID;
-		internal uint? TintID;
-		internal uint? MusicID;
-		internal uint Quality;
-		internal uint Rarity;
-		internal uint Origin;
+	public class Item {
+		public uint DefIndex;
+		public uint PaintIndex;
+		public uint? StickerID;
+		public uint? TintID;
+		public uint? MusicID;
+		public uint Quality;
+		public uint Rarity;
+		public uint Origin;
 
 		[JsonInclude]
 		[JsonPropertyName("full_name")]
-		internal string? FullName { get; private set; }
+		public string? FullName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("full_type_name")]
-		internal string? FullTypeName { get; private set; }
+		public string? FullTypeName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("rarity_name")]
-		internal string? RarityName { get; private set; }
+		public string? RarityName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("quality_name")]
-		internal string? QualityName { get; private set; }
+		public string? QualityName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("origin_name")]
-		internal string? OriginName { get; private set; }
+		public string? OriginName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("type_name")]
-		internal string? TypeName { get; private set; }
+		public string? TypeName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("item_name")]
-		internal string? ItemName { get; private set; }
+		public string? ItemName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("tool_name")]
-		internal string? ToolName { get; private set; }
+		public string? ToolName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("tint_name")]
-		internal string? TintName { get; private set; }
+		public string? TintName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("weapon_image_url")]
-		internal string? WeaponImageURL { get; private set; }
+		public string? WeaponImageURL { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("weapon_name")]
-		internal string? WeaponName { get; private set; }
+		public string? WeaponName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("wear_name")]
-		internal string? WearName { get; private set; }
+		public string? WearName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("wear")]
-		internal double? Wear { get; set; }
+		public double? Wear { get; set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("wear_min")]
-		internal float? WearMin { get; private set; }
+		public float? WearMin { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("wear_max")]
-		internal float? WearMax { get; private set; }
+		public float? WearMax { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("name_id")]
-		internal string? NameID { get; private set; }
+		public string? NameID { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("set_name_id")]
-		internal string? SetNameID { get; private set; }
+		public string? SetNameID { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("set_name")]
-		internal string? SetName { get; private set; }
+		public string? SetName { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("crate_name_id")]
-		internal string? CrateNameID { get; private set; }
+		public string? CrateNameID { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("crate_defindex")]
-		internal uint? CrateDefIndex { get; private set; }
+		public uint? CrateDefIndex { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("crate_supply_series")]
-		internal uint? CrateSupplySeries { get; private set; }
+		public uint? CrateSupplySeries { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("crate_name")]
-		internal string? CrateName { get; private set; }
+		public string? CrateName { get; private set; }
 
 		[JsonInclude]
 		[JsonPropertyName("defs")]
-		internal ItemData? ItemData { get; private set; }
+		public ItemData? ItemData { get; private set; }
 
 		protected static bool ShouldSerializeAdditionalProperties = true;
 		protected static bool ShouldSerializeDefs = true;
