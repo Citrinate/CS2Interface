@@ -12,7 +12,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 - Unpack the downloaded .zip file to the `plugins` folder inside your ASF folder.
 - (Re)start ASF, you should get a message indicating that the plugin loaded successfully. 
 
-> **Note**
+> [!NOTE]
 > This plugin is only tested to work with ASF-generic.  It may or may not work with other ASF variants, but feel free to report any issues you may encounter.
 
 ## Usage
@@ -36,7 +36,7 @@ Command | Access | Description
 "FarmingPreferences": 1,
 ```
 
-> **Note**
+> [!NOTE]
 > It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also enable the `FarmingPausedByDefault` flag.  This will prevent ASF's CardFarmer module from starting automatically.
 > 
 > If you want to farm cards you can still do so using the `cstop` or `resume` commands.  The CS2 Interface will automatically resume after card farming is complete.
@@ -45,10 +45,10 @@ Command | Access | Description
 
 ### IPC Interface
 
-> **Note**
+> [!NOTE]
 > Each bot can only process 1 request at a time.
 
-> **Note**
+> [!NOTE]
 > Once the plugin is installed additional documentation can be found, by default, at: [`/swagger`](http://localhost:1242/swagger)
 
 API | Method | Parameters | Description
