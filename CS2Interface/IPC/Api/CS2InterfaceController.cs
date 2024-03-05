@@ -136,24 +136,24 @@ namespace CS2Interface {
 			return Ok(new GenericResponse<InspectItem>(true, item));
 		}
 
-		[HttpGet("{botNames:required}/PlayerProfile/{steamID:required}")]
-		[SwaggerOperation (Summary = "Get a CS2 player profile")]
+		[HttpGet("{botName:required}/PlayerProfile/{steamID:required}")]
+		[SwaggerOperation (Summary = "Get a friend's CS2 player profile")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> PlayerProfile([FromRoute] string botNames, [FromRoute] ulong steamID) {
-			if (string.IsNullOrEmpty(botNames)) {
-				throw new ArgumentNullException(nameof(botNames));
+		public async Task<ActionResult<GenericResponse>> PlayerProfile([FromRoute] string botName, [FromRoute] ulong steamID) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
 			}
 			
-			HashSet<Bot>? bots = Bot.GetBots(botNames);
-			if ((bots == null) || (bots.Count == 0)) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botNames)));
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
 			}
 
-			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
-			if (bot == null || client == null) {
-				return BadRequest(new GenericResponse(false, status));
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
 			}
 
 			CMsgGCCStrike15_v2_PlayersProfile player;
