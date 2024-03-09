@@ -1,21 +1,25 @@
 using System;
+using System.Text.Json.Serialization;
 using ArchiSteamFarm.Core;
-using Newtonsoft.Json;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class ItemData {
-		[JsonProperty(PropertyName = "item_def")]
-		internal ItemDef ItemDef;
+	public class ItemData {
+		[JsonInclude]
+		[JsonPropertyName("item_def")]
+		public ItemDef ItemDef { get; private init; }
 
-		[JsonProperty(PropertyName = "paint_kit_def")]
-		internal ItemDef? PaintKitDef;
+		[JsonInclude]
+		[JsonPropertyName("paint_kit_def")]
+		public ItemDef? PaintKitDef { get; private init; }
 
-		[JsonProperty(PropertyName = "sticker_kit_def")]
-		internal ItemDef? StickerKitDef;
+		[JsonInclude]
+		[JsonPropertyName("sticker_kit_def")]
+		public ItemDef? StickerKitDef { get; private init; }
 
-		[JsonProperty(PropertyName = "music_def")]
-		internal ItemDef? MusicDef;
+		[JsonInclude]
+		[JsonPropertyName("music_def")]
+		public ItemDef? MusicDef { get; private init; }
 
 		public bool ShouldSerializeItemDef() => ItemDef != null;
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;
@@ -47,8 +51,6 @@ namespace CS2Interface {
 			if (prefab == null) {
 				return true;
 			}
-
-			// STACK OVERFLOW HERE
 
 			// Some items have multiple prefabs separated by a space, but only one is valid (it has an entry in ItemsGame)
 			// Ex: "valve weapon_case_key": "valve" isn't valid, but "weapon_case_key" is

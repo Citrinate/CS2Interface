@@ -2,28 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using ArchiSteamFarm.Core;
-using Newtonsoft.Json;
 using SteamKit2;
 using SteamKit2.GC.CSGO.Internal;
 
 namespace CS2Interface {
-	internal sealed class InventoryItem : Item {
-		[JsonProperty(PropertyName = "iteminfo")]
-		internal CSOEconItem ItemInfo;
+	public sealed class InventoryItem : Item {
+		[JsonInclude]
+		[JsonPropertyName("iteminfo")]
+		public CSOEconItem ItemInfo { get; private init; }
 
-		[JsonProperty(PropertyName = "attributes")]
+		[JsonInclude]
+		[JsonPropertyName("attributes")]
 		[JsonConverter (typeof(AttributeConverter))]
-		Dictionary<string, IAttribute>? Attributes;
+		public Dictionary<string, IAttribute>? Attributes { get; private set; }
 
-		[JsonProperty(PropertyName = "position")]
-		internal uint? Position;
+		[JsonInclude]
+		[JsonPropertyName("position")]
+		public uint? Position { get; private set; }
 
-		[JsonProperty(PropertyName = "casket_id")]
-		internal ulong? CasketID;
+		[JsonInclude]
+		[JsonPropertyName("casket_id")]
+		public ulong? CasketID { get; private set; }
 
-		[JsonProperty(PropertyName = "moveable")]
-		internal bool? Moveable;
+		[JsonInclude]
+		[JsonPropertyName("moveable")]
+		public bool? Moveable { get; private set; }
 
 		public bool ShouldSerializeAttributes() => Attributes != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializePosition() => Position != null && ShouldSerializeAdditionalProperties;

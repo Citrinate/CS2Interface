@@ -1,87 +1,110 @@
 using System;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class Item {
-		internal uint DefIndex;
-		internal uint PaintIndex;
-		internal uint? StickerID;
-		internal uint? TintID;
-		internal uint? MusicID;
-		internal uint Quality;
-		internal uint Rarity;
-		internal uint Origin;
+	public class Item {
+		public uint DefIndex;
+		public uint PaintIndex;
+		public uint? StickerID;
+		public uint? TintID;
+		public uint? MusicID;
+		public uint Quality;
+		public uint Rarity;
+		public uint Origin;
 
-		[JsonProperty(PropertyName = "full_name")]
-		internal string? FullName;
+		[JsonInclude]
+		[JsonPropertyName("full_name")]
+		public string? FullName { get; private set; }
 		
-		[JsonProperty(PropertyName = "full_type_name")]
-		internal string? FullTypeName;
+		[JsonInclude]
+		[JsonPropertyName("full_type_name")]
+		public string? FullTypeName { get; private set; }
 		
-		[JsonProperty(PropertyName = "rarity_name")]
-		internal string? RarityName;
+		[JsonInclude]
+		[JsonPropertyName("rarity_name")]
+		public string? RarityName { get; private set; }
 		
-		[JsonProperty(PropertyName = "quality_name")]
-		internal string? QualityName;
+		[JsonInclude]
+		[JsonPropertyName("quality_name")]
+		public string? QualityName { get; private set; }
 		
-		[JsonProperty(PropertyName = "origin_name")]
-		internal string? OriginName;
+		[JsonInclude]
+		[JsonPropertyName("origin_name")]
+		public string? OriginName { get; private set; }
 		
-		[JsonProperty(PropertyName = "type_name")]
-		internal string? TypeName;
+		[JsonInclude]
+		[JsonPropertyName("type_name")]
+		public string? TypeName { get; private set; }
 		
-		[JsonProperty(PropertyName = "item_name")]
-		internal string? ItemName;
+		[JsonInclude]
+		[JsonPropertyName("item_name")]
+		public string? ItemName { get; private set; }
 		
-		[JsonProperty(PropertyName = "tool_name")]
-		internal string? ToolName;
+		[JsonInclude]
+		[JsonPropertyName("tool_name")]
+		public string? ToolName { get; private set; }
 		
-		[JsonProperty(PropertyName = "tint_name")]
-		internal string? TintName;
+		[JsonInclude]
+		[JsonPropertyName("tint_name")]
+		public string? TintName { get; private set; }
 		
-		[JsonProperty(PropertyName = "weapon_image_url")]
-		internal string? WeaponImageURL;
+		[JsonInclude]
+		[JsonPropertyName("weapon_image_url")]
+		public string? WeaponImageURL { get; private set; }
 		
-		[JsonProperty(PropertyName = "weapon_name")]
-		internal string? WeaponName;
+		[JsonInclude]
+		[JsonPropertyName("weapon_name")]
+		public string? WeaponName { get; private set; }
 		
-		[JsonProperty(PropertyName = "wear_name")]
-		internal string? WearName;
+		[JsonInclude]
+		[JsonPropertyName("wear_name")]
+		public string? WearName { get; private set; }
 		
-		[JsonProperty(PropertyName = "wear")]
-		internal double? Wear;
+		[JsonInclude]
+		[JsonPropertyName("wear")]
+		public double? Wear { get; set; }
 		
-		[JsonProperty(PropertyName = "wear_min")]
-		internal float? WearMin;
+		[JsonInclude]
+		[JsonPropertyName("wear_min")]
+		public float? WearMin { get; private set; }
 		
-		[JsonProperty(PropertyName = "wear_max")]
-		internal float? WearMax;
+		[JsonInclude]
+		[JsonPropertyName("wear_max")]
+		public float? WearMax { get; private set; }
 
-		[JsonProperty(PropertyName = "name_id")]
-		internal string? NameID;
+		[JsonInclude]
+		[JsonPropertyName("name_id")]
+		public string? NameID { get; private set; }
 		
-		[JsonProperty(PropertyName = "set_name_id")]
-		internal string? SetNameID;
+		[JsonInclude]
+		[JsonPropertyName("set_name_id")]
+		public string? SetNameID { get; private set; }
 		
-		[JsonProperty(PropertyName = "set_name")]
-		internal string? SetName;
+		[JsonInclude]
+		[JsonPropertyName("set_name")]
+		public string? SetName { get; private set; }
 		
-		[JsonProperty(PropertyName = "crate_name_id")]
-		internal string? CrateNameID;
+		[JsonInclude]
+		[JsonPropertyName("crate_name_id")]
+		public string? CrateNameID { get; private set; }
 		
-		[JsonProperty(PropertyName = "crate_defindex")]
-		internal uint? CrateDefIndex;
+		[JsonInclude]
+		[JsonPropertyName("crate_defindex")]
+		public uint? CrateDefIndex { get; private set; }
 
-		[JsonProperty(PropertyName = "crate_supply_series")]
-		internal uint? CrateSupplySeries;
+		[JsonInclude]
+		[JsonPropertyName("crate_supply_series")]
+		public uint? CrateSupplySeries { get; private set; }
 		
-		[JsonProperty(PropertyName = "crate_name")]
-		internal string? CrateName;
+		[JsonInclude]
+		[JsonPropertyName("crate_name")]
+		public string? CrateName { get; private set; }
 
-		[JsonProperty(PropertyName = "defs")]
-		internal ItemData? ItemData;
+		[JsonInclude]
+		[JsonPropertyName("defs")]
+		public ItemData? ItemData { get; private set; }
 
 		protected static bool ShouldSerializeAdditionalProperties = true;
 		protected static bool ShouldSerializeDefs = true;

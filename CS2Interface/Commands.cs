@@ -21,12 +21,17 @@ namespace CS2Interface {
 			switch (args.Length) {
 				case 1:
 					switch (args[0].ToUpperInvariant()) {
+						case "CS2INTERFACE" when access >= EAccess.FamilySharing:
+							return String.Format("{0} {1}", nameof(CS2Interface), (typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0")).ToString());
+
 						case "CSTART" or "CSSTART" or "CS2START" or "CRUN" or "CSRUN" or "CS2RUN":
 							return await ResponseRun(bot, access).ConfigureAwait(false);
 
 						case "CSTOP" or "CSSTOP" or "CS2STOP":
 							return ResponseStop(bot, access);
 
+						case "CSA":
+							return ResponseStatus(access, steamID, "ASF");
 						case "CSTATUS" or "CSSTATUS" or "CS2STATUS":
 							return ResponseStatus(bot, access);
 						

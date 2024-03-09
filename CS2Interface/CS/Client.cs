@@ -125,6 +125,10 @@ namespace CS2Interface {
 				return;
 			}
 			
+#if DEBUG
+			Bot.ArchiLogger.LogGenericDebug(String.Format("Message Received: {0}", callback.EMsg));
+#endif
+
 			OnGCMessageRecieved?.Invoke(callback);
 
 			var messageMap = new Dictionary<uint, Action<IPacketGCMsg>> {

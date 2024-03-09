@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class ItemDef {
-		[JsonProperty(PropertyName = "defs", ItemConverterType = typeof(KVConverter))]
-		internal List<KeyValue> Defs = new();
+	public class ItemDef {
+		[JsonInclude]
+		[JsonPropertyName("defs")]
+		[JsonConverter(typeof(JsonListItemConverter<KeyValue, KVConverter>))]
+		internal List<KeyValue> Defs { get; private init; } = new();
 
 		internal ItemDef(KeyValue? def) {
 			AddDef(def);

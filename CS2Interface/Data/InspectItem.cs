@@ -1,16 +1,17 @@
 using System;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using SteamKit2.GC.CSGO.Internal;
 
 namespace CS2Interface {
-	internal sealed class InspectItem : Item {
-		[JsonProperty(PropertyName = "iteminfo")]
-		internal CEconItemPreviewDataBlock ItemInfo;
-		internal string s;
-		internal string a;
-		internal string d;
-		internal string m;
+	public sealed class InspectItem : Item {
+		[JsonInclude]
+		[JsonPropertyName("iteminfo")]
+		public CEconItemPreviewDataBlock ItemInfo { get; private init; }
+		public string s;
+		public string a;
+		public string d;
+		public string m;
 
 		internal InspectItem(CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse item, ulong param_s, ulong param_a, ulong param_d, ulong param_m) {
 			ItemInfo = item.iteminfo;

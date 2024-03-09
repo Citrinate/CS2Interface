@@ -25,6 +25,12 @@ Command | Access | Description
 `cstop [Bots]`|`Master`|Stops the CS2 Interface
 `cstatus [Bots]`|`Master`|Displays the status of the CS2 Interface
 
+#### Command Aliases
+
+Command | Alias |
+--- | --- |
+`cstatus asf`|`csa`
+
 ---
 
 ### AutoStartCS2Interface
