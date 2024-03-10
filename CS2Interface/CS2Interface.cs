@@ -16,7 +16,6 @@ namespace CS2Interface {
 		internal static ConcurrentDictionary<string, bool> AutoStart = new();
 		public string Name => nameof(CS2Interface);
 		public Version Version => typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0");
-		private bool ASFEnhanceEnabled = false;
 
 		public Task OnLoaded() {
 			ASF.ArchiLogger.LogGenericInfo("Counter-Strike 2 Interface ASF Plugin by Citrinate");
@@ -24,21 +23,16 @@ namespace CS2Interface {
 
 			// ASFEnhanced Adapter https://github.com/chr233/ASFEnhanceAdapterDemoPlugin
 			var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-			var handler = typeof(Commands).GetMethod(nameof(Commands.Response), flag);
+			var handler = typeof(AdapterBridge).GetMethod(nameof(AdapterBridge.Response), flag);
 			const string pluginId = nameof(CS2Interface);
 			const string cmdPrefix = "CS2INTERFACE";
 			const string repoName = "Citrinate/CS2Interface";
-			var registered = AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
-			ASFEnhanceEnabled = registered;
-
+			AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
+			
 			return Task.CompletedTask;
 		}
 
-		public async Task<string?> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0) {
-			if (ASFEnhanceEnabled) {
-				return null;
-			}
-			
+		public async Task<string?> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0) {			
 			return await Commands.Response(bot, access, steamID, message, args).ConfigureAwait(false);
 		}
 
