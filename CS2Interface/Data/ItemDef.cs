@@ -8,7 +8,7 @@ namespace CS2Interface {
 	public class ItemDef {
 		[JsonInclude]
 		[JsonPropertyName("defs")]
-		[JsonConverter(typeof(JsonListItemConverter<KeyValue, KVConverter>))]
+		[JsonConverter(typeof(ListKVConverter))]
 		internal List<KeyValue> Defs { get; private init; } = new();
 
 		internal ItemDef(KeyValue? def) {

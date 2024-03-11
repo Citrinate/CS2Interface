@@ -17,11 +17,14 @@ namespace CS2Interface {
 				var attribute = kvp.Value;
 				try {
 					if (attribute.Type == typeof(uint)) {
-						writer.WriteNumber(attribute.Name, attribute.ToUInt32());
+						writer.WritePropertyName(attribute.Name);
+						writer.WriteNumberValue(attribute.ToUInt32());
 					} if (attribute.Type == typeof(float)) {
-						writer.WriteNumber(attribute.Name, attribute.ToSingle());
+						writer.WritePropertyName(attribute.Name);
+						writer.WriteNumberValue(attribute.ToSingle());
 					} else if (attribute.Type == typeof(string)) {
-						writer.WriteString(attribute.Name, attribute.ToString());
+						writer.WritePropertyName(attribute.Name);
+						writer.WriteStringValue(attribute.ToString());
 					}
 				} catch (Exception e) {
 					ASF.ArchiLogger.LogGenericException(e);

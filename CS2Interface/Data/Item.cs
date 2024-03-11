@@ -181,8 +181,10 @@ namespace CS2Interface {
 
 				if (Wear != null) {
 					WearName = GameData.GetWearName(Wear.Value);
-					WearMin = Convert.ToSingle(ItemData.PaintKitDef!.GetValue("wear_remap_min"));
-					WearMax = Convert.ToSingle(ItemData.PaintKitDef!.GetValue("wear_remap_max"));
+					string? wearRemapMinValue = ItemData.PaintKitDef!.GetValue("wear_remap_min");
+					string? wearRemapMaxValue = ItemData.PaintKitDef!.GetValue("wear_remap_max");
+					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue);
+					WearMax = wearRemapMaxValue == null ? null : float.Parse(wearRemapMaxValue);
 				}
 
 				// Set the weapon image url
