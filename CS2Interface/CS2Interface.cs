@@ -8,7 +8,6 @@ using ArchiSteamFarm.Plugins.Interfaces;
 using SteamKit2;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using System.Reflection;
 
 namespace CS2Interface {
 	[Export(typeof(IPlugin))]
@@ -20,14 +19,6 @@ namespace CS2Interface {
 		public Task OnLoaded() {
 			ASF.ArchiLogger.LogGenericInfo("Counter-Strike 2 Interface ASF Plugin by Citrinate");
 			GameData.Update();
-
-			// ASFEnhanced Adapter https://github.com/chr233/ASFEnhanceAdapterDemoPlugin
-			var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-			var handler = typeof(AdapterBridge).GetMethod(nameof(AdapterBridge.Response), flag);
-			const string pluginId = nameof(CS2Interface);
-			const string cmdPrefix = "CS2INTERFACE";
-			const string repoName = "Citrinate/CS2Interface";
-			AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
 			
 			return Task.CompletedTask;
 		}
