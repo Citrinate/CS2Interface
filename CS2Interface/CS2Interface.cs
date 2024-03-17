@@ -11,9 +11,10 @@ using System.Text.Json;
 
 namespace CS2Interface {
 	[Export(typeof(IPlugin))]
-	public sealed class CS2Interface : IASF, IBotModules, IBotSteamClient, IBotCommand2, IBotConnection, IBotCardsFarmerInfo {
+	public sealed class CS2Interface : IASF, IBotModules, IBotSteamClient, IBotCommand2, IBotConnection, IBotCardsFarmerInfo, IGitHubPluginUpdates {
 		internal static ConcurrentDictionary<string, bool> AutoStart = new();
 		public string Name => nameof(CS2Interface);
+		public string RepositoryName => "Citrinate/CS2Interface";
 		public Version Version => typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0");
 
 		public Task OnLoaded() {
