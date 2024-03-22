@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
-using ArchiSteamFarm.Localization;
 using ArchiSteamFarm.Steam;
 using Microsoft.AspNetCore.Mvc;
 using SteamKit2.GC.CSGO.Internal;
@@ -28,7 +27,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botNames)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
 			IList<(bool Success, string Message)> results = await Utilities.InParallel(bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Run())).ConfigureAwait(false);
@@ -48,7 +47,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botNames)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
 			IEnumerable<string> results = bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Stop());
@@ -92,7 +91,7 @@ namespace CS2Interface {
 			
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 			if ((bots == null) || (bots.Count == 0)) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botNames)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
 			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
@@ -148,7 +147,7 @@ namespace CS2Interface {
 			
 			Bot? bot = Bot.GetBot(botName);
 			if (bot == null) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
@@ -186,7 +185,7 @@ namespace CS2Interface {
 			
 			Bot? bot = Bot.GetBot(botName);
 			if (bot == null) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
 			(Client? client, string status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
@@ -227,7 +226,7 @@ namespace CS2Interface {
 			
 			Bot? bot = Bot.GetBot(botName);
 			if (bot == null) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 			
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
@@ -259,7 +258,7 @@ namespace CS2Interface {
 			
 			Bot? bot = Bot.GetBot(botName);
 			if (bot == null) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
@@ -288,7 +287,7 @@ namespace CS2Interface {
 			
 			Bot? bot = Bot.GetBot(botName);
 			if (bot == null) {
-				return BadRequest(new GenericResponse(false, string.Format(Strings.BotNotFound, botName)));
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();

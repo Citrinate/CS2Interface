@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Steam;
+using CS2Interface.Localization;
 using SteamKit2;
 
 namespace CS2Interface {
@@ -26,7 +27,7 @@ namespace CS2Interface {
 
 		internal async Task<(bool Success, string Message)> Run(int numAttempts = 3) {
 			if (!Bot.IsConnectedAndLoggedOn) {
-				return (false, "Bot is not connected");
+				return (false, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			(_, _, EClientStatus status) = await VerifyConnection().ConfigureAwait(false);
@@ -34,55 +35,55 @@ namespace CS2Interface {
 			bool ready = ((status & EClientStatus.Ready) == EClientStatus.Ready);
 
 			if (connected) {
-				return (true, "CS2 Interface is already running");
+				return (true, Strings.InterfaceAlreadyRunning);
 			}
 
 			if (!connected && !ready) {
-				return (false, "CS2 Interface is already attempting to run");
+				return (false, Strings.InterfaceAlreadyStarting);
 			}
 
 			try {
 				await Client.Run().ConfigureAwait(false);
 				if (!await Client.VerifyConnection().ConfigureAwait(false)) {
-					throw new ClientException(EClientExceptionType.Failed, "CS2 Interface seemed to start, but then didn't");
+					throw new ClientException(EClientExceptionType.Failed, Strings.InterfaceStartFailedUnexpectedly);
 				}
 			} catch (ClientException e) {
 				Bot.ArchiLogger.LogGenericError(e.Message);
 				if (numAttempts > 0 && e.Type != EClientExceptionType.FatalError) {
 					await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
-					Bot.ArchiLogger.LogGenericError("CS2 Interface failed to start, retrying");
+					Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailedRetry);
 
 					return await Run(numAttempts - 1).ConfigureAwait(false);
 				}
 
 				ForceStop();
 				Bot.Actions.Resume();
-				Bot.ArchiLogger.LogGenericError("CS2 Interface failed to start");
+				Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailed);
 
-				return (false, String.Format("CS2 Interface failed to start: {0}", e.Message));
+				return (false, String.Format("{0}: {1}", Strings.InterfaceStartFailed, e.Message));
 			}
 
-			Bot.ArchiLogger.LogGenericInfo("CS2 Interface started");
+			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStarted);
 			
-			return (true, "CS2 Interface started");
+			return (true, Strings.InterfaceStarted);
 		}
 
 		internal string Stop() {
 			if (!Bot.IsConnectedAndLoggedOn) {
-				return "Bot is not connected";
+				return ArchiSteamFarm.Localization.Strings.BotNotConnected;
 			}
 
 			EClientStatus status = Client.Status();
 			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
 			if (!connected) {
-				return "CS2 Interface was not running";
+				return Strings.IntefaceNotRunning;
 			}
 
 			Client.Stop();
 			Bot.Actions.Resume();
-			Bot.ArchiLogger.LogGenericInfo("CS2 Interface stopped");
+			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStopped);
 
-			return "CS2 Interface successfully stopped";
+			return Strings.InterfaceStoppedSuccessfully;
 		}
 
 		internal void ForceStop() {
@@ -91,13 +92,13 @@ namespace CS2Interface {
 			if (connected) {
 				Client.Stop(); // Stop even if bot is logged out, to update the client state
 				Bot.Actions.Resume();
-				Bot.ArchiLogger.LogGenericInfo("CS2 Interface was forcibly stopped");
+				Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceForciblyStopped);
 			}
 		}
 
 		internal (EClientStatus ClientStatus, string Message) Status() {
 			if (!Bot.IsConnectedAndLoggedOn) {
-				return (EClientStatus.None, "Bot is not connected");
+				return (EClientStatus.None, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			EClientStatus status = Client.Status();
@@ -106,17 +107,17 @@ namespace CS2Interface {
 
 			if (!connected) {
 				if (!ready) {
-					return (status, "CS2 Interface is connecting");
+					return (status, Strings.InterfaceConnecting);
 				}
 
-				return (status, "CS2 Interface is not connected");
+				return (status, Strings.InterfaceNotConnected);
 			}
 
 			if (!ready) {
-				return (status, "CS2 Interface is busy");
+				return (status, Strings.InterfaceBusy);
 			}
 
-			return (status, "Ready");
+			return (status, Strings.Ready);
 		}
 
 		internal async Task<(bool Connected, string Message, EClientStatus ClientStatus)> VerifyConnection() {
@@ -124,18 +125,18 @@ namespace CS2Interface {
 			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
 
 			if (!connected) {
-				return (false, "CS2 Interface is not connected", status);
+				return (false, Strings.InterfaceNotConnected, status);
 			}
 
 			connected = await Client.VerifyConnection().ConfigureAwait(false);
 			if (!connected) {
 				ForceStop();
-				Bot.ArchiLogger.LogGenericError("CS2 Interface stopped unexpectedly");
+				Bot.ArchiLogger.LogGenericError(Strings.InterfaceStoppedUnexpectedly);
 
-				return (false, "CS2 Interface stopped unexpectedly", Client.Status());
+				return (false, Strings.InterfaceStoppedUnexpectedly, Client.Status());
 			}
 
-			return (true, "CS2 Interface is connected", Client.Status());
+			return (true, Strings.InterfaceConnected, Client.Status());
 		}
 
 		internal static (Bot?, Client?, string) GetAvailableClient(HashSet<Bot> bots) {
@@ -146,7 +147,7 @@ namespace CS2Interface {
 				}
 			}
 
-			return (null, null, "No bots are available");
+			return (null, null, Strings.NoBotsAvailable);
 		}
 
 		internal (Client?, string) GetClient(EClientStatus desiredStatus = EClientStatus.Connected | EClientStatus.Ready) {

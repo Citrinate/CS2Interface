@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 using SteamKit2;
 
 namespace CS2Interface {
@@ -14,7 +15,7 @@ namespace CS2Interface {
 		internal async Task<bool> Update() {
 			KeyValue? data = await FetchKVResource().ConfigureAwait(false);
 			if (data == null) {
-				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't load game data from: {0}", Url));
+				ASF.ArchiLogger.LogGenericError(String.Format(Strings.GameDataSourceFailed, Url));
 
 				return false;
 			}
@@ -44,7 +45,7 @@ namespace CS2Interface {
 
 			if (def == null) {
 				if (!suppressErrorLogs) {
-					ASF.ArchiLogger.LogGenericError(String.Format("Couldn't find definition: {0}[{1}]", value, index));
+					ASF.ArchiLogger.LogGenericError(String.Format("{0}: {1}[{2}]", Strings.GameDataDefinitionUndefined, value, index));
 				}
 				
 				return null;

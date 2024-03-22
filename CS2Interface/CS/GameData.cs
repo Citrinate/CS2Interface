@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 
 namespace CS2Interface {
 	internal static class GameData {
@@ -21,7 +22,7 @@ namespace CS2Interface {
 				ItemsGameCdn.Updated = false;
 				CsgoEnglish.Updated = false;
 				DoNotUpdateUntil = DateTime.Now.AddMinutes(15);
-				ASF.ArchiLogger.LogGenericInfo("Refreshing CS2 game data");
+				ASF.ArchiLogger.LogGenericInfo(Strings.GameDataRefreshing);
 			}
 			
 			if (!ItemsGame.Updated || !ItemsGameCdn.Updated || !CsgoEnglish.Updated) {
@@ -72,7 +73,7 @@ namespace CS2Interface {
 				if (ItemsGame.Updated && ItemsGameCdn.Updated && CsgoEnglish.Updated) {
 					UpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 					IsUpdating = false;
-					ASF.ArchiLogger.LogGenericInfo("CS2 game data loaded");
+					ASF.ArchiLogger.LogGenericInfo(Strings.GameDataLoadingSuccess);
 				}
 			} catch (Exception e) {
 				ASF.ArchiLogger.LogGenericException(e);

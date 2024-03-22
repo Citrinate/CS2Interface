@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 using SteamKit2;
 
 namespace CS2Interface {
@@ -73,7 +74,7 @@ namespace CS2Interface {
 			}
 
 			if (!foundValid) {
-				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't find definition: prefabs[{0}]", prefab));
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: prefabs[{1}]", Strings.GameDataDefinitionUndefined, prefab));
 			}
 
 			return foundValid;

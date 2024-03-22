@@ -4,7 +4,6 @@ using ArchiSteamFarm.Steam;
 using System.ComponentModel;
 using ArchiSteamFarm.Core;
 using System.Collections.Generic;
-using ArchiSteamFarm.Localization;
 using System.Linq;
 
 namespace CS2Interface {
@@ -61,7 +60,7 @@ namespace CS2Interface {
 			}
 
 			if (!bot.IsConnectedAndLoggedOn) {
-				return FormatBotResponse(bot, Strings.BotNotConnected);
+				return FormatBotResponse(bot, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			(_, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
@@ -77,7 +76,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(Strings.BotNotFound, botNames)) : null;
+				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseRun(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)))).ConfigureAwait(false);
@@ -93,7 +92,7 @@ namespace CS2Interface {
 			}
 
 			if (!bot.IsConnectedAndLoggedOn) {
-				return FormatBotResponse(bot, Strings.BotNotConnected);
+				return FormatBotResponse(bot, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			string message = ClientHandler.ClientHandlers[bot.BotName].Stop();
@@ -109,7 +108,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(Strings.BotNotFound, botNames)) : null;
+				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IEnumerable<string?> results = bots.Select(bot => ResponseStop(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)));
@@ -125,7 +124,7 @@ namespace CS2Interface {
 			}
 
 			if (!bot.IsConnectedAndLoggedOn) {
-				return FormatBotResponse(bot, Strings.BotNotConnected);
+				return FormatBotResponse(bot, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			(_, string message) = ClientHandler.ClientHandlers[bot.BotName].Status();
@@ -141,7 +140,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(Strings.BotNotFound, botNames)) : null;
+				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IEnumerable<string?> results = bots.Select(bot => ResponseStatus(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)));
