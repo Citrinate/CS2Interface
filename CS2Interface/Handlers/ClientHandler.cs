@@ -69,6 +69,8 @@ namespace CS2Interface {
 		}
 
 		internal string Stop() {
+			// The user has decided to stop the interface
+
 			if (!Bot.IsConnectedAndLoggedOn) {
 				return ArchiSteamFarm.Localization.Strings.BotNotConnected;
 			}
@@ -80,6 +82,7 @@ namespace CS2Interface {
 			}
 
 			Client.Stop();
+			CS2Interface.AutoStart[Bot.BotName] = false;
 			Bot.Actions.Resume();
 			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStopped);
 
@@ -87,6 +90,8 @@ namespace CS2Interface {
 		}
 
 		internal void ForceStop() {
+			// The interface has decided to stop itself
+
 			EClientStatus status = Client.Status();
 			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
 			if (connected) {
