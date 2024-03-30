@@ -89,9 +89,7 @@ namespace CS2Interface {
 		}
 
 		public async Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
-			if (farmedSomething) {
-				await TryAutoStart(bot).ConfigureAwait(false);
-			}
+			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 
 		public Task OnBotFarmingStarted(Bot bot) {
@@ -100,10 +98,8 @@ namespace CS2Interface {
 			return Task.FromResult(0);
 		}
 
-		public Task OnBotFarmingStopped(Bot bot) {
-			ClientHandler.ClientHandlers[bot.BotName].ForceStop();
-
-			return Task.FromResult(0);
+		public async Task OnBotFarmingStopped(Bot bot) {
+			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 	}
 }
