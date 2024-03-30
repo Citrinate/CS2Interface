@@ -46,7 +46,7 @@ Command | Alias |
 > [!NOTE]
 > It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also enable the `FarmingPausedByDefault` flag.  This will prevent ASF's CardFarmer module from starting automatically.
 > 
-> If you want to farm cards you can still do so using the `cstop` or `resume` commands.  The CS2 Interface will automatically resume after card farming is complete.
+> If you want to farm cards you can still do so using the `resume` command.  The CS2 Interface will automatically start after card farming is complete.
 
 ---
 
