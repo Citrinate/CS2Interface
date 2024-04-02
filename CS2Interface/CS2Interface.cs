@@ -8,26 +8,18 @@ using ArchiSteamFarm.Plugins.Interfaces;
 using SteamKit2;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using System.Reflection;
 
 namespace CS2Interface {
 	[Export(typeof(IPlugin))]
-	public sealed class CS2Interface : IASF, IBotModules, IBotSteamClient, IBotCommand2, IBotConnection, IBotCardsFarmerInfo {
+	public sealed class CS2Interface : IASF, IBotModules, IBotSteamClient, IBotCommand2, IBotConnection, IBotCardsFarmerInfo, IGitHubPluginUpdates {
 		internal static ConcurrentDictionary<string, bool> AutoStart = new();
 		public string Name => nameof(CS2Interface);
+		public string RepositoryName => "Citrinate/CS2Interface";
 		public Version Version => typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0");
 
 		public Task OnLoaded() {
 			ASF.ArchiLogger.LogGenericInfo("Counter-Strike 2 Interface ASF Plugin by Citrinate");
 			GameData.Update();
-
-			// ASFEnhanced Adapter https://github.com/chr233/ASFEnhanceAdapterDemoPlugin
-			var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-			var handler = typeof(AdapterBridge).GetMethod(nameof(AdapterBridge.Response), flag);
-			const string pluginId = nameof(CS2Interface);
-			const string cmdPrefix = "CS2INTERFACE";
-			const string repoName = "Citrinate/CS2Interface";
-			AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
 			
 			return Task.CompletedTask;
 		}
@@ -97,9 +89,7 @@ namespace CS2Interface {
 		}
 
 		public async Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
-			if (farmedSomething) {
-				await TryAutoStart(bot).ConfigureAwait(false);
-			}
+			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 
 		public Task OnBotFarmingStarted(Bot bot) {
@@ -108,10 +98,8 @@ namespace CS2Interface {
 			return Task.FromResult(0);
 		}
 
-		public Task OnBotFarmingStopped(Bot bot) {
-			ClientHandler.ClientHandlers[bot.BotName].ForceStop();
-
-			return Task.FromResult(0);
+		public async Task OnBotFarmingStopped(Bot bot) {
+			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 	}
 }

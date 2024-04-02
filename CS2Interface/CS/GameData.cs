@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 
 namespace CS2Interface {
 	internal static class GameData {
@@ -21,7 +22,7 @@ namespace CS2Interface {
 				ItemsGameCdn.Updated = false;
 				CsgoEnglish.Updated = false;
 				DoNotUpdateUntil = DateTime.Now.AddMinutes(15);
-				ASF.ArchiLogger.LogGenericInfo("Refreshing CS2 game data");
+				ASF.ArchiLogger.LogGenericInfo(Strings.GameDataRefreshing);
 			}
 			
 			if (!ItemsGame.Updated || !ItemsGameCdn.Updated || !CsgoEnglish.Updated) {
@@ -72,7 +73,7 @@ namespace CS2Interface {
 				if (ItemsGame.Updated && ItemsGameCdn.Updated && CsgoEnglish.Updated) {
 					UpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 					IsUpdating = false;
-					ASF.ArchiLogger.LogGenericInfo("CS2 game data loaded");
+					ASF.ArchiLogger.LogGenericInfo(Strings.GameDataLoadingSuccess);
 				}
 			} catch (Exception e) {
 				ASF.ArchiLogger.LogGenericException(e);
@@ -94,31 +95,31 @@ namespace CS2Interface {
 		internal static string? GetOriginName(uint origin) {
 			// https://raw.githubusercontent.com/SteamDatabase/SteamTracking/b5cba7a22ab899d6d423380cff21cec707b7c947/ItemSchema/CounterStrikeGlobalOffensive.json
 			return origin switch {
-				0 => "Timed Drop",
-				1 => "Achievement",
-				2 => "Purchased",
-				3 => "Traded",
-				4 => "Crafted",
-				5 => "Store Promotion",
-				6 => "Gifted",
-				7 => "Support Granted",
-				8 => "Found in Crate",
-				9 => "Earned",
-				10 => "Third-Party Promotion",
-				11 => "Wrapped Gift",
-				12 => "Halloween Drop",
-				13 => "Steam Purchase",
-				14 => "Foreign Item",
-				15 => "CD Key",
-				16 => "Collection Reward",
-				17 => "Preview Item",
-				18 => "Steam Workshop Contribution",
-				19 => "Periodic Score Reward",
-				20 => "Recycling",
-				21 => "Tournament Drop",
-				22 => "Stock Item",
-				23 => "Quest Reward",
-				24 => "Level Up Reward",
+				0 => Strings.ItemOrigin0, // Timed Drop
+				1 => Strings.ItemOrigin1, // Achievement
+				2 => Strings.ItemOrigin2, // Purchased
+				3 => Strings.ItemOrigin3, // Traded
+				4 => Strings.ItemOrigin4, // Crafted
+				5 => Strings.ItemOrigin5, // Store Promotion
+				6 => Strings.ItemOrigin6, // Gifted
+				7 => Strings.ItemOrigin7, // Support Granted
+				8 => Strings.ItemOrigin8, // Found in Crate
+				9 => Strings.ItemOrigin9, // Earned
+				10 => Strings.ItemOrigin10, // "Third-Party Promotion
+				11 => Strings.ItemOrigin11, // "Wrapped Gift
+				12 => Strings.ItemOrigin12, // "Halloween Drop
+				13 => Strings.ItemOrigin13, // "Steam Purchase
+				14 => Strings.ItemOrigin14, // "Foreign Item
+				15 => Strings.ItemOrigin15, // "CD Key
+				16 => Strings.ItemOrigin16, // "Collection Reward
+				17 => Strings.ItemOrigin17, // "Preview Item
+				18 => Strings.ItemOrigin18, // "Steam Workshop Contribution
+				19 => Strings.ItemOrigin19, // "Periodic Score Reward
+				20 => Strings.ItemOrigin20, // "Recycling
+				21 => Strings.ItemOrigin21, // "Tournament Drop
+				22 => Strings.ItemOrigin22, // "Stock Item
+				23 => Strings.ItemOrigin23, // "Quest Reward
+				24 => Strings.ItemOrigin24, // "Level Up Reward
 				_ => null
 			};
 		}

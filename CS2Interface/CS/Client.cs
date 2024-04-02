@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Steam;
+using CS2Interface.Localization;
 using ProtoBuf;
 using SteamKit2;
 using SteamKit2.GC;
@@ -38,17 +39,17 @@ namespace CS2Interface {
 			}
 
 			if (ConnectionSemaphore.CurrentCount != 1) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is already attempting to run, please wait");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientAlreadyStarting);
 			}
 
 			if (FatalError) {
-				throw new ClientException(EClientExceptionType.FatalError, "CS2 Client experienced a fatal error");
+				throw new ClientException(EClientExceptionType.FatalError, Strings.ClientFatalError);
 			}
 
 			await ConnectionSemaphore.WaitAsync().ConfigureAwait(false);
 			try {
 				if (!await GameData.IsLoaded(0).ConfigureAwait(false)) {
-					throw new ClientException(EClientExceptionType.Failed, "Failed to load Game Data");
+					throw new ClientException(EClientExceptionType.Failed, Strings.GameDataLoadingFailed);
 				}
 
 				// TODO: Verify that this account owns CS2
@@ -69,10 +70,10 @@ namespace CS2Interface {
 				}};
 				var fetcher = new GCFetcher<CMsgClientHello, CMsgClientWelcome>((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
 
-				Bot.ArchiLogger.LogGenericDebug("Sending hello message");
+				Bot.ArchiLogger.LogGenericDebug(Strings.SendingHello);
 
 				if (fetcher.Fetch(this, msg, resendMsg: true) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "CS2 Client wasn't able to connect to GC");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.GCConnectionFailed);
 				}
 
 				HasGCSession = true;
@@ -110,7 +111,7 @@ namespace CS2Interface {
 				return false;
 			}
 
-			Bot.ArchiLogger.LogGenericDebug("Verifying CS2 Client's connection to GC");
+			Bot.ArchiLogger.LogGenericDebug(Strings.VerifyingGCConnection);
 			try {
 				await RequestPlayerProfile(Bot.SteamID).ConfigureAwait(false);
 			} catch {
@@ -126,7 +127,7 @@ namespace CS2Interface {
 			}
 			
 #if DEBUG
-			Bot.ArchiLogger.LogGenericDebug(String.Format("Message Received: {0}", callback.EMsg));
+			Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.MessageRecieved, callback.EMsg));
 #endif
 
 			OnGCMessageRecieved?.Invoke(callback);
@@ -167,7 +168,7 @@ namespace CS2Interface {
 						}
 					}));
 
-					Bot.ArchiLogger.LogGenericDebug("CS2 inventory loaded");
+					Bot.ArchiLogger.LogGenericDebug(Strings.InventoryLoaded);
 					
 					return;
 				}
@@ -177,7 +178,7 @@ namespace CS2Interface {
 		private void OnFatalLogonError(IPacketGCMsg packetMsg) {
 			var msg = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_ClientLogonFatalError>(packetMsg);
 
-			Bot.ArchiLogger.LogGenericError(String.Format("Fatal CS2 logon error {0}: {1}", msg.Body.errorcode, msg.Body.message));
+			Bot.ArchiLogger.LogGenericError(String.Format("{0}: {1}", String.Format(Strings.FatalLogonError, msg.Body.errorcode), msg.Body.message));
 			FatalError = true;
 		}
 
@@ -253,7 +254,7 @@ namespace CS2Interface {
 
 		internal async Task<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse> InspectItem(ulong param_s, ulong param_a, ulong param_d, ulong param_m) {
 			if (!HasGCSession) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is not connected to GC");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
 			await GCSemaphore.WaitAsync().ConfigureAwait(false);
@@ -271,11 +272,11 @@ namespace CS2Interface {
 					VerifyFunc = response => response.Body.iteminfo.itemid == param_a
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("Inspecting item: s {0} a {1} d {2} m {3}", param_s, param_a, param_d, param_m));
+				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", Strings.InspectingItem, param_s, param_a, param_d, param_m));
 
 				var response = fetcher.Fetch(this, msg);
 				if (response == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "Request timed out");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return response.Body;
@@ -286,12 +287,12 @@ namespace CS2Interface {
 
 		internal async Task<CMsgGCCStrike15_v2_PlayersProfile> RequestPlayerProfile(ulong steam_id) { //uint account_id) {
 			if (!HasGCSession) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is not connected");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
 			SteamID SteamID = new(steam_id);
 			if (!SteamID.IsValid || SteamID.AccountUniverse != EUniverse.Public || SteamID.AccountType != EAccountType.Individual || SteamID.AccountInstance != SteamID.DesktopInstance) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Invalid Steam ID");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidSteamID);
 			}
 
 			await GCSemaphore.WaitAsync().ConfigureAwait(false);
@@ -308,11 +309,11 @@ namespace CS2Interface {
 					VerifyFunc = response => response.Body.account_profiles.FirstOrDefault()?.account_id == account_id
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("Getting CS2 player profile: {0}", steam_id));
+				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.InspectingPlayer, steam_id));
 
 				var response = fetcher.Fetch(this, msg);
 				if (response == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "Request timed out");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return response.Body;
@@ -323,21 +324,21 @@ namespace CS2Interface {
 
 		internal async Task<List<InventoryItem>> GetCasketContents(ulong casket_id) {
 			if (!HasGCSession) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is not connected to GC");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
 			if (Inventory == null) {
-				throw new ClientException(EClientExceptionType.Failed, "Inventory not loaded yet");
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
 			InventoryItem? casket = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == casket_id);
 			if (casket == null) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Storage unit not found in inventory");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketNotFound);
 			}
 
 			uint? items_count = casket.GetAttribute("items count")?.ToUInt32();
 			if (items_count == null) {
-				throw new ClientException(EClientExceptionType.Failed, "Could not determine storage unit item count");
+				throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
 			}
 
 			if (items_count == 0) {
@@ -362,21 +363,21 @@ namespace CS2Interface {
 					VerifyFunc = response => response.Body.item_id.FirstOrDefault() == casket_id && response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_CasketContents
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("Opening casket {0}", casket_id));
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.OpeningCasket, casket_id));
 
 				if (fetcher.Fetch(this, msg) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "Request timed out");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				// Casket contents can sometimes continue to come in after we've recieved the k_EMsgGCItemCustomizationNotification response
 				DateTime waitTime = DateTime.Now.AddSeconds(30);
 				while (Inventory.Values.Where(x => x.CasketID == casket_id).Count() != items_count && DateTime.Now < waitTime) {
-					Bot.ArchiLogger.LogGenericDebug(String.Format("Waiting for casket {0} items", casket_id));
+					Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.CasketContentsLoading, casket_id));
 					await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
 				}
 
 				if (Inventory.Values.Where(x => x.CasketID == casket_id).Count() != items_count) {
-					throw new ClientException(EClientExceptionType.Failed, String.Format("Casket item count mismatch, casket should have {0} items but only found {1}", items_count, Inventory.Values.Where(x => x.CasketID == casket_id).Count()));
+					throw new ClientException(EClientExceptionType.Failed, String.Format(Strings.CasketItemCountMismatch, items_count, Inventory.Values.Where(x => x.CasketID == casket_id).Count()));
 				}
 
 				return Inventory.Values.Where(x => x.CasketID == casket_id).ToList();
@@ -387,27 +388,27 @@ namespace CS2Interface {
 
 		internal async Task<bool> AddItemToCasket(ulong casket_id, ulong item_id) {
 			if (!HasGCSession) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is not connected to GC");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
 			if (Inventory == null) {
-				throw new ClientException(EClientExceptionType.Failed, "Inventory not loaded yet");
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
 			if (Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == item_id) == null) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Item not found in inventory");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.InventoryItemNotFound);
 			}
 
 			InventoryItem? casket = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == casket_id);
 			if (casket == null) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Storage unit not found in inventory");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketNotFound);
 			}
 
 			uint? items_count = casket.GetAttribute("items count")?.ToUInt32();
 			if (items_count == null) {
-				throw new ClientException(EClientExceptionType.Failed, "Could not determine storage unit item count");
+				throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
 			} else if (items_count == 1000) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Storage unit is full");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketFull);
 			}
 
 			await GCSemaphore.WaitAsync().ConfigureAwait(false);
@@ -437,10 +438,10 @@ namespace CS2Interface {
 					}
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("Adding item {0} to casket {1}", item_id, casket_id));
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.AddingItemToCasket, item_id, casket_id));
 
 				if (fetcher.Fetch(this, msg) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "Request timed out");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return true;
@@ -451,16 +452,16 @@ namespace CS2Interface {
 		
 		internal async Task<bool> RemoveItemFromCasket(ulong casket_id, ulong item_id) {
 			if (!HasGCSession) {
-				throw new ClientException(EClientExceptionType.Failed, "CS2 Client is not connected to GC");
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
 			if (Inventory == null) {
-				throw new ClientException(EClientExceptionType.Failed, "Inventory not loaded yet");
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
 			InventoryItem? casket = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == casket_id);
 			if (casket == null) {
-				throw new ClientException(EClientExceptionType.BadRequest, "Storage unit not found in inventory");
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketNotFound);
 			}
 
 			// Does not verify that the item is actually in the crate, to do that we would need to request the crate contents first
@@ -492,10 +493,10 @@ namespace CS2Interface {
 					}
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("Removing item {0} from casket {1}", item_id, casket_id));
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RemovingItemFromCasket, item_id, casket_id));
 
 				if (fetcher.Fetch(this, msg) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, "Request timed out");
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return true;				
