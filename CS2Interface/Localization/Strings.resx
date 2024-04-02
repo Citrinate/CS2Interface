@@ -297,4 +297,104 @@
     <value>No bots are available</value>
     <comment/>
   </data>
+  <data name="ItemOrigin0" xml:space="preserve">
+    <value>Timed Drop</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin1" xml:space="preserve">
+    <value>Achievement</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin2" xml:space="preserve">
+    <value>Purchased</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin3" xml:space="preserve">
+    <value>Traded</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin4" xml:space="preserve">
+    <value>Crafted</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin5" xml:space="preserve">
+    <value>Store Promotion</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin6" xml:space="preserve">
+    <value>Gifted</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin7" xml:space="preserve">
+    <value>Support Granted</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin8" xml:space="preserve">
+    <value>Found in Crate</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin9" xml:space="preserve">
+    <value>Earned</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin10" xml:space="preserve">
+    <value>Third-Party Promotion</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin11" xml:space="preserve">
+    <value>Wrapped Gift</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin12" xml:space="preserve">
+    <value>Halloween Drop</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin13" xml:space="preserve">
+    <value>Steam Purchase</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin14" xml:space="preserve">
+    <value>Foreign Item</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin15" xml:space="preserve">
+    <value>CD Key</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin16" xml:space="preserve">
+    <value>Collection Reward</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin17" xml:space="preserve">
+    <value>Preview Item</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin18" xml:space="preserve">
+    <value>Steam Workshop Contribution</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin19" xml:space="preserve">
+    <value>Periodic Score Reward</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin20" xml:space="preserve">
+    <value>Recycling</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin21" xml:space="preserve">
+    <value>Tournament Drop</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin22" xml:space="preserve">
+    <value>Stock Item</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin23" xml:space="preserve">
+    <value>Quest Reward</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin24" xml:space="preserve">
+    <value>Level Up Reward</value>
+    <comment/>
+  </data>
 </root>
