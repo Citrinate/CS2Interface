@@ -1,0 +1,3 @@
+files:
+  - source: /CS2Interface/Localization/Strings.resx
+    translation: /CS2Interface/Localization/Strings.%locale%.resx
