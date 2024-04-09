@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ClientAlreadyStarting" xml:space="preserve">
+    <value>Клиент CS2 уже пытается запуститься, пожалуйста, подождите</value>
+    <comment/>
+  </data>
+  <data name="ClientFatalError" xml:space="preserve">
+    <value>Клиент CS2 столкнулся с фатальной ошибкой</value>
+    <comment/>
+  </data>
+  <data name="GameDataLoadingFailed" xml:space="preserve">
+    <value>Не удалось загрузить данные игры</value>
+    <comment/>
+  </data>
+  <data name="SendingHello" xml:space="preserve">
+    <value>Отправка сообщения приветствия</value>
+    <comment/>
+  </data>
+  <data name="GCConnectionFailed" xml:space="preserve">
+    <value>Клиент CS2 не смог подключиться к GC</value>
+    <comment/>
+  </data>
+  <data name="VerifyingGCConnection" xml:space="preserve">
+    <value>Проверка подключения клиента CS2 к GC</value>
+    <comment/>
+  </data>
+  <data name="MessageRecieved" xml:space="preserve">
+    <value>Сообщение получено</value>
+    <comment/>
+  </data>
+  <data name="InventoryLoaded" xml:space="preserve">
+    <value>Загрузка инвентаря CS2</value>
+    <comment/>
+  </data>
+  <data name="FatalLogonError" xml:space="preserve">
+    <value>Фатальная ошибка входа в CS2 {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="ClientNotConnectedToGC" xml:space="preserve">
+    <value>Клиент CS2 не подключен к GC</value>
+    <comment/>
+  </data>
+  <data name="InspectingItem" xml:space="preserve">
+    <value>Осмотр предмета</value>
+    <comment/>
+  </data>
+  <data name="RequestTimeout" xml:space="preserve">
+    <value>Запрос отложен</value>
+    <comment/>
+  </data>
+  <data name="InvalidSteamID" xml:space="preserve">
+    <value>Неверный идентификатор Steam</value>
+    <comment/>
+  </data>
+  <data name="InspectingPlayer" xml:space="preserve">
+    <value>Получение профиля игрока CS2</value>
+    <comment/>
+  </data>
+  <data name="InventoryNotLoaded" xml:space="preserve">
+    <value>Инвентарь ещё не загружен</value>
+    <comment/>
+  </data>
+  <data name="CasketNotFound" xml:space="preserve">
+    <value>Единица хранения не найдена в инвентаре</value>
+    <comment/>
+  </data>
+  <data name="CasketContentsUndefined" xml:space="preserve">
+    <value>Не удалось определить количество элементов единицы хранения</value>
+    <comment/>
+  </data>
+  <data name="OpeningCasket" xml:space="preserve">
+    <value>Открытие единицы хранения {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="CasketContentsLoading" xml:space="preserve">
+    <value>Ожидание единиц хранения {0} элементов</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="CasketItemCountMismatch" xml:space="preserve">
+    <value>Несоответствие количества элементов в единице хранения, в единице хранения должно быть {0} элементов, но найдено только {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
+  </data>
+  <data name="InventoryItemNotFound" xml:space="preserve">
+    <value>Предмет не найден в инвентаре</value>
+    <comment/>
+  </data>
+  <data name="CasketFull" xml:space="preserve">
+    <value>Единица хранения переполнена</value>
+    <comment/>
+  </data>
+  <data name="AddingItemToCasket" xml:space="preserve">
+    <value>Добавление элемента {0} в единицу хранения {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
+  </data>
+  <data name="RemovingItemFromCasket" xml:space="preserve">
+    <value>Удаление элемента {0} из единицы хранения {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
+  </data>
+  <data name="GameDataLoadingSuccess" xml:space="preserve">
+    <value>Загружены данные игры CS2</value>
+    <comment/>
+  </data>
+  <data name="GameDataRefreshing" xml:space="preserve">
+    <value>Обновление данных игры CS2</value>
+    <comment/>
+  </data>
+  <data name="GameDataSourceFailed" xml:space="preserve">
+    <value>Не удалось загрузить данные игры из: {0}</value>
+    <comment>{0} will be replaced by a url</comment>
+  </data>
+  <data name="GameDataDefinitionUndefined" xml:space="preserve">
+    <value>Не удалось найти определение</value>
+    <comment/>
+  </data>
+  <data name="InterfaceAlreadyRunning" xml:space="preserve">
+    <value>Интерфейс CS2 уже запущен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceAlreadyStarting" xml:space="preserve">
+    <value>Интерфейс CS2 уже пытается запуститься</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStartFailedUnexpectedly" xml:space="preserve">
+    <value>Интерфейс CS2 вроде бы запустился, но потом не запустился</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStartFailedRetry" xml:space="preserve">
+    <value>Интерфейс CS2 не удалось запустить, повторная попытка</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStartFailed" xml:space="preserve">
+    <value>Интерфейс CS2 не удалось запустить</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStarted" xml:space="preserve">
+    <value>Интерфейс CS2 запущен</value>
+    <comment/>
+  </data>
+  <data name="IntefaceNotRunning" xml:space="preserve">
+    <value>Интерфейс CS2 не был запущен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStopped" xml:space="preserve">
+    <value>Интерфейс CS2 остановлен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStoppedSuccessfully" xml:space="preserve">
+    <value>Интерфейс CS2 успешно остановлен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceForciblyStopped" xml:space="preserve">
+    <value>Интерфейс CS2 был принудительно остановлен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceConnecting" xml:space="preserve">
+    <value>Интерфейс CS2 подключается</value>
+    <comment/>
+  </data>
+  <data name="InterfaceNotConnected" xml:space="preserve">
+    <value>Интерфейс CS2 не подключён</value>
+    <comment/>
+  </data>
+  <data name="InterfaceBusy" xml:space="preserve">
+    <value>Интерфейс CS2 занят</value>
+    <comment/>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Готов</value>
+    <comment/>
+  </data>
+  <data name="InterfaceStoppedUnexpectedly" xml:space="preserve">
+    <value>Интерфейс CS2 неожиданно остановлен</value>
+    <comment/>
+  </data>
+  <data name="InterfaceConnected" xml:space="preserve">
+    <value>Интерфейс CS2 подключён</value>
+    <comment/>
+  </data>
+  <data name="NoBotsAvailable" xml:space="preserve">
+    <value>Боты недоступны</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin0" xml:space="preserve">
+    <value>Выпадение по времени</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin1" xml:space="preserve">
+    <value>Достижение</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin2" xml:space="preserve">
+    <value>Приобретено</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin3" xml:space="preserve">
+    <value>Обменено</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin4" xml:space="preserve">
+    <value>Создано</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin5" xml:space="preserve">
+    <value>Продвижение магазина</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin6" xml:space="preserve">
+    <value>Подарено</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin7" xml:space="preserve">
+    <value>Оказана поддержка</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin8" xml:space="preserve">
+    <value>Найдено в ящике</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin9" xml:space="preserve">
+    <value>Заработано</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin10" xml:space="preserve">
+    <value>Продвижение третьих лиц</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin11" xml:space="preserve">
+    <value>Упакованный подарок</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin12" xml:space="preserve">
+    <value>Хэллоуинское выпадение</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin13" xml:space="preserve">
+    <value>Покупка через Steam</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin14" xml:space="preserve">
+    <value>Иностранный предмет</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin15" xml:space="preserve">
+    <value>Ключ CD</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin16" xml:space="preserve">
+    <value>Вознаграждение за коллекцию</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin17" xml:space="preserve">
+    <value>Предпросмотр</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin18" xml:space="preserve">
+    <value>Вклад в мастерскую Steam</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin19" xml:space="preserve">
+    <value>Периодическое вознаграждение за очки</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin20" xml:space="preserve">
+    <value>Переработка</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin21" xml:space="preserve">
+    <value>Выпадение с турнира</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin22" xml:space="preserve">
+    <value>На складе</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin23" xml:space="preserve">
+    <value>Награда за выполнение квеста</value>
+    <comment/>
+  </data>
+  <data name="ItemOrigin24" xml:space="preserve">
+    <value>Награда за повышение уровня</value>
+    <comment/>
+  </data>
+</root>
