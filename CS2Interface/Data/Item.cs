@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using SteamKit2;
@@ -183,8 +184,8 @@ namespace CS2Interface {
 					WearName = GameData.GetWearName(Wear.Value);
 					string? wearRemapMinValue = ItemData.PaintKitDef!.GetValue("wear_remap_min");
 					string? wearRemapMaxValue = ItemData.PaintKitDef!.GetValue("wear_remap_max");
-					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue);
-					WearMax = wearRemapMaxValue == null ? null : float.Parse(wearRemapMaxValue);
+					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+					WearMax = wearRemapMaxValue == null ? null : float.Parse(wearRemapMaxValue, NumberStyles.Float, CultureInfo.InvariantCulture);
 				}
 
 				// Set the weapon image url
