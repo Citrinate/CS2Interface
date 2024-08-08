@@ -156,7 +156,7 @@ namespace CS2Interface {
 
 					case "float":
 					case null when attribute_def["stored_as_integer"].Value == "0":
-						Attributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes.ToArray(), 0)));
+						Attributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes.ToArray())));
 						break;
 
 					case "string":
