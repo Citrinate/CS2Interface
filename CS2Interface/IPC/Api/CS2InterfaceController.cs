@@ -13,13 +13,13 @@ using SteamKit2.GC.CSGO.Internal;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CS2Interface {
-	[Route("Api/CS2Interface", Name = nameof(CS2Interface))]
+	[Route("Api/CS2Interface")]
 	public sealed class CS2InterfaceController : ArchiController {
 		[HttpGet("{botNames:required}/Start")]
 		[SwaggerOperation (Summary = "Starts the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public async Task<ActionResult<GenericResponse>> Start([FromRoute] string botNames) {
+		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -39,7 +39,7 @@ namespace CS2Interface {
 		[SwaggerOperation (Summary = "Stops the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Stop([FromRoute] string botNames) {
+		public ActionResult<GenericResponse> Stop(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -61,7 +61,6 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
 		public async Task<ActionResult<GenericResponse>> InspectItem(
-			[FromRoute] 
 			string botNames, 
 			[FromQuery]
 			[SwaggerParameter(Description = "The item's inspect link", Required = false)] 
@@ -140,7 +139,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> PlayerProfile([FromRoute] string botName, [FromRoute] ulong steamID) {
+		public async Task<ActionResult<GenericResponse>> PlayerProfile(string botName, ulong steamID) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -170,7 +169,6 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Inventory(
-			[FromRoute] 
 			string botName, 
 			[FromQuery] 
 			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
@@ -209,9 +207,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
 		public async Task<ActionResult<GenericResponse>> GetCrateContents(
-			[FromRoute] 
 			string botName,			
-			[FromRoute] 
 			ulong crateID, 
 			[FromQuery] 
 			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
@@ -251,7 +247,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> StoreItem([FromRoute] string botName, [FromRoute] ulong crateID, [FromRoute] ulong itemID) {
+		public async Task<ActionResult<GenericResponse>> StoreItem(string botName, ulong crateID, ulong itemID) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -280,7 +276,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> RetrieveItem([FromRoute] string botName, [FromRoute] ulong crateID, [FromRoute] ulong itemID) {
+		public async Task<ActionResult<GenericResponse>> RetrieveItem(string botName, ulong crateID, ulong itemID) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
