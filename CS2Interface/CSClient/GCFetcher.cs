@@ -2,24 +2,45 @@ using System;
 using ProtoBuf;
 using SteamKit2;
 using SteamKit2.GC;
+using SteamKit2.Internal;
 
 namespace CS2Interface {
-	internal sealed class GCFetcher<TMsg, TResponse> where TMsg : IExtensible, new() where TResponse : IExtensible, new() {
+	internal sealed class GCFetcher {
 		internal int TTLSeconds { get; set; } = 30;
 		internal uint GCResponseMsgType { get; set; } 
-		internal Func<ClientGCMsgProtobuf<TResponse>, bool>? VerifyFunc { get; set; } 
+		internal Func<IPacketGCMsg, bool>? VerifyResponse { get; set; }
 		private bool GotMatch = false;
 		IPacketGCMsg? PacketMsg;
 
 		internal GCFetcher() {}
 
-		internal GCFetcher(uint gcResponseMsgType, int? ttlSeconds = null, Func<ClientGCMsgProtobuf<TResponse>, bool>? verify = null) {
+		internal GCFetcher(uint gcResponseMsgType, int? ttlSeconds = null, Func<IPacketGCMsg, bool>? verifyResponse = null) {
 			GCResponseMsgType = gcResponseMsgType;
 			TTLSeconds = ttlSeconds ?? TTLSeconds;
-			VerifyFunc = verify;
+			VerifyResponse = verifyResponse;
 		}
 
-		internal ClientGCMsgProtobuf<TResponse>? Fetch(Client client, ClientGCMsgProtobuf<TMsg> msg, bool resendMsg = false) {
+		internal ClientGCMsgProtobuf<TResponse>? Fetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IExtensible, new() {
+			GetResponse(client, msg, resendMsg);
+
+			if (!GotMatch || PacketMsg == null) {
+				return null;
+			}
+
+			return new ClientGCMsgProtobuf<TResponse>(PacketMsg);
+		}
+
+		internal ClientGCMsg<TResponse>? RawFetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IGCSerializableMessage, new() {
+			GetResponse(client, msg, resendMsg);
+
+			if (!GotMatch || PacketMsg == null) {
+				return null;
+			}
+
+			return new ClientGCMsg<TResponse>(PacketMsg);
+		}
+
+		private void GetResponse(Client client, IClientGCMsg msg, bool resendMsg = false) {
 			client.OnGCMessageRecieved += CheckMatch;
 			client.GameCoordinator.Send(msg, Client.AppID);
 
@@ -41,11 +62,6 @@ namespace CS2Interface {
 			}
 
 			client.OnGCMessageRecieved -= CheckMatch;
-			if (!GotMatch || PacketMsg == null) {
-				return null;
-			}
-
-			return new ClientGCMsgProtobuf<TResponse>(PacketMsg);
 		}
 
 		internal void CheckMatch(SteamGameCoordinator.MessageCallback callback) {
@@ -53,7 +69,7 @@ namespace CS2Interface {
 				return;
 			}
 
-			if (VerifyFunc != null && !VerifyFunc(new ClientGCMsgProtobuf<TResponse>(callback.Message))) {
+			if (VerifyResponse != null && !VerifyResponse(callback.Message)) {
 				return;
 			}
 

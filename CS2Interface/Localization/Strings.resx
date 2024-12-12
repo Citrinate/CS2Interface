@@ -198,8 +198,8 @@
     <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
   </data>
   <data name="InventoryItemNotFound" xml:space="preserve">
-    <value>Item not found in inventory</value>
-    <comment/>
+    <value>Item not found in inventory: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
   </data>
   <data name="CasketFull" xml:space="preserve">
     <value>Storage unit is full</value>
@@ -395,6 +395,30 @@
   </data>
   <data name="ItemOrigin24" xml:space="preserve">
     <value>Level Up Reward</value>
+    <comment/>
+  </data>
+  <data name="InvalidCraftRecipe" xml:space="preserve">
+    <value>No crafting recipe was found for the given inputs</value>
+    <comment/>
+  </data>
+  <data name="InventoryItemFoundInCrate" xml:space="preserve">
+    <value>Cannot use item that's currently in a storage unit: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="InvalidCraftInput" xml:space="preserve">
+    <value>This item cannot be used in crafting recipies: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="CraftingItem" xml:space="preserve">
+    <value>Crafting recipe {0} using items: {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a list of numbers</comment>
+  </data>
+  <data name="InvalidCraftDuplicateInput" xml:space="preserve">
+    <value>Same item ID used multiple times as an input: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="InvalidCraftTooManyInputs" xml:space="preserve">
+    <value>Too many crafting inputs given</value>
     <comment/>
   </data>
 </root>

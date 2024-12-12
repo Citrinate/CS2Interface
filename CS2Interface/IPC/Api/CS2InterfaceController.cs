@@ -268,7 +268,7 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			return Ok(new GenericResponse(true, "Item successfully added to storage unit"));	
+			return Ok(new GenericResponse(true));	
 		}
 
 		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
@@ -297,7 +297,52 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			return Ok(new GenericResponse(true, "Item successfully removed from storage unit"));
+			return Ok(new GenericResponse(true));
+		}
+
+		[HttpGet("{botName:required}/CraftItem/{recipeID:required}")]
+		[SwaggerOperation (Summary = "Crafts an item using the specified trade up recipe")]
+		[ProducesResponseType(typeof(GenericResponse<GCMsg.MsgCraftResponse>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> CraftItem(
+			string botName, 
+			ushort recipeID, 
+			[FromQuery] 
+			[SwaggerParameter(Description = "A comma separated list of item ids", Required = true)] 
+			string itemIDs
+		) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+			
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
+			}
+
+			List<ulong> item_ids = new();
+			foreach (string itemIDString in itemIDs.Split(",")) {
+				if (!ulong.TryParse(itemIDString, out ulong item_id)) {
+					return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(itemIDs))));
+				}
+
+				item_ids.Add(item_id);
+			}
+
+			GCMsg.MsgCraftResponse craftResponse;
+			try {
+				craftResponse = await client.Craft(recipeID, item_ids).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse<GCMsg.MsgCraftResponse>(true, craftResponse));
 		}
 
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {

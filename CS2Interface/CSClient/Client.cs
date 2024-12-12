@@ -68,11 +68,12 @@ namespace CS2Interface {
 					client_launcher = 0,
 					steam_launcher = 0
 				}};
-				var fetcher = new GCFetcher<CMsgClientHello, CMsgClientWelcome>((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
+				// var fetcher = new GCFetcher<CMsgClientHello, CMsgClientWelcome>((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
+				var fetcher = new GCFetcher((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
 
 				Bot.ArchiLogger.LogGenericDebug(Strings.SendingHello);
 
-				if (fetcher.Fetch(this, msg, resendMsg: true) == null) {
+				if (fetcher.Fetch<CMsgClientWelcome>(this, msg, resendMsg: true) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.GCConnectionFailed);
 				}
 
@@ -267,14 +268,18 @@ namespace CS2Interface {
 					param_m = param_m
 				}};
 
-				var fetcher = new GCFetcher<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockRequest, CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse> {
+				var fetcher = new GCFetcher {
 					GCResponseMsgType = (uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse,
-					VerifyFunc = response => response.Body.iteminfo.itemid == param_a
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(message);
+					
+						return response.Body.iteminfo.itemid == param_a;
+					}
 				};
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", Strings.InspectingItem, param_s, param_a, param_d, param_m));
 
-				var response = fetcher.Fetch(this, msg);
+				var response = fetcher.Fetch<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(this, msg);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
@@ -304,14 +309,18 @@ namespace CS2Interface {
 					request_level = 32
 				}};
 
-				var fetcher = new GCFetcher<CMsgGCCStrike15_v2_ClientRequestPlayersProfile, CMsgGCCStrike15_v2_PlayersProfile>{
+				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_PlayersProfile,
-					VerifyFunc = response => response.Body.account_profiles.FirstOrDefault()?.account_id == account_id
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(message);
+						
+						return response.Body.account_profiles.FirstOrDefault()?.account_id == account_id;
+					}
 				};
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.InspectingPlayer, steam_id));
 
-				var response = fetcher.Fetch(this, msg);
+				var response = fetcher.Fetch<CMsgGCCStrike15_v2_PlayersProfile>(this, msg);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
@@ -358,14 +367,18 @@ namespace CS2Interface {
 					item_item_id = casket_id
 				}};
 
-				var fetcher = new GCFetcher<CMsgCasketItem, CMsgGCItemCustomizationNotification>{
+				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
-					VerifyFunc = response => response.Body.item_id.FirstOrDefault() == casket_id && response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_CasketContents
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
+
+						return response.Body.item_id.FirstOrDefault() == casket_id && response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_CasketContents;
+					}
 				};
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.OpeningCasket, casket_id));
 
-				if (fetcher.Fetch(this, msg) == null) {
+				if (fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
@@ -395,8 +408,13 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
-			if (Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == item_id) == null) {
-				throw new ClientException(EClientExceptionType.BadRequest, Strings.InventoryItemNotFound);
+			InventoryItem? item = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == item_id);
+			if (item == null) {
+				throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemNotFound, item_id));
+			}
+
+			if (item.CasketID != null) {
+				throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemFoundInCrate, item_id));
 			}
 
 			InventoryItem? casket = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == casket_id);
@@ -419,9 +437,11 @@ namespace CS2Interface {
 					item_item_id = item_id
 				}};
 
-				var fetcher = new GCFetcher<CMsgCasketItem, CMsgSOSingleObject>{
+				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Destroy,
-					VerifyFunc = response => {
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
+
 						if (response.Body.type_id != 1) {
 							// Ignore non-inventory changes
 							return false;
@@ -440,7 +460,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.AddingItemToCasket, item_id, casket_id));
 
-				if (fetcher.Fetch(this, msg) == null) {
+				if (fetcher.Fetch<CMsgSOSingleObject>(this, msg) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
@@ -474,9 +494,11 @@ namespace CS2Interface {
 					item_item_id = item_id
 				}};
 
-				var fetcher = new GCFetcher<CMsgCasketItem, CMsgSOSingleObject>{
+				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Create,
-					VerifyFunc = response => {
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
+
 						if (response.Body.type_id != 1) {
 							// Ignore non-inventory changes
 							return false;
@@ -495,11 +517,80 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RemovingItemFromCasket, item_id, casket_id));
 
-				if (fetcher.Fetch(this, msg) == null) {
+				if (fetcher.Fetch<CMsgSOSingleObject>(this, msg) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return true;				
+			} finally {
+				GCSemaphore.Release();
+			}
+		}
+		
+		internal async Task<GCMsg.MsgCraftResponse> Craft(ushort recipe, List<ulong> item_ids) {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			if (Inventory == null) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
+			}
+
+			if (item_ids.Count > ushort.MaxValue) {
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidCraftTooManyInputs);
+			}
+
+			{
+				HashSet<ulong> duplicateIDCheck = new();
+				foreach (ulong item_id in item_ids) {
+					InventoryItem? inventoryItem = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == item_id);
+					
+					if (inventoryItem == null) {
+						throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemNotFound, item_id));
+					}
+
+					if (inventoryItem.CasketID != null) {
+						throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemFoundInCrate, item_id));
+					}
+
+					if (inventoryItem.Moveable != true) {
+						throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InvalidCraftInput, item_id));
+					}
+
+					if (!duplicateIDCheck.Add(item_id)) {
+						throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InvalidCraftDuplicateInput, item_id));
+					}
+				}
+			}
+
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+			
+			try {
+				var msg = new ClientGCMsg<GCMsg.MsgCraft>() {
+					Body = {
+						Recipe = recipe,
+						ItemCount = (ushort) item_ids.Count,
+						ItemIDs = item_ids
+					}
+				};
+
+				var fetcher = new GCFetcher{
+					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCCraftResponse,
+					VerifyResponse = message => {
+						var response = new ClientGCMsg<GCMsg.MsgCraftResponse>(message);
+
+						return response.Body.Recipe == recipe || response.Body.Recipe == GCMsg.MsgCraft.UnknownRecipe;
+					}
+				};
+
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.CraftingItem, recipe, String.Join(", ", item_ids)));
+
+				var response = fetcher.RawFetch<GCMsg.MsgCraftResponse>(this, msg);
+				if (response == null) {
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+				}
+
+				return response.Body;
 			} finally {
 				GCSemaphore.Release();
 			}
