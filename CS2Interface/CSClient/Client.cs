@@ -345,7 +345,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketNotFound);
 			}
 
-			uint? items_count = casket.GetAttribute("items count")?.ToUInt32();
+			uint? items_count = casket.Attributes?.GetValueOrDefault("items count")?.ToUInt32();
 			if (items_count == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
 			}
@@ -422,7 +422,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketNotFound);
 			}
 
-			uint? items_count = casket.GetAttribute("items count")?.ToUInt32();
+			uint? items_count = casket.Attributes?.GetValueOrDefault("items count")?.ToUInt32();
 			if (items_count == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
 			} else if (items_count == 1000) {

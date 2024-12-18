@@ -129,7 +129,7 @@ namespace CS2Interface {
 			}
 
 			var item = new InspectItem(inspect, s, a, d, m);
-			Item.SetSerializationProperties(!minimal, showDefs);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<InspectItem>(true, item));
 		}
@@ -195,8 +195,8 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, "Inventory not loaded yet"));
 			}
 
-			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsValid()).ToList();
-			Item.SetSerializationProperties(!minimal, showDefs);
+			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible()).ToList();
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<List<InventoryItem>>(true, inventory));
 		}
@@ -237,7 +237,7 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 			
-			Item.SetSerializationProperties(!minimal, showDefs);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<List<InventoryItem>>(true, contents));
 		}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -52,27 +51,6 @@ namespace CS2Interface {
 			}
 
 			writer.WriteStringValue(vdf.Value);
-		}
-	}
-
-	public sealed class ListKVConverter : JsonConverter<List<KeyValue>> {
-		public override List<KeyValue> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-			throw new NotImplementedException();
-		}
-
-		public override void Write(Utf8JsonWriter writer, List<KeyValue> value, JsonSerializerOptions options) {
-			if (value == null) {
-				writer.WriteNullValue();
-				return;
-			}
-
-			writer.WriteStartArray();
-
-			foreach (KeyValue data in value) {
-				KVConverter.ConvertKVObjectToJson(ref writer, data);
-			}
-
-			writer.WriteEndArray();
 		}
 	}
 }

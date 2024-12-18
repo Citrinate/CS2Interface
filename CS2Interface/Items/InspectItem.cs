@@ -20,10 +20,6 @@ namespace CS2Interface {
 			d = param_d.ToString();
 			m = param_m.ToString();
 
-			SetAdditionalProperties();
-		}
-
-		new bool SetAdditionalProperties() {
 			DefIndex = ItemInfo.defindex;
 			PaintIndex = ItemInfo.paintindex;            
 			StickerID = ItemInfo.stickers.FirstOrDefault()?.sticker_id;
@@ -36,7 +32,8 @@ namespace CS2Interface {
 				Wear = (double) BitConverter.UInt32BitsToSingle(ItemInfo.paintwear);
 			}
 
-			return base.SetAdditionalProperties();
+			SetDefs();
+			SetAdditionalProperties();
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using SteamKit2;
 
 namespace CS2Interface {
-	public class Item {
+	public class Item : GameObject {
 		public uint DefIndex;
 		public uint PaintIndex;
 		public uint? StickerID;
@@ -107,9 +107,6 @@ namespace CS2Interface {
 		[JsonPropertyName("defs")]
 		public ItemData? ItemData { get; private set; }
 
-		protected static bool ShouldSerializeAdditionalProperties = true;
-		protected static bool ShouldSerializeDefs = true;
-
 		public bool ShouldSerializeFullName() => FullName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeFullTypeName() => FullTypeName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeRarityName() => RarityName != null && ShouldSerializeAdditionalProperties;
@@ -134,12 +131,7 @@ namespace CS2Interface {
 		public bool ShouldSerializeCrateName() => CrateName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
-		internal static void SetSerializationProperties(bool should_serialize_additional_properties, bool should_serialize_defs) {
-			ShouldSerializeAdditionalProperties = should_serialize_additional_properties;
-			ShouldSerializeDefs = should_serialize_defs;
-		}
-
-		protected bool SetAdditionalProperties() {
+		protected override bool SetDefs() {
 			try {
 				ItemData = new ItemData(this);
 			} catch (Exception) {
@@ -148,27 +140,35 @@ namespace CS2Interface {
 				return false;
 			}
 
+			return true;
+		}
+
+		protected override bool SetAdditionalProperties() {
+			if (ItemData == null) {
+				return false;
+			}
+
 			{ // Set rarity name, which differs based on the type of item
 				string locKey = "loc_key"; // General rarities
-				if (ItemData.ItemDef.GetValue("taxonomy", "weapon") == "1") {
+				if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
-				} else if (ItemData.ItemDef.GetValue("item_slot") == "customplayer") {
+				} else if (ItemData.ItemDef["item_slot"].Value == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
 				}
 				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"]?.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
 			}
 
-			TypeName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_type_name")?.Substring(1)];
+			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value?.Substring(1)];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
 			OriginName = GameData.GetOriginName(Origin);
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?.GetValue("loc_name") ?? ItemData.StickerKitDef?.GetValue("item_name") ?? ItemData.PaintKitDef?.GetValue("description_tag") ?? ItemData.ItemDef.GetValue("item_name"))?.Substring(1)];
+			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)?.Substring(1)];
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
-			if (ItemData.ItemDef.GetValue("prefab") == "csgo_tool") {
-				ToolName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.Substring(1)];
+			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
+				ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 			}
 
 			// Set the graffiti color, ignore if tint_id is 0 (Multicolor)
@@ -177,13 +177,13 @@ namespace CS2Interface {
 			}
 
 			// Set various weapon-only attributes
-			if (ItemData.ItemDef.GetValue("taxonomy", "weapon") == "1") {
-				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef.GetValue("item_name")?.Substring(1)];
+			if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1") {
+				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 
 				if (Wear != null) {
 					WearName = GameData.GetWearName(Wear.Value);
-					string? wearRemapMinValue = ItemData.PaintKitDef!.GetValue("wear_remap_min");
-					string? wearRemapMaxValue = ItemData.PaintKitDef!.GetValue("wear_remap_max");
+					string? wearRemapMinValue = ItemData.PaintKitDef!["wear_remap_min"].Value;
+					string? wearRemapMaxValue = ItemData.PaintKitDef!["wear_remap_max"].Value;
 					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue, NumberStyles.Float, CultureInfo.InvariantCulture);
 					WearMax = wearRemapMaxValue == null ? null : float.Parse(wearRemapMaxValue, NumberStyles.Float, CultureInfo.InvariantCulture);
 				}
@@ -191,17 +191,19 @@ namespace CS2Interface {
 				// Set the weapon image url
 				string? cdnNameID;
 				if (PaintIndex == 0) {
-					cdnNameID = ItemData.ItemDef.GetValue("name"); // Vanilla Knives
+					cdnNameID = ItemData.ItemDef["name"].Value; // Vanilla Knives
 				} else {
-					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef.GetValue("name"), ItemData.PaintKitDef!.GetValue("name")); // Everything else
+					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef["name"].Value, ItemData.PaintKitDef!["name"].Value); // Everything else
 				}
 				WeaponImageURL = GameData.ItemsGameCdn[cdnNameID];
 			}
 
 			{ // Set the full name and type
+				// bool displayQualityName = Quality != 4; // Hide "Unique" quality from item names and types
 				string? displayQualityName = Quality == 4 ? "" : QualityName; // Hide "Unique" quality from item names and types
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
+				// FullTypeName = String.Format(GameData.CsgoEnglish.Format("ItemTypeDescKillEater") ?? "{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
 				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives
@@ -216,9 +218,9 @@ namespace CS2Interface {
 
 			// Set the name id, used for determining related set and crate
 			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
-				NameID = ItemData.ItemDef.GetValue("name"); // Collectibles, Vanilla Knives
+				NameID = ItemData.ItemDef["name"].Value; // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?.GetValue("name"), ItemData.ItemDef.GetValue("name")); // Everything else
+				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
 			}
 
 			if (NameID != null) {

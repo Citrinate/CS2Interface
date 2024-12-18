@@ -8,19 +8,23 @@ namespace CS2Interface {
 	public class ItemData {
 		[JsonInclude]
 		[JsonPropertyName("item_def")]
-		public ItemDef ItemDef { get; private init; }
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue ItemDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("paint_kit_def")]
-		public ItemDef? PaintKitDef { get; private init; }
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue? PaintKitDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("sticker_kit_def")]
-		public ItemDef? StickerKitDef { get; private init; }
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue? StickerKitDef { get; private init; }
 
 		[JsonInclude]
 		[JsonPropertyName("music_def")]
-		public ItemDef? MusicDef { get; private init; }
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue? MusicDef { get; private init; }
 
 		public bool ShouldSerializeItemDef() => ItemDef != null;
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;
@@ -34,21 +38,31 @@ namespace CS2Interface {
 			MusicDef = CreateMusicDef(item);
 		}
 
-		private ItemDef CreateItemDef(Item item) {
-			ItemDef itemDef = new(GameData.ItemsGame.GetDef("items", item.DefIndex.ToString()));
+		private KeyValue CreateItemDef(Item item) {
+			KeyValue? itemDef = GameData.ItemsGame.GetDef("items", item.DefIndex.ToString());
+			if (itemDef == null) {
+				throw new Exception();
+			}
 
-			// Add prefab values			
-			if (!MergePrefab(itemDef, itemDef.GetValue("prefab"))) {
-				throw new InvalidOperationException();
+			KeyValue def = itemDef.Clone();
+
+			// Add prefab values
+			if (!MergePrefab(def, def["prefab"].Value)) {
+				throw new Exception();
 			}
 
 			// Add default values
-			itemDef.AddDef(GameData.ItemsGame.GetDef("items", "default"));
+			KeyValue? defaultItemDef = GameData.ItemsGame.GetDef("items", "default");
+			if (defaultItemDef == null) {
+				throw new Exception();
+			}
+			
+			def.Merge(defaultItemDef);
 
-			return itemDef;
+			return def;
 		}
 
-		private bool MergePrefab(ItemDef itemDef, string? prefab) {
+		private bool MergePrefab(KeyValue itemDef, string? prefab) {
 			if (prefab == null) {
 				return true;
 			}
@@ -67,7 +81,7 @@ namespace CS2Interface {
 				}
 
 				foundValid = true;
-				itemDef.AddDef(prefabDef);
+				itemDef.Merge(prefabDef);
 				if (!MergePrefab(itemDef, prefabDef["prefab"].Value)) {
 					return false;
 				};
@@ -80,21 +94,30 @@ namespace CS2Interface {
 			return foundValid;
 		}
 
-		private ItemDef? CreatePaintKitDef(Item item) {
+		private KeyValue? CreatePaintKitDef(Item item) {
 			if (item.PaintIndex == 0 && item.Wear == null) {
 				// This item has no paint kit
 				return null;
 			}
 
-			ItemDef paintKitDef = new(GameData.ItemsGame.GetDef("paint_kits", item.PaintIndex.ToString()));
+			KeyValue? paintKitDef = GameData.ItemsGame.GetDef("paint_kits", item.PaintIndex.ToString());
+			if (paintKitDef == null) {
+				throw new Exception();
+			}
 
 			// Add default values
-			paintKitDef.AddDef(GameData.ItemsGame.GetDef("paint_kits", "0"));
+			KeyValue? defaultPaintKitDef = GameData.ItemsGame.GetDef("paint_kits", "0");
+			if (defaultPaintKitDef == null) {
+				throw new Exception();
+			}
 
-			return paintKitDef;
+			KeyValue def = paintKitDef.Clone();
+			def.Merge(defaultPaintKitDef);
+
+			return def;
 		}
 
-		private ItemDef? CreateStickerKitDef(Item item) {
+		private KeyValue? CreateStickerKitDef(Item item) {
 			if (item.StickerID == null 
 				|| !(
 					item.DefIndex == 1209 // Sticker
@@ -107,23 +130,35 @@ namespace CS2Interface {
 				return null;
 			}
 
-			ItemDef stickerKitDef = new(GameData.ItemsGame.GetDef("sticker_kits", item.StickerID.ToString()!));
+			KeyValue? stickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", item.StickerID.ToString()!);
+			if (stickerKitDef == null) {
+				throw new Exception();
+			}
 
 			// Add default values
-			stickerKitDef.AddDef(GameData.ItemsGame.GetDef("sticker_kits", "0"));
+			KeyValue? defaultStickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", "0");
+			if (defaultStickerKitDef == null) {
+				throw new Exception();
+			}
+			
+			KeyValue def = stickerKitDef.Clone();
+			def.Merge(defaultStickerKitDef);
 
-			return stickerKitDef;
+			return def;
 		}
 
-		private ItemDef? CreateMusicDef(Item item) {
+		private KeyValue? CreateMusicDef(Item item) {
 			if (item.MusicID == null) {
 				// This item has no music definition
 				return null;
 			}
 
-			ItemDef musicDef = new (GameData.ItemsGame.GetDef("music_definitions", item.MusicID.ToString()!));
+			KeyValue? musicDef = GameData.ItemsGame.GetDef("music_definitions", item.MusicID.ToString()!);
+			if (musicDef == null) {
+				throw new Exception();
+			}
 
-			return musicDef;
+			return musicDef.Clone();
 		}
 	}
 }
