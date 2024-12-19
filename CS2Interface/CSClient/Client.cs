@@ -590,6 +590,10 @@ namespace CS2Interface {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
+				if (response.Body.Recipe == GCMsg.MsgCraft.UnknownRecipe) {
+					throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidCraftRecipe);
+				}
+
 				return response.Body;
 			} finally {
 				GCSemaphore.Release();
