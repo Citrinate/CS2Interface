@@ -17,7 +17,7 @@ namespace CS2Interface {
 	public sealed class CS2InterfaceController : ArchiController {
 		[HttpGet("{botNames:required}/Start")]
 		[SwaggerOperation (Summary = "Starts the CS2 Interface")]
-		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
@@ -30,14 +30,21 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			IList<(bool Success, string Message)> results = await Utilities.InParallel(bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Run())).ConfigureAwait(false);
+			
+			IEnumerable<(Bot Bot, GenericResponse Response)> results = await Utilities.InParallel(bots.Select(
+				async static bot => {
+					(bool success, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
 
-			return Ok(new GenericResponse(results.All(static result => result.Success), string.Join(Environment.NewLine, results.Select(static result => result.Message))));
+					return (bot, new GenericResponse(success, message));
+				}
+			)).ConfigureAwait(false);
+
+			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(results.All(static result => result.Response.Success), results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
 
 		[HttpGet("{botNames:required}/Stop")]
 		[SwaggerOperation (Summary = "Stops the CS2 Interface")]
-		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Stop(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
@@ -50,9 +57,11 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			IEnumerable<string> results = bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Stop());
+			IEnumerable<(Bot Bot, GenericResponse Response)> results = bots.Select(
+				static bot => (bot, new GenericResponse(true, ClientHandler.ClientHandlers[bot.BotName].Stop()))
+			);
 
-			return Ok(new GenericResponse(true, string.Join(Environment.NewLine, results)));
+			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
 
 		[HttpGet("{botNames:required}/InspectItem")]
@@ -60,30 +69,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse<InspectItem>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> InspectItem(
-			string botNames, 
-			[FromQuery]
-			[SwaggerParameter(Description = "The item's inspect link", Required = false)] 
-			string? url = null, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "The S value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
-			ulong s = 0, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "The A value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
-			ulong a = 0, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "The D value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
-			ulong d = 0, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "The M value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
-			ulong m = 0, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
-			bool minimal = false, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
-			bool showDefs = false
-		) {
+		public async Task<ActionResult<GenericResponse>> InspectItem(string botNames, [FromQuery] string? url = null, [FromQuery] ulong s = 0, [FromQuery] ulong a = 0, [FromQuery] ulong d = 0, [FromQuery] ulong m = 0, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -168,15 +154,7 @@ namespace CS2Interface {
 		[SwaggerOperation (Summary = "Get the given bot's CS2 inventory")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Inventory(
-			string botName, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
-			bool minimal = false, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
-			bool showDefs = false
-		) {
+		public ActionResult<GenericResponse> Inventory(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -206,16 +184,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> GetCrateContents(
-			string botName,			
-			ulong crateID, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
-			bool minimal = false, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
-			bool showDefs = false
-		) {
+		public async Task<ActionResult<GenericResponse>> GetCrateContents(string botName,	ulong crateID, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -305,13 +274,7 @@ namespace CS2Interface {
 		[ProducesResponseType(typeof(GenericResponse<GCMsg.MsgCraftResponse>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> CraftItem(
-			string botName, 
-			ushort recipeID, 
-			[FromQuery] 
-			[SwaggerParameter(Description = "A comma separated list of item ids", Required = true)] 
-			string itemIDs
-		) {
+		public async Task<ActionResult<GenericResponse>> CraftItem(string botName, ushort recipeID, [FromQuery] string itemIDs) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
