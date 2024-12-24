@@ -11,6 +11,7 @@ namespace CS2Interface {
 		public uint? StickerID;
 		public uint? TintID;
 		public uint? MusicID;
+		public uint? KeychainID;
 		public uint Quality;
 		public uint Rarity;
 		public uint Origin;
@@ -164,7 +165,7 @@ namespace CS2Interface {
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)?.Substring(1)];
+			ItemName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)?.Substring(1)];
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
 			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
@@ -205,7 +206,7 @@ namespace CS2Interface {
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 				// FullTypeName = String.Format(GameData.CsgoEnglish.Format("ItemTypeDescKillEater") ?? "{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
-				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
+				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives
 				} else if (WearName != null || TintName != null) {
 					FullName = String.Format("{0} {1} | {2} ({3})", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName).Trim(); // Weapon Skins, Gloves, Graffiti
@@ -217,10 +218,10 @@ namespace CS2Interface {
 			}
 
 			// Set the name id, used for determining related set and crate
-			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null) {
+			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 				NameID = ItemData.ItemDef["name"].Value; // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", (ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
+				NameID = String.Format("[{0}]{1}", (ItemData.KeychainDef ?? ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
 			}
 
 			if (NameID != null) {

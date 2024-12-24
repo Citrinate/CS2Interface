@@ -46,6 +46,7 @@ namespace CS2Interface {
 				StickerID = Attributes.GetValueOrDefault("sticker slot 0 id")?.ToUInt32();
 				TintID = Attributes.GetValueOrDefault("spray tint id")?.ToUInt32();
 				MusicID = Attributes.GetValueOrDefault("music id")?.ToUInt32();
+				KeychainID = Attributes.GetValueOrDefault("keychain slot 0 id")?.ToUInt32();
 				if (Attributes.GetValueOrDefault("set item texture wear") != null) {
 					Wear = (double) BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(Attributes.GetValueOrDefault("set item texture wear")!.ToSingle()));
 				}

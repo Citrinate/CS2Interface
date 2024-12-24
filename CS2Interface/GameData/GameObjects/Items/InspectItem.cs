@@ -24,6 +24,7 @@ namespace CS2Interface {
 			PaintIndex = ItemInfo.paintindex;            
 			StickerID = ItemInfo.stickers.FirstOrDefault()?.sticker_id;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;
+			KeychainID = ItemInfo.keychains.FirstOrDefault()?.sticker_id;
 			Quality = ItemInfo.quality;
 			Rarity = ItemInfo.rarity;
 			Origin = ItemInfo.origin;

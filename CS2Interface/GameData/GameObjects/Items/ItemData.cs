@@ -26,16 +26,23 @@ namespace CS2Interface {
 		[JsonConverter(typeof(KVConverter))]
 		public KeyValue? MusicDef { get; private init; }
 
+		[JsonInclude]
+		[JsonPropertyName("keychain_def")]
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue? KeychainDef { get; private init; }
+
 		public bool ShouldSerializeItemDef() => ItemDef != null;
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;
 		public bool ShouldSerializeStickerKitDef() => StickerKitDef != null;
 		public bool ShouldSerializeMusicDef() => MusicDef != null;
+		public bool ShouldSerializeKeychainDefDef() => KeychainDef != null;
 
 		internal ItemData(Item item) {
 			ItemDef = CreateItemDef(item);
 			PaintKitDef = CreatePaintKitDef(item);
 			StickerKitDef = CreateStickerKitDef(item);
 			MusicDef = CreateMusicDef(item);
+			KeychainDef = CreateKeychainDef(item);
 		}
 
 		private KeyValue CreateItemDef(Item item) {
@@ -159,6 +166,25 @@ namespace CS2Interface {
 			}
 
 			return musicDef.Clone();
+		}
+
+
+		private KeyValue? CreateKeychainDef(Item item) {
+			if (item.KeychainID == null 
+				|| !(
+					item.DefIndex == 1355 // Charm
+				)
+			) {
+				// This item has no keychain definition
+				return null;
+			}
+
+			KeyValue? keychainDef = GameData.ItemsGame.GetDef("keychain_definitions", item.KeychainID.ToString()!);
+			if (keychainDef == null) {
+				throw new Exception();
+			}
+
+			return keychainDef.Clone();
 		}
 	}
 }
