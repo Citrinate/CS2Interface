@@ -63,6 +63,7 @@ namespace CS2Interface {
 				return (false, String.Format("{0}: {1}", Strings.InterfaceStartFailed, e.Message));
 			}
 
+			CS2Interface.AutoStart[Bot.BotName] = true;
 			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStarted);
 			
 			return (true, Strings.InterfaceStarted);
