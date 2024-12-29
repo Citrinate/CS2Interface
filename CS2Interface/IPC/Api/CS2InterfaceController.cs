@@ -173,7 +173,7 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, "Inventory not loaded yet"));
 			}
 
-			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible()).ToList();
+			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null).ToList();
 			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<List<InventoryItem>>(true, inventory));
