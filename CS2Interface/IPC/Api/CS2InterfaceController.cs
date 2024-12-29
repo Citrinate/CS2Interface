@@ -173,7 +173,7 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, "Inventory not loaded yet"));
 			}
 
-			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null).ToList();
+			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null).OrderByDescending(x => x.ItemInfo.id).ToList();
 			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<List<InventoryItem>>(true, inventory));
@@ -208,7 +208,7 @@ namespace CS2Interface {
 			
 			GameObject.SetSerializationProperties(!minimal, showDefs);
 
-			return Ok(new GenericResponse<List<InventoryItem>>(true, contents));
+			return Ok(new GenericResponse<List<InventoryItem>>(true, contents.OrderByDescending(x => x.ItemInfo.id).ToList()));
 		}
 
 		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]

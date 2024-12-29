@@ -16,10 +16,6 @@ namespace CS2Interface {
 		public Dictionary<string, IAttribute>? Attributes { get; private set; }
 
 		[JsonInclude]
-		[JsonPropertyName("position")]
-		public uint? Position { get; private set; }
-
-		[JsonInclude]
 		[JsonPropertyName("casket_id")]
 		public ulong? CasketID { get; private set; }
 
@@ -29,7 +25,6 @@ namespace CS2Interface {
 		public bool? Moveable { get; private set; }
 
 		public bool ShouldSerializeAttributes() => Attributes != null && ShouldSerializeAdditionalProperties;
-		public bool ShouldSerializePosition() => Position != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCasketID() => CasketID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeMoveable() => Moveable != null && ShouldSerializeAdditionalProperties;
 
@@ -52,11 +47,6 @@ namespace CS2Interface {
 				}
 
 				SetDefs();
-
-				{
-					bool is_new = ((ItemInfo.inventory >>> 30) & 1) == 1;
-					Position = is_new ? 0 : ItemInfo.inventory & 0xFFFF;
-				}
 
 				{
 					uint? casket_low = Attributes.GetValueOrDefault("casket item id low")?.ToUInt32();
