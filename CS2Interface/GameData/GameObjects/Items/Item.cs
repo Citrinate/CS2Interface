@@ -172,8 +172,8 @@ namespace CS2Interface {
 				ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 			}
 
-			// Set the graffiti color, ignore if tint_id is 0 (Multicolor)
-			if ((DefIndex == 1348 || DefIndex == 1349) && TintID != null && TintID != 0) {
+			// Set the graffiti color
+			if ((DefIndex == 1348 || DefIndex == 1349) && TintID != null) {
 				TintName = GameData.CsgoEnglish[String.Format("Attrib_SprayTintValue_{0}", TintID)];
 			}
 
@@ -208,7 +208,7 @@ namespace CS2Interface {
 
 				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives
-				} else if (WearName != null || TintName != null) {
+				} else if (WearName != null || (TintName != null && TintID != 0)) {
 					FullName = String.Format("{0} {1} | {2} ({3})", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName).Trim(); // Weapon Skins, Gloves, Graffiti
 				} else if (ItemName != null) {
 					FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers
