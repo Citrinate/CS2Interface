@@ -120,12 +120,12 @@ namespace CS2Interface {
 			return Ok(new GenericResponse<InspectItem>(true, item));
 		}
 
-		[HttpGet("{botName:required}/PlayerProfile/{steamID:required}")]
+		[HttpGet("{botName:required}/PlayerProfile/{steamID?}")]
 		[SwaggerOperation (Summary = "Get a friend's CS2 player profile")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> PlayerProfile(string botName, ulong steamID) {
+		public async Task<ActionResult<GenericResponse>> PlayerProfile(string botName, ulong? steamID = null) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -142,7 +142,7 @@ namespace CS2Interface {
 
 			CMsgGCCStrike15_v2_PlayersProfile player;
 			try {
-				player = await client.RequestPlayerProfile(steamID).ConfigureAwait(false);
+				player = await client.RequestPlayerProfile(steamID ?? bot.SteamID).ConfigureAwait(false);
 			} catch (ClientException e) {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
