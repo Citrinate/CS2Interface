@@ -95,10 +95,6 @@ namespace CS2Interface {
 		[JsonInclude]
 		[JsonPropertyName("crate_defindex")]
 		public uint? CrateDefIndex { get; private set; }
-
-		[JsonInclude]
-		[JsonPropertyName("crate_supply_series")]
-		public uint? CrateSupplySeries { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("crate_name")]
@@ -128,7 +124,6 @@ namespace CS2Interface {
 		public bool ShouldSerializeSetName() => SetName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateNameID() => CrateNameID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateDefIndex() => CrateDefIndex != null && ShouldSerializeAdditionalProperties;
-		public bool ShouldSerializeCrateSupplySeries() => CrateSupplySeries != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateName() => CrateName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
@@ -241,7 +236,6 @@ namespace CS2Interface {
 					if (crateItemDef != null && crateItemDef.Name != null) {
 						CrateNameID = crateItemDef["name"].Value;
 						CrateDefIndex = uint.Parse(crateItemDef.Name);
-						CrateSupplySeries = uint.Parse(lootListID!);
 						CrateName = GameData.CsgoEnglish[crateItemDef["item_name"].Value?.Substring(1)];
 					}
 				}
