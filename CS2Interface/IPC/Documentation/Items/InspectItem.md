@@ -118,7 +118,6 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "set_name": "The Phoenix Collection",
     "crate_name_id": "crate_community_2",
     "crate_defindex": 4011,
-    "crate_supply_series": 11,
     "crate_name": "Operation Phoenix Weapon Case"
   }
 }
@@ -185,7 +184,6 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "set_name": "The Phoenix Collection",
     "crate_name_id": "crate_community_2",
     "crate_defindex": 4011,
-    "crate_supply_series": 11,
     "crate_name": "Operation Phoenix Weapon Case",
     "defs": {
       "item_def": {
