@@ -21,7 +21,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 
 Command | Access | Description
 --- | --- | ---
-`cs2interface`|`FamilySharing`|Prints version of plugin.
+`cs2interface`|`FamilySharing`|Prints the current version of the plugin
 `cstart [Bots]`|`Master`|Starts the CS2 Interface
 `cstop [Bots]`|`Master`|Stops the CS2 Interface
 `cstatus [Bots]`|`Master`|Displays the status of the CS2 Interface
@@ -46,7 +46,7 @@ Command | Alias |
 > [!NOTE]
 > It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also enable the `FarmingPausedByDefault` flag.  This will prevent ASF's CardFarmer module from starting automatically.
 > 
-> If you want to farm cards you can still do so using the `resume` command.  The CS2 Interface will automatically start after card farming is complete.
+> If you want to farm cards you can still do so using the `resume` command.  The CS2 Interface will automatically start when ASF stops farming.
 
 ---
 
@@ -55,31 +55,26 @@ Command | Alias |
 > [!NOTE]
 > Each bot can only process 1 request at a time.
 
-> [!NOTE]
-> Once the plugin is installed additional documentation can be found, by default, at: [`/swagger`](http://localhost:1242/swagger)
-
 #### Interface
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-`/Api/CS2Interface/{botNames}/Start`|`GET`| |Starts the CS2 Interface
-`/Api/CS2Interface/{botNames}/Stop`|`GET`| |Stops the CS2 Interface
+[`/Api/CS2Interface/{botNames}/Start`](CS2Interface/IPC/Documentation/Interface/Start.md)|`GET`| |Starts the CS2 Interface
+[`/Api/CS2Interface/{botNames}/Stop`](CS2Interface/IPC/Documentation/Interface/Stop.md)|`GET`| |Stops the CS2 Interface
 
 #### Players
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`|`GET`| |Get a friend's CS2 player profile
+[`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's CS2 player profile
 
 #### Items
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`|`GET`|`itemIDs`|Crafts an item using the specified trade up recipe
-`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`|`GET`|`minimal`, `showDefs`|Get the contents of the given bot's crate
-`/Api/CS2Interface/{botNames}/InspectItem`|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect a CS2 Item [^1]
-`/Api/CS2Interface/{botName}/Inventory`|`GET`|`minimal`, `showDefs`|Get the given bot's CS2 inventory
-`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`|`GET`| |Retrieves an item from the specified crate
-`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`|`GET`| |Stores an item into the specified crate
-
-[^1]: Responses are not dependent on the account used to make these requests.  You may provide multiple `botNames`, and the first available bot will be used to make the request.
+[`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](CS2Interface/IPC/Documentation/Items/CraftItem.md)|`GET`|`itemIDs`|Crafts an item using the specified trade up recipe
+[`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get the contents of the given bot's crate
+[`/Api/CS2Interface/{botNames}/InspectItem`](CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect a CS2 Item
+[`/Api/CS2Interface/{botName}/Inventory`](CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get the given bot's CS2 inventory
+[`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Retrieves an item from the specified crate
+[`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Stores an item into the specified crate
