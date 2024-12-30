@@ -21,7 +21,7 @@ namespace CS2Interface {
 			m = param_m.ToString();
 
 			DefIndex = ItemInfo.defindex;
-			PaintIndex = ItemInfo.paintindex;            
+			PaintIndex = ItemInfo.paintindex;
 			StickerID = ItemInfo.stickers.FirstOrDefault()?.sticker_id;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;
 			KeychainID = ItemInfo.keychains.FirstOrDefault()?.sticker_id;

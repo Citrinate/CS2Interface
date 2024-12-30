@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using SteamKit2.GC.CSGO.Internal;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace CS2Interface {
 	public sealed class InventoryItem : Item {
@@ -21,7 +20,6 @@ namespace CS2Interface {
 
 		[JsonInclude]
 		[JsonPropertyName("moveable")]
-		[SwaggerParameter(Description = "The S value from the item's inspect link (not needed if using the url parameter)")] 
 		public bool? Moveable { get; private set; }
 
 		public bool ShouldSerializeAttributes() => Attributes != null && ShouldSerializeAdditionalProperties;

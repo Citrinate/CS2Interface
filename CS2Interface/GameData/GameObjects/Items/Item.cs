@@ -195,11 +195,9 @@ namespace CS2Interface {
 			}
 
 			{ // Set the full name and type
-				// bool displayQualityName = Quality != 4; // Hide "Unique" quality from item names and types
 				string? displayQualityName = Quality == 4 ? "" : QualityName; // Hide "Unique" quality from item names and types
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
-				// FullTypeName = String.Format(GameData.CsgoEnglish.Format("ItemTypeDescKillEater") ?? "{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
 				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives

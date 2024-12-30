@@ -290,7 +290,7 @@ namespace CS2Interface {
 			}
 		}
 
-		internal async Task<CMsgGCCStrike15_v2_PlayersProfile> RequestPlayerProfile(ulong steam_id) { //uint account_id) {
+		internal async Task<CMsgGCCStrike15_v2_PlayersProfile> RequestPlayerProfile(ulong steam_id) {
 			if (!HasGCSession) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
