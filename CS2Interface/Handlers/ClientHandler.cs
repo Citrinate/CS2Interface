@@ -104,12 +104,12 @@ namespace CS2Interface {
 
 		internal (EClientStatus ClientStatus, string Message) Status() {
 			if (!Bot.IsConnectedAndLoggedOn) {
-				return (EClientStatus.None, ArchiSteamFarm.Localization.Strings.BotNotConnected);
+				return (EClientStatus.BotOffline, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
 			EClientStatus status = Client.Status();
-			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
-			bool ready = ((status & EClientStatus.Ready) == EClientStatus.Ready);
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
+			bool ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
 
 			if (!connected) {
 				if (!ready) {

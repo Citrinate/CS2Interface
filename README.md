@@ -60,21 +60,22 @@ Command | Alias |
 API | Method | Parameters | Description
 --- | --- | --- | ---
 [`/Api/CS2Interface/{botNames}/Start`](CS2Interface/IPC/Documentation/Interface/Start.md)|`GET`| |Starts the CS2 Interface
+[`/Api/CS2Interface/{botNames}/Status`](CS2Interface/IPC/Documentation/Interface/Status.md)|`GET`| |Get the CS2 Interface status
 [`/Api/CS2Interface/{botNames}/Stop`](CS2Interface/IPC/Documentation/Interface/Stop.md)|`GET`| |Stops the CS2 Interface
 
 #### Players
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's CS2 player profile
+[`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's player profile
 
 #### Items
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](CS2Interface/IPC/Documentation/Items/CraftItem.md)|`GET`|`itemIDs`|Crafts an item using the specified trade up recipe
-[`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get the contents of the given bot's crate
-[`/Api/CS2Interface/{botNames}/InspectItem`](CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect a CS2 Item
-[`/Api/CS2Interface/{botName}/Inventory`](CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get the given bot's CS2 inventory
-[`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Retrieves an item from the specified crate
-[`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Stores an item into the specified crate
+[`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](CS2Interface/IPC/Documentation/Items/CraftItem.md)|`GET`|`itemIDs`|Craft an item
+[`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get a storage unit's contents
+[`/Api/CS2Interface/{botNames}/InspectItem`](CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect an item
+[`/Api/CS2Interface/{botName}/Inventory`](CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
+[`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Take an item out of a storage unit
+[`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Place an item into a storage unit

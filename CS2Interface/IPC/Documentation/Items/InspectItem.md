@@ -57,7 +57,7 @@ Property | Type | Description
 `defs.music_def` | `object` | Related game data found in [items_game.txt](https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game.txt) under `music_definitions`
 `defs.keychain_def` | `object` | Related game data found in [items_game.txt](https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game.txt) under `keychain_definitions`
 
-## Example Response
+## Example Responses
 
 ```
 http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M625254122282020305A6760346663D30614827701953021

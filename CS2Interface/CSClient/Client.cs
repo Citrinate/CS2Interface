@@ -602,9 +602,10 @@ namespace CS2Interface {
 	}
 
 	[Flags]
-	internal enum EClientStatus : byte {
+	public enum EClientStatus : byte {
 		None = 0,
 		Connected = 1,
-		Ready = 2
+		Ready = 2,
+		BotOffline = 4
 	}
 }
