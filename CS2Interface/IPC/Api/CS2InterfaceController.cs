@@ -330,6 +330,23 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<GCMsg.MsgCraftResponse>(true, craftResponse));
 		}
 
+		[HttpGet("Recipes")]
+		[SwaggerOperation (Summary = "Get a list of crafting recipes")]
+		[ProducesResponseType(typeof(GenericResponse<List<Recipe>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> Recipes([FromQuery] bool showDefs = false) {
+			List<Recipe> recipes;
+			try {
+				recipes = await Recipe.GetAll().ConfigureAwait(false);
+			} catch (ClientException e) {
+				return BadRequest(new GenericResponse(false, e.Message));
+			}
+
+			GameObject.SetSerializationProperties(true, showDefs);
+
+			return Ok(new GenericResponse<List<Recipe>>(true, recipes));
+		}
+
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {
 			bot.ArchiLogger.LogGenericError(e.Message);
 			if (e.Type == EClientExceptionType.Timeout) {

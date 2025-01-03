@@ -11,6 +11,9 @@ Name | Required | Description
 `botName` | Yes | The ASF bot name that will be used to craft an item
 `recipeID` | Yes | The ID for the crafting recipe
 
+> [!NOTE]
+> A list of `recipeIDs` can be found using the [Recipes](/CS2Interface/IPC/Documentation/Data/Recipes.md) API
+
 ## Query Parameters
 
 Name | Required | Description

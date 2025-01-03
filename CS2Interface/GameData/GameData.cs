@@ -36,8 +36,10 @@ namespace CS2Interface {
 			UpdateTimer.Change(TimeSpan.FromTicks(0), TimeSpan.FromSeconds(10));
 		}
 
-		internal static async Task<bool> IsLoaded(uint maxWaitTimeSeconds = 60) {
-			Update();
+		internal static async Task<bool> IsLoaded(uint maxWaitTimeSeconds = 60, bool update = true) {
+			if (update) {
+				Update();
+			}
 
 			DateTime timeoutTime = DateTime.Now.AddSeconds(maxWaitTimeSeconds);
 			while (IsUpdating) {

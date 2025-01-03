@@ -63,12 +63,6 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botNames}/Status`](CS2Interface/IPC/Documentation/Interface/Status.md)|`GET`| |Get the CS2 Interface status
 [`/Api/CS2Interface/{botNames}/Stop`](CS2Interface/IPC/Documentation/Interface/Stop.md)|`GET`| |Stops the CS2 Interface
 
-#### Players
-
-API | Method | Parameters | Description
---- | --- | --- | ---
-[`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's player profile
-
 #### Items
 
 API | Method | Parameters | Description
@@ -79,3 +73,15 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botName}/Inventory`](CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
 [`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Take an item out of a storage unit
 [`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Place an item into a storage unit
+
+#### Players
+
+API | Method | Parameters | Description
+--- | --- | --- | ---
+[`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's player profile
+
+#### Data
+
+API | Method | Parameters | Description
+--- | --- | --- | ---
+[`/Api/CS2Interface/Recipes/`](CS2Interface/IPC/Documentation/Data/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
