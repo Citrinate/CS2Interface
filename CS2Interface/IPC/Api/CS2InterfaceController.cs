@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+// using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -8,15 +9,16 @@ using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
 using ArchiSteamFarm.Steam;
+// using Microsoft.AspNetCore.Http;
+// EndpointSummary and Description lines commented out temporarily to allow plugin to work with generic/non-generic ASF V6.1.2.0 and V6.1.1.3
 using Microsoft.AspNetCore.Mvc;
 using SteamKit2.GC.CSGO.Internal;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace CS2Interface.IPC {
 	[Route("Api/CS2Interface")]
 	public sealed class CS2InterfaceController : ArchiController {
 		[HttpGet("{botNames:required}/Start")]
-		[SwaggerOperation (Summary = "Starts the CS2 Interface")]
+		// [EndpointSummary("Starts the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
@@ -43,7 +45,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botNames:required}/Stop")]
-		[SwaggerOperation (Summary = "Stops the CS2 Interface")]
+		// [EndpointSummary("Stops the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Stop(string botNames) {
@@ -87,7 +89,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botNames:required}/InspectItem")]
-		[SwaggerOperation (Summary = "Inspect a CS2 Item")]
+		// [EndpointSummary("Inspect a CS2 Item")]
 		[ProducesResponseType(typeof(GenericResponse<InspectItem>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -143,7 +145,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/PlayerProfile/{steamID?}")]
-		[SwaggerOperation (Summary = "Get a friend's CS2 player profile")]
+		// [EndpointSummary("Get a friend's CS2 player profile")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -173,7 +175,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/Inventory/")]
-		[SwaggerOperation (Summary = "Get the given bot's CS2 inventory")]
+		// [EndpointSummary("Get the given bot's CS2 inventory")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Inventory(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
@@ -202,7 +204,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/GetCrateContents/{crateID:required}")]
-		[SwaggerOperation (Summary = "Get the contents of the given bot's crate")]
+		// [EndpointSummary("Get the contents of the given bot's crate")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -234,7 +236,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]
-		[SwaggerOperation (Summary = "Stores an item into the specified crate")]
+		// [EndpointSummary("Stores an item into the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -263,7 +265,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
-		[SwaggerOperation (Summary = "Retrieves an item from the specified crate")]
+		// [EndpointSummary("Retrieves an item from the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
