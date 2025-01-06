@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+// using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -8,15 +9,16 @@ using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
 using ArchiSteamFarm.Steam;
+// using Microsoft.AspNetCore.Http;
+// EndpointSummary and Description lines commented out temporarily to allow plugin to work with generic/non-generic ASF V6.1.2.0 and V6.1.1.3
 using Microsoft.AspNetCore.Mvc;
 using SteamKit2.GC.CSGO.Internal;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace CS2Interface {
 	[Route("Api/CS2Interface")]
 	public sealed class CS2InterfaceController : ArchiController {
 		[HttpGet("{botNames:required}/Start")]
-		[SwaggerOperation (Summary = "Starts the CS2 Interface")]
+		// [EndpointSummary("Starts the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
@@ -36,7 +38,7 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botNames:required}/Stop")]
-		[SwaggerOperation (Summary = "Stops the CS2 Interface")]
+		// [EndpointSummary("Stops the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Stop(string botNames) {
@@ -56,32 +58,32 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botNames:required}/InspectItem")]
-		[SwaggerOperation (Summary = "Inspect a CS2 Item")]
+		// [EndpointSummary("Inspect a CS2 Item")]
 		[ProducesResponseType(typeof(GenericResponse<InspectItem>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
 		public async Task<ActionResult<GenericResponse>> InspectItem(
 			string botNames, 
 			[FromQuery]
-			[SwaggerParameter(Description = "The item's inspect link", Required = false)] 
+			// [Description("The item's inspect link")] 
 			string? url = null, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "The S value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
+			// [Description("The S value from the item's inspect link (not needed if using the url parameter)")] 
 			ulong s = 0, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "The A value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
+			// [Description("The A value from the item's inspect link (not needed if using the url parameter)")] 
 			ulong a = 0, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "The D value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
+			// [Description("The D value from the item's inspect link (not needed if using the url parameter)")] 
 			ulong d = 0, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "The M value from the item's inspect link (not needed if using the url parameter)", Required = false)] 
+			// [Description("The M value from the item's inspect link (not needed if using the url parameter)")] 
 			ulong m = 0, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
+			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
 			bool minimal = false, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
+			// [Description("If true, additional raw item information will be provided")] 
 			bool showDefs = false
 		) {
 			if (string.IsNullOrEmpty(botNames)) {
@@ -135,7 +137,7 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/PlayerProfile/{steamID:required}")]
-		[SwaggerOperation (Summary = "Get a friend's CS2 player profile")]
+		// [EndpointSummary("Get a friend's CS2 player profile")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -165,16 +167,16 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/Inventory/")]
-		[SwaggerOperation (Summary = "Get the given bot's CS2 inventory")]
+		// [EndpointSummary("Get the given bot's CS2 inventory")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> Inventory(
 			string botName, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
+			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
 			bool minimal = false, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
+			// [Description("If true, additional raw item information will be provided")] 
 			bool showDefs = false
 		) {
 			if (string.IsNullOrEmpty(botName)) {
@@ -202,7 +204,7 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/GetCrateContents/{crateID:required}")]
-		[SwaggerOperation (Summary = "Get the contents of the given bot's crate")]
+		// [EndpointSummary("Get the contents of the given bot's crate")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -210,10 +212,10 @@ namespace CS2Interface {
 			string botName,			
 			ulong crateID, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, only the data recieved from the CS2 client will be provided", Required = false)] 
+			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
 			bool minimal = false, 
 			[FromQuery] 
-			[SwaggerParameter(Description = "If true, additional raw item information will be provided", Required = false)] 
+			// [Description("If true, additional raw item information will be provided")] 
 			bool showDefs = false
 		) {
 			if (string.IsNullOrEmpty(botName)) {
@@ -243,7 +245,7 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]
-		[SwaggerOperation (Summary = "Stores an item into the specified crate")]
+		// [EndpointSummary("Stores an item into the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -272,7 +274,7 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
-		[SwaggerOperation (Summary = "Retrieves an item from the specified crate")]
+		// [EndpointSummary("Retrieves an item from the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
