@@ -28,7 +28,7 @@ namespace CS2Interface {
 		public string? Quality { get; private set; }
 
 		[JsonInclude]
-		[JsonPropertyName("defs")]
+		[JsonPropertyName("def")]
 		[JsonConverter(typeof(KVConverter))]
 		public KeyValue? RecipeData { get; private set; }
 
