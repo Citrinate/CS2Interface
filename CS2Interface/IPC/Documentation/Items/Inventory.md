@@ -5,7 +5,7 @@
 Get the CS2 inventory for the given `botName`
 
 > [!NOTE]
-> There's a few seconds of delay between when the interface first connects and when bot's inventory is available.
+> There's a few seconds of delay between when the interface first connects and when the bot's inventory is available.
 
 ## Path Parameters
 
@@ -19,7 +19,6 @@ Name | Required | Description
 --- | --- | ---
 `minimal` | No | If set to true, the response will only contain the data recieved from CS2
 `showDefs` | No | If set to true, the response will include a `defs` property containing additional game data
-
 
 ## Response Result
 
