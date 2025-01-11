@@ -12,7 +12,7 @@ None
 
 Name | Required | Description
 --- | --- | ---
-`showDefs` | No | If set to true, the response will include a `defs` property containing additional game data
+`showDefs` | No | If set to true, the response will include a `def` property containing additional game data
 
 ## Response Result
 
