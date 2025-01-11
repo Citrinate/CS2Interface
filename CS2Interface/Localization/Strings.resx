@@ -421,4 +421,8 @@
     <value>Too many crafting inputs given</value>
     <comment/>
   </data>
+  <data name="ClientVersionFail" xml:space="preserve">
+    <value>Failed to determine client version</value>
+    <comment/>
+  </data>
 </root>

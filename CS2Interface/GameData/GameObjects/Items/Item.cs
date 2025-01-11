@@ -156,7 +156,7 @@ namespace CS2Interface {
 
 			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value?.Substring(1)];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
-			OriginName = GameData.GetOriginName(Origin);
+			OriginName = GameDataText.GetOriginName(Origin);
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
@@ -177,7 +177,7 @@ namespace CS2Interface {
 				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 
 				if (Wear != null) {
-					WearName = GameData.GetWearName(Wear.Value);
+					WearName = GameData.CsgoEnglish.GetWearName(Wear.Value);
 					string? wearRemapMinValue = ItemData.PaintKitDef!["wear_remap_min"].Value;
 					string? wearRemapMaxValue = ItemData.PaintKitDef!["wear_remap_max"].Value;
 					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue, NumberStyles.Float, CultureInfo.InvariantCulture);

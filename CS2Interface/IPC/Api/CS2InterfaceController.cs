@@ -332,7 +332,7 @@ namespace CS2Interface.IPC {
 
 		[HttpGet("Recipes")]
 		[EndpointSummary("Get a list of crafting recipes")]
-		[ProducesResponseType(typeof(GenericResponse<List<Recipe>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse<GameData<List<Recipe>>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public async Task<ActionResult<GenericResponse>> Recipes([FromQuery] bool showDefs = false) {
 			List<Recipe> recipes;
@@ -344,7 +344,7 @@ namespace CS2Interface.IPC {
 
 			GameObject.SetSerializationProperties(true, showDefs);
 
-			return Ok(new GenericResponse<List<Recipe>>(true, recipes));
+			return Ok(new GenericResponse<GameData<List<Recipe>>>(true, new GameData<List<Recipe>>(recipes)));
 		}
 
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {

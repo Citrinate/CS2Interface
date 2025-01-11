@@ -12,7 +12,7 @@ namespace CS2Interface {
 
 		internal GameDataItems(string url) : base(url) {}
 
-		internal async Task<bool> Update() {
+		internal override async Task<bool> Update() {
 			KeyValue? data = await FetchKVResource().ConfigureAwait(false);
 			if (data == null) {
 				ASF.ArchiLogger.LogGenericError(String.Format(Strings.GameDataSourceFailed, Url));

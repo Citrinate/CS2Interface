@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using SteamKit2;
 
 namespace CS2Interface {
-	internal class GameDataResource {
+	internal abstract class GameDataResource {
 		protected Uri Url;
 		internal bool Updated {get; set;} = false;
 
 		internal GameDataResource(string url) {
 			Url = new Uri(url);
 		}
+
+		internal abstract Task<bool> Update();
 
 		protected async Task<KeyValue?> FetchKVResource() {
 			HttpClient httpClient = new();
