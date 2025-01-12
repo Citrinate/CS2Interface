@@ -151,11 +151,11 @@ namespace CS2Interface {
 				} else if (ItemData.ItemDef["item_slot"].Value == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
 				}
-				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"]?.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
+				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"].Children.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
 			}
 
 			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value?.Substring(1)];
-			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"]?.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
+			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
 			OriginName = GameDataText.GetOriginName(Origin);
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
@@ -219,7 +219,7 @@ namespace CS2Interface {
 
 			if (NameID != null) {
 				{ // Determine what set, if any, this item belongs to
-					KeyValue? setItemDef = GameData.ItemsGame["item_sets"]?.FirstOrDefault(x => x["items"][NameID] != KeyValue.Invalid);
+					KeyValue? setItemDef = GameData.ItemsGame["item_sets"].Children.FirstOrDefault(x => x["items"][NameID] != KeyValue.Invalid);
 					if (setItemDef != null) {
 						SetNameID = setItemDef.Name;
 						SetName = GameData.CsgoEnglish[setItemDef["name"].Value?.Substring(1)];
@@ -227,10 +227,10 @@ namespace CS2Interface {
 				}
 
 				{ // Determine what crate, if any, this item belongs to.  Doesn't work for souvenir skins, knives, or gloves
-					string? lootListName = GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[NameID] != KeyValue.Invalid)?.Name;
-					lootListName = lootListName == null ? null : GameData.ItemsGame["client_loot_lists"]?.FirstOrDefault(x => x[lootListName] != KeyValue.Invalid)?.Name ?? lootListName; // Some lists in client_loot_lists are nested (1 or 2 layers), we want the top-most layer
-					string? lootListID = lootListName == null ? null : GameData.ItemsGame["revolving_loot_lists"]?.FirstOrDefault(x => x.Value == lootListName)?.Name;
-					KeyValue? crateItemDef = lootListID == null ? null : GameData.ItemsGame["items"]?.FirstOrDefault(x => x["attributes"]["set supply crate series"]["value"].Value == lootListID);
+					string? lootListName = GameData.ItemsGame["client_loot_lists"].Children.FirstOrDefault(x => x[NameID] != KeyValue.Invalid)?.Name;
+					lootListName = lootListName == null ? null : GameData.ItemsGame["client_loot_lists"].Children.FirstOrDefault(x => x[lootListName] != KeyValue.Invalid)?.Name ?? lootListName; // Some lists in client_loot_lists are nested (1 or 2 layers), we want the top-most layer
+					string? lootListID = lootListName == null ? null : GameData.ItemsGame["revolving_loot_lists"].Children.FirstOrDefault(x => x.Value == lootListName)?.Name;
+					KeyValue? crateItemDef = lootListID == null ? null : GameData.ItemsGame["items"].Children.FirstOrDefault(x => x["attributes"]["set supply crate series"]["value"].Value == lootListID);
 					if (crateItemDef != null && crateItemDef.Name != null) {
 						CrateNameID = crateItemDef["name"].Value;
 						CrateDefIndex = uint.Parse(crateItemDef.Name);

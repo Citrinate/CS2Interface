@@ -35,7 +35,7 @@ namespace CS2Interface {
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;
 		public bool ShouldSerializeStickerKitDef() => StickerKitDef != null;
 		public bool ShouldSerializeMusicDef() => MusicDef != null;
-		public bool ShouldSerializeKeychainDefDef() => KeychainDef != null;
+		public bool ShouldSerializeKeychainDef() => KeychainDef != null;
 
 		internal ItemData(Item item) {
 			ItemDef = CreateItemDef(item);
@@ -46,8 +46,10 @@ namespace CS2Interface {
 		}
 
 		private KeyValue CreateItemDef(Item item) {
-			KeyValue? itemDef = GameData.ItemsGame.GetDef("items", item.DefIndex.ToString());
-			if (itemDef == null) {
+			KeyValue itemDef = GameData.ItemsGame["items"][item.DefIndex.ToString()];
+			if (itemDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: items[{1}]", Strings.GameDataDefinitionUndefined, item.DefIndex));
+
 				throw new Exception();
 			}
 
@@ -59,8 +61,10 @@ namespace CS2Interface {
 			}
 
 			// Add default values
-			KeyValue? defaultItemDef = GameData.ItemsGame.GetDef("items", "default");
-			if (defaultItemDef == null) {
+			KeyValue defaultItemDef = GameData.ItemsGame["items"]["default"];
+			if (defaultItemDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: items[default]", Strings.GameDataDefinitionUndefined));
+
 				throw new Exception();
 			}
 			
@@ -82,8 +86,8 @@ namespace CS2Interface {
 			bool foundValid = false;
 
 			foreach (string prefabName in prefabNames) {
-				KeyValue? prefabDef = GameData.ItemsGame.GetDef("prefabs", prefabName, suppressErrorLogs: true);
-				if (prefabDef == null) {
+				KeyValue prefabDef = GameData.ItemsGame["prefabs"][prefabName];
+				if (prefabDef == KeyValue.Invalid) {
 					continue;
 				}
 
@@ -107,14 +111,18 @@ namespace CS2Interface {
 				return null;
 			}
 
-			KeyValue? paintKitDef = GameData.ItemsGame.GetDef("paint_kits", item.PaintIndex.ToString());
-			if (paintKitDef == null) {
+			KeyValue paintKitDef = GameData.ItemsGame["paint_kits"][item.PaintIndex.ToString()];
+			if (paintKitDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: paint_kits[{1}]", Strings.GameDataDefinitionUndefined, item.PaintIndex));
+
 				throw new Exception();
 			}
 
 			// Add default values
-			KeyValue? defaultPaintKitDef = GameData.ItemsGame.GetDef("paint_kits", "0");
-			if (defaultPaintKitDef == null) {
+			KeyValue defaultPaintKitDef = GameData.ItemsGame["paint_kits"]["0"];
+			if (defaultPaintKitDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: paint_kits[0]", Strings.GameDataDefinitionUndefined));
+
 				throw new Exception();
 			}
 
@@ -137,14 +145,18 @@ namespace CS2Interface {
 				return null;
 			}
 
-			KeyValue? stickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", item.StickerID.ToString()!);
-			if (stickerKitDef == null) {
+			KeyValue stickerKitDef = GameData.ItemsGame["sticker_kits"][item.StickerID.ToString()!];
+			if (stickerKitDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: sticker_kits[{1}]", Strings.GameDataDefinitionUndefined, item.StickerID));
+
 				throw new Exception();
 			}
 
 			// Add default values
-			KeyValue? defaultStickerKitDef = GameData.ItemsGame.GetDef("sticker_kits", "0");
-			if (defaultStickerKitDef == null) {
+			KeyValue defaultStickerKitDef = GameData.ItemsGame["sticker_kits"]["0"];
+			if (defaultStickerKitDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: sticker_kits[0]", Strings.GameDataDefinitionUndefined));
+
 				throw new Exception();
 			}
 			
@@ -160,8 +172,10 @@ namespace CS2Interface {
 				return null;
 			}
 
-			KeyValue? musicDef = GameData.ItemsGame.GetDef("music_definitions", item.MusicID.ToString()!);
-			if (musicDef == null) {
+			KeyValue musicDef = GameData.ItemsGame["music_definitions"][item.MusicID.ToString()!];
+			if (musicDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: music_definitions[{1}]", Strings.GameDataDefinitionUndefined, item.MusicID));
+
 				throw new Exception();
 			}
 
@@ -179,8 +193,10 @@ namespace CS2Interface {
 				return null;
 			}
 
-			KeyValue? keychainDef = GameData.ItemsGame.GetDef("keychain_definitions", item.KeychainID.ToString()!);
-			if (keychainDef == null) {
+			KeyValue keychainDef = GameData.ItemsGame["keychain_definitions"][item.KeychainID.ToString()!];
+			if (keychainDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: keychain_definitions[{1}]", Strings.GameDataDefinitionUndefined, item.KeychainID));
+
 				throw new Exception();
 			}
 

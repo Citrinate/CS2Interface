@@ -84,4 +84,5 @@ API | Method | Parameters | Description
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/Recipes/`](CS2Interface/IPC/Documentation/Data/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
+[`/Api/CS2Interface/Recipes`](CS2Interface/IPC/Documentation/Data/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
+[`/Api/CS2Interface/items_game.txt`](CS2Interface/IPC/Documentation/Data/ItemsGame.md)|`GET`| |Get the contents of items_game.txt

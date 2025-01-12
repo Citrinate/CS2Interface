@@ -24,7 +24,7 @@ Property | Type | Description
 `Data.inputs` | `string` | A description of the inputs
 `Data.outputs` | `string` | A description of the outputs
 `Data.quality` | `string` | The quality of the inputs and outputs (Unique or StatTrak™)
-`Data.def`| `object` | Related game data found in [items_game.txt](https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game.txt) under `recipes`
+`Data.def`| `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `recipes`
 
 ## Example Response
 

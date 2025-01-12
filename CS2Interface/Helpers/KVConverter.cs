@@ -44,7 +44,7 @@ namespace CS2Interface {
 				return;
 			}
 
-			if (float.TryParse(vdf.Value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float floatValue)) {
+			if (float.TryParse(vdf.Value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float floatValue) && !float.IsInfinity(floatValue)) {
 				writer.WriteNumberValue(floatValue);
 
 				return;

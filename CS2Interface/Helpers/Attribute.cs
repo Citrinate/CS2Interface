@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 using SteamKit2;
 using SteamKit2.GC.CSGO.Internal;
 
@@ -42,8 +43,10 @@ namespace CS2Interface {
 			}
 
 			foreach (CSOEconItemAttribute attribute in attributes) {
-				KeyValue? attribute_def = GameData.ItemsGame.GetDef("attributes", attribute.def_index.ToString());
-				if (attribute_def == null) {
+				KeyValue attribute_def = GameData.ItemsGame["attributes"][attribute.def_index.ToString()];
+				if (attribute_def == KeyValue.Invalid) {
+					ASF.ArchiLogger.LogGenericError(String.Format("{0}: attributes[{1}]", Strings.GameDataDefinitionUndefined, attribute.def_index));
+
 					return null;
 				}
 

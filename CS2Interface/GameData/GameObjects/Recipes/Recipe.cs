@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using ArchiSteamFarm.Core;
 using CS2Interface.Localization;
 using SteamKit2;
 
@@ -47,8 +49,10 @@ namespace CS2Interface {
 		}
 
 		protected override bool SetDefs() {
-			KeyValue? recipeDef = GameData.ItemsGame.GetDef("recipes", RecipeID.ToString());
-			if (recipeDef == null) {
+			KeyValue recipeDef = GameData.ItemsGame["recipes"][RecipeID.ToString()];
+			if (recipeDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: recipes[{1}]", Strings.GameDataDefinitionUndefined, RecipeID));
+
 				return false;
 			}
 
@@ -86,13 +90,13 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.GameDataLoadingFailed);
 			}
 
-			List<KeyValue>? kvs = GameData.ItemsGame["recipes"];
-			if (kvs == null) {
+			KeyValue kvs = GameData.ItemsGame["recipes"];
+			if (kvs == KeyValue.Invalid) {
 				return [];
 			}
 
 			List<Recipe> recipes = [];
-			foreach (KeyValue kv in kvs) {
+			foreach (KeyValue kv in kvs.Children) {
 				if (ushort.TryParse(kv.Name, out ushort recipeID)) {
 					recipes.Add(new Recipe(recipeID));
 				}

@@ -8,6 +8,7 @@ using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
 using ArchiSteamFarm.Steam;
+using CS2Interface.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SteamKit2.GC.CSGO.Internal;
@@ -345,6 +346,18 @@ namespace CS2Interface.IPC {
 			GameObject.SetSerializationProperties(true, showDefs);
 
 			return Ok(new GenericResponse<GameData<List<Recipe>>>(true, new GameData<List<Recipe>>(recipes)));
+		}
+
+		[HttpGet("items_game.txt")]
+		[EndpointSummary("Get the contents of items_game.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameDataKV>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> ItemsGame() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.ItemsGame.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameDataKV>(true, new GameDataKV(GameData.ItemsGame.Data)));
 		}
 
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {
