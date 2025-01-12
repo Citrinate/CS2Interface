@@ -36,7 +36,7 @@ Property | Type | Description
 `item_name` | `string` | The item's name
 `tool_name` | `string` | What type of tool this is (usually the same as `type_name`, except for Sealed Graffiti)
 `tint_name` | `string` | The item's tint
-`weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md))
+`weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md))
 `weapon_name` | `string` | The weapon this applies to
 `wear_name` | `string` | The name for the float range this item falls into
 `wear` | `float` | The item's float value
@@ -46,13 +46,13 @@ Property | Type | Description
 `set_name_id` | `string` | The unique string ID for the collection this item belongs to
 `set_name` | `string` | The name of the collection this item belongs to
 `crate_name_id` | `string` | The unique string ID for the crate this item can be found in
-`crate_defindex` | `uint` | The definition index for the crate this item can be found in (the definition for which can be found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`)
+`crate_defindex` | `uint` | The definition index for the crate this item can be found in (the definition for which can be found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`)
 `crate_name` | `string` | The name of the crate this item can be found in
-`defs.item_def` | `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
-`defs.paint_kit_def` | `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `paint_kits`
-`defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
-`defs.music_def` | `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `music_definitions`
-`defs.keychain_def` | `object` | Related game data found in [items_game.txt](CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `keychain_definitions`
+`defs.item_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
+`defs.paint_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `paint_kits`
+`defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
+`defs.music_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `music_definitions`
+`defs.keychain_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `keychain_definitions`
 
 ## Example Responses
 
