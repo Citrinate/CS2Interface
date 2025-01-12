@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using SteamKit2;
 
 namespace CS2Interface {
 	internal class GameDataText : GameDataResource {
-		private List<KeyValue>? Data;
+		internal KeyValue? Data {get; private set;}
 
 		internal GameDataText(string url) : base(url) {}
 
@@ -21,7 +20,7 @@ namespace CS2Interface {
 				return false;
 			}
 
-			Data = data.Children.Where(x => x.Name == "Tokens").SelectMany(x => x.Children).ToList();
+			Data = data["Tokens"];
 			Updated = true;
 
 			return true;
@@ -33,7 +32,7 @@ namespace CS2Interface {
 					return null;
 				}
 
-				return Data.Where(x => x.Name?.ToUpper().Trim() == key.ToUpper().Trim()).FirstOrDefault()?.Value;
+				return Data.Children.Where(x => x.Name?.ToUpper().Trim() == key.ToUpper().Trim()).FirstOrDefault()?.Value;
 			}
 		}
 

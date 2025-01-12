@@ -360,6 +360,42 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<GameDataKV>(true, new GameDataKV(GameData.ItemsGame.Data)));
 		}
 
+		[HttpGet("items_game_cdn.txt")]
+		[EndpointSummary("Get the contents of items_game_cdn.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameData<Dictionary<string, string>>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> ItemsGameCDN() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.ItemsGameCdn.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameData<Dictionary<string, string>>>(true, new GameData<Dictionary<string, string>>(GameData.ItemsGameCdn.Data)));
+		}
+
+		[HttpGet("csgo_english.txt")]
+		[EndpointSummary("Get the contents of csgo_english.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameDataKV>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> CSGOEnglish() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.CsgoEnglish.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameDataKV>(true, new GameDataKV(GameData.CsgoEnglish.Data)));
+		}
+
+		[HttpGet("steam.inf")]
+		[EndpointSummary("Get the contents of steam.inf")]
+		[ProducesResponseType(typeof(GenericResponse<GameData<Dictionary<string, string>>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> SteamINF() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.GameVersion.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameData<Dictionary<string, string>>>(true, new GameData<Dictionary<string, string>>(GameData.GameVersion.Data)));
+		}
+
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {
 			bot.ArchiLogger.LogGenericError(e.Message);
 			if (e.Type == EClientExceptionType.Timeout) {

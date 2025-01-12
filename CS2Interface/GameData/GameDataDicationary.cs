@@ -6,7 +6,7 @@ using CS2Interface.Localization;
 
 namespace CS2Interface {
 	internal class GameDataDictionary : GameDataResource {
-		private Dictionary<string, string>? Data;
+		internal Dictionary<string, string>? Data {get; private set;}
 
 		internal GameDataDictionary(string url) : base(url) {}
 

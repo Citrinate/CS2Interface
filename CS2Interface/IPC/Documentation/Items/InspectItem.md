@@ -39,7 +39,7 @@ Property | Type | Description
 `item_name` | `string` | The item's name
 `tool_name` | `string` | What type of tool this is (usually the same as `type_name`, except for Sealed Graffiti)
 `tint_name` | `string` | The item's tint
-`weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md))
+`weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md))
 `weapon_name` | `string` | The weapon this applies to
 `wear_name` | `string` | The name for the float range this item falls into
 `wear` | `float` | The item's float value

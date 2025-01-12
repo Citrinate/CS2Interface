@@ -85,4 +85,7 @@ API | Method | Parameters | Description
 API | Method | Parameters | Description
 --- | --- | --- | ---
 [`/Api/CS2Interface/Recipes`](/CS2Interface/IPC/Documentation/Data/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
-[`/Api/CS2Interface/items_game.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md)|`GET`| |Get the contents of items_game.txt
+[`/Api/CS2Interface/items_game.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md)|`GET`| |Get the contents of `items_game.txt`
+[`/Api/CS2Interface/items_game_cdn.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md)|`GET`| |Get the contents of `items_game_cdn.txt`
+[`/Api/CS2Interface/csgo_english.txt`](/CS2Interface/IPC/Documentation/Data/CsgoEnglishTxt.md)|`GET`| |Get the contents of `csgo_english.txt`
+[`/Api/CS2Interface/steam.inf`](/CS2Interface/IPC/Documentation/Data/SteamInf.md)|`GET`| |Get the contents of `steam.inf`
