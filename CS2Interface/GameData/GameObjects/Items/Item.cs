@@ -173,7 +173,7 @@ namespace CS2Interface {
 			}
 
 			// Set various weapon-only attributes
-			if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1") {
+			if (ItemData.PaintKitDef != null && ItemData.ItemDef["taxonomy"]["weapon"].Value == "1" || ItemData.ItemDef["item_type_name"].Value == "#Type_Hands") {
 				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 
 				if (Wear != null) {
