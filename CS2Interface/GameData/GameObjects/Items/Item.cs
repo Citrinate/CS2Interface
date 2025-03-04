@@ -173,13 +173,13 @@ namespace CS2Interface {
 			}
 
 			// Set various weapon-only attributes
-			if (ItemData.PaintKitDef != null && ItemData.ItemDef["taxonomy"]["weapon"].Value == "1" || ItemData.ItemDef["item_type_name"].Value == "#Type_Hands") {
+			if (ItemData.PaintKitDef != null) {
 				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
 
 				if (Wear != null) {
 					WearName = GameData.CsgoEnglish.GetWearName(Wear.Value);
-					string? wearRemapMinValue = ItemData.PaintKitDef!["wear_remap_min"].Value;
-					string? wearRemapMaxValue = ItemData.PaintKitDef!["wear_remap_max"].Value;
+					string? wearRemapMinValue = ItemData.PaintKitDef["wear_remap_min"].Value;
+					string? wearRemapMaxValue = ItemData.PaintKitDef["wear_remap_max"].Value;
 					WearMin = wearRemapMinValue == null ? null : float.Parse(wearRemapMinValue, NumberStyles.Float, CultureInfo.InvariantCulture);
 					WearMax = wearRemapMaxValue == null ? null : float.Parse(wearRemapMaxValue, NumberStyles.Float, CultureInfo.InvariantCulture);
 				}
@@ -189,7 +189,7 @@ namespace CS2Interface {
 				if (PaintIndex == 0) {
 					cdnNameID = ItemData.ItemDef["name"].Value; // Vanilla Knives
 				} else {
-					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef["name"].Value, ItemData.PaintKitDef!["name"].Value); // Everything else
+					cdnNameID = String.Format("{0}_{1}", ItemData.ItemDef["name"].Value, ItemData.PaintKitDef["name"].Value); // Everything else
 				}
 				WeaponImageURL = GameData.ItemsGameCdn[cdnNameID];
 			}
