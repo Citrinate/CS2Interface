@@ -43,17 +43,13 @@ namespace CS2Interface {
 					Wear = (double) BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(Attributes.GetValueOrDefault("set item texture wear")!.ToSingle()));
 				}
 
-				{
-					uint slotNum = 0;
-					do {
-						uint? stickerID = Attributes.GetValueOrDefault(String.Format("sticker slot {0} id", slotNum))?.ToUInt32();
-						if (stickerID == null) {
-							break;
-						}
+				for (uint slotNum = 0; slotNum < NumStickerSlots; slotNum++) {
+					uint? stickerID = Attributes.GetValueOrDefault(String.Format("sticker slot {0} id", slotNum))?.ToUInt32();
+					if (stickerID == null) {
+						continue;
+					}
 
-						StickerIDs.Add(stickerID.Value);
-						slotNum++;
-					} while (true);
+					StickerIDs.Add(stickerID.Value);
 				}
 
 				SetDefs();

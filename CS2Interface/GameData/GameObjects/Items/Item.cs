@@ -138,6 +138,8 @@ namespace CS2Interface {
 		public bool ShouldSerializeKeychains() => Keychains.Count > 0 && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
+		public const uint NumStickerSlots = 6;
+
 		protected override bool SetDefs() {
 			try {
 				ItemData = new ItemData(this);

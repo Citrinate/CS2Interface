@@ -50,6 +50,8 @@ Property | Type | Description
 `crate_name_id` | `string` | The unique string ID for the crate this item can be found in
 `crate_defindex` | `uint` | The definition index for the crate this item can be found in (the definition for which can be found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`)
 `crate_name` | `string` | The name of the crate this item can be found in
+`stickers` | `object` | Details for each of the stickers or patches attached to this item
+`keychains` | `object` | Details for each of the keychains attached to this item
 `defs.item_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
 `defs.paint_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `paint_kits`
 `defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
