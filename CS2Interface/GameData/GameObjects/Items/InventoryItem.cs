@@ -36,12 +36,24 @@ namespace CS2Interface {
 				Rarity = ItemInfo.rarity;
 				Origin = ItemInfo.origin;
 				PaintIndex = Attributes.GetValueOrDefault("set item texture prefab")?.ToUInt32() ?? 0;
-				StickerID = Attributes.GetValueOrDefault("sticker slot 0 id")?.ToUInt32();
 				TintID = Attributes.GetValueOrDefault("spray tint id")?.ToUInt32();
 				MusicID = Attributes.GetValueOrDefault("music id")?.ToUInt32();
 				KeychainID = Attributes.GetValueOrDefault("keychain slot 0 id")?.ToUInt32();
 				if (Attributes.GetValueOrDefault("set item texture wear") != null) {
 					Wear = (double) BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(Attributes.GetValueOrDefault("set item texture wear")!.ToSingle()));
+				}
+
+				{
+					uint slotNum = 0;
+					do {
+						uint? stickerID = Attributes.GetValueOrDefault(String.Format("sticker slot {0} id", slotNum))?.ToUInt32();
+						if (stickerID == null) {
+							break;
+						}
+
+						StickerIDs.Add(stickerID.Value);
+						slotNum++;
+					} while (true);
 				}
 
 				SetDefs();

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using ArchiSteamFarm.Core;
 using CS2Interface.Localization;
@@ -133,21 +134,15 @@ namespace CS2Interface {
 		}
 
 		private KeyValue? CreateStickerKitDef(Item item) {
-			if (item.StickerID == null 
-				|| !(
-					item.DefIndex == 1209 // Sticker
-					|| item.DefIndex == 1348 // Sealed Graffiti
-					|| item.DefIndex == 1349 // Graffiti
-					|| item.DefIndex == 4609 // Patch
-				)
-			) {
+			if (item.StickerIDs.Count != 1 || !(item.IsSticker() || item.IsGraffiti())) {
 				// This item has no sticker kit
 				return null;
 			}
 
-			KeyValue stickerKitDef = GameData.ItemsGame["sticker_kits"][item.StickerID.ToString()!];
+			uint stickerID = item.StickerIDs.First();
+			KeyValue stickerKitDef = GameData.ItemsGame["sticker_kits"][stickerID.ToString()!];
 			if (stickerKitDef == KeyValue.Invalid) {
-				ASF.ArchiLogger.LogGenericError(String.Format("{0}: sticker_kits[{1}]", Strings.GameDataDefinitionUndefined, item.StickerID));
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: sticker_kits[{1}]", Strings.GameDataDefinitionUndefined, stickerID));
 
 				throw new Exception();
 			}
@@ -184,11 +179,7 @@ namespace CS2Interface {
 
 
 		private KeyValue? CreateKeychainDef(Item item) {
-			if (item.KeychainID == null 
-				|| !(
-					item.DefIndex == 1355 // Charm
-				)
-			) {
+			if (item.KeychainID == null || !item.IsKeychain()) {
 				// This item has no keychain definition
 				return null;
 			}

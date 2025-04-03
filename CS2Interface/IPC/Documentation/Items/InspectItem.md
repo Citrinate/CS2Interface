@@ -51,6 +51,8 @@ Property | Type | Description
 `crate_name_id` | `string` | The unique string ID for the crate this item can be found in
 `crate_defindex` | `uint` | The definition index for the crate this item can be found in (the definition for which can be found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`)
 `crate_name` | `string` | The name of the crate this item can be found in
+`stickers` | `object` | Details for each of the stickers or patches attached to this item
+`keychains` | `object` | Details for each of the keychains attached to this item
 `defs.item_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
 `defs.paint_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `paint_kits`
 `defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
@@ -118,7 +120,61 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "set_name": "The Phoenix Collection",
     "crate_name_id": "crate_community_2",
     "crate_defindex": 4011,
-    "crate_name": "Operation Phoenix Weapon Case"
+    "crate_name": "Operation Phoenix Weapon Case",
+    "stickers": {
+      "328": {
+        "full_name": "Sticker | Ninjas in Pyjamas (Foil) | Katowice 2015",
+        "full_type_name": "Exotic Sticker",
+        "rarity_name": "Exotic",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Ninjas in Pyjamas (Foil) | Katowice 2015",
+        "tool_name": "Sticker",
+        "name_id": "[eslkatowice2015_ninjasinpyjamas_foil]sticker",
+        "crate_name_id": "crate_sticker_pack_eslkatowice2015_01",
+        "crate_defindex": 4086,
+        "crate_name": "ESL One Katowice 2015 Legends (Holo/Foil)"
+      },
+      "815": {
+        "full_name": "Sticker | GeT_RiGhT | Cluj-Napoca 2015",
+        "full_type_name": "High Grade Sticker",
+        "rarity_name": "High Grade",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "GeT_RiGhT | Cluj-Napoca 2015",
+        "tool_name": "Sticker",
+        "name_id": "[cluj2015_signature_getright]sticker",
+        "crate_name_id": "crate_signature_pack_cluj2015_nip",
+        "crate_defindex": 4160,
+        "crate_name": "Autograph Capsule | Ninjas in Pyjamas | Cluj-Napoca 2015"
+      },
+      "1008": {
+        "full_name": "Sticker | Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
+        "full_type_name": "Remarkable Sticker",
+        "rarity_name": "Remarkable",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
+        "tool_name": "Sticker",
+        "name_id": "[columbus2016_team_nip_holo]sticker",
+        "crate_name_id": "crate_sticker_pack_columbus2016_legends",
+        "crate_defindex": 4205,
+        "crate_name": "MLG Columbus 2016 Legends (Holo/Foil)"
+      },
+      "1223": {
+        "full_name": "Sticker | Xizt (Foil) | MLG Columbus 2016",
+        "full_type_name": "Exotic Sticker",
+        "rarity_name": "Exotic",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Xizt (Foil) | MLG Columbus 2016",
+        "tool_name": "Sticker",
+        "name_id": "[columbus2016_signature_xizt_foil]sticker",
+        "crate_name_id": "crate_signature_pack_columbus2016_group_2",
+        "crate_defindex": 4208,
+        "crate_name": "Autograph Capsule | Legends (Foil) | MLG Columbus 2016"
+      }
+    }
   }
 }
 ```
@@ -173,7 +229,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "origin_name": "Found in Crate",
     "type_name": "Rifle",
     "item_name": "Redline",
-    "weapon_image_url": "http: //media.steampowered.com/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_cobra_light_large.7494bfdf4855fd4e6a2dbd983ed0a243c80ef830.png",
+    "weapon_image_url": "http://media.steampowered.com/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_cobra_light_large.7494bfdf4855fd4e6a2dbd983ed0a243c80ef830.png",
     "weapon_name": "AK-47",
     "wear_name": "Minimal Wear",
     "wear": 0.14862100780010223,
@@ -185,6 +241,226 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "crate_name_id": "crate_community_2",
     "crate_defindex": 4011,
     "crate_name": "Operation Phoenix Weapon Case",
+    "stickers": {
+      "328": {
+        "full_name": "Sticker | Ninjas in Pyjamas (Foil) | Katowice 2015",
+        "full_type_name": "Exotic Sticker",
+        "rarity_name": "Exotic",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Ninjas in Pyjamas (Foil) | Katowice 2015",
+        "tool_name": "Sticker",
+        "name_id": "[eslkatowice2015_ninjasinpyjamas_foil]sticker",
+        "crate_name_id": "crate_sticker_pack_eslkatowice2015_01",
+        "crate_defindex": 4086,
+        "crate_name": "ESL One Katowice 2015 Legends (Holo/Foil)",
+        "defs": {
+          "item_def": {
+            "name": "sticker",
+            "first_sale_date": "2014/01/29",
+            "prefab": "csgo_tool",
+            "item_name": "#CSGO_Tool_Sticker",
+            "item_type_name": "#CSGO_Tool_Sticker",
+            "item_description": "#CSGO_Tool_Sticker_Desc",
+            "tool": {
+              "type": "sticker",
+              "usage_capabilities": {
+                "can_sticker": 1,
+                "usable_out_of_game": 1
+              }
+            },
+            "inv_graphic_art": "sticker",
+            "item_class": "tool",
+            "craft_class": "tool",
+            "craft_material_type": "tool",
+            "item_type": "type_tool",
+            "item_quality": "unique",
+            "item_rarity": "common",
+            "min_ilevel": 1,
+            "max_ilevel": 1,
+            "image_inventory_size_w": 128,
+            "image_inventory_size_h": 82,
+            "mouse_pressed_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "drop_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "hidden": 1,
+            "flexible_loadout_category": "melee"
+          },
+          "sticker_kit_def": {
+            "name": "eslkatowice2015_ninjasinpyjamas_foil",
+            "item_name": "#StickerKit_eslkatowice2015_ninjasinpyjamas_foil",
+            "description_string": "#StickerKit_desc_eslkatowice2015_ninjasinpyjamas_foil",
+            "sticker_material": "eslkatowice2015/ninjasinpyjamas_foil",
+            "item_rarity": "legendary",
+            "tournament_event_id": 6,
+            "tournament_team_id": 1
+          }
+        }
+      },
+      "815": {
+        "full_name": "Sticker | GeT_RiGhT | Cluj-Napoca 2015",
+        "full_type_name": "High Grade Sticker",
+        "rarity_name": "High Grade",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "GeT_RiGhT | Cluj-Napoca 2015",
+        "tool_name": "Sticker",
+        "name_id": "[cluj2015_signature_getright]sticker",
+        "crate_name_id": "crate_signature_pack_cluj2015_nip",
+        "crate_defindex": 4160,
+        "crate_name": "Autograph Capsule | Ninjas in Pyjamas | Cluj-Napoca 2015",
+        "defs": {
+          "item_def": {
+            "name": "sticker",
+            "first_sale_date": "2014/01/29",
+            "prefab": "csgo_tool",
+            "item_name": "#CSGO_Tool_Sticker",
+            "item_type_name": "#CSGO_Tool_Sticker",
+            "item_description": "#CSGO_Tool_Sticker_Desc",
+            "tool": {
+              "type": "sticker",
+              "usage_capabilities": {
+                "can_sticker": 1,
+                "usable_out_of_game": 1
+              }
+            },
+            "inv_graphic_art": "sticker",
+            "item_class": "tool",
+            "craft_class": "tool",
+            "craft_material_type": "tool",
+            "item_type": "type_tool",
+            "item_quality": "unique",
+            "item_rarity": "common",
+            "min_ilevel": 1,
+            "max_ilevel": 1,
+            "image_inventory_size_w": 128,
+            "image_inventory_size_h": 82,
+            "mouse_pressed_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "drop_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "hidden": 1,
+            "flexible_loadout_category": "melee"
+          },
+          "sticker_kit_def": {
+            "name": "cluj2015_signature_getright",
+            "item_name": "#StickerKit_cluj2015_signature_getright",
+            "description_string": "#StickerKit_desc_cluj2015_signature_getright",
+            "sticker_material": "cluj2015/sig_getright",
+            "item_rarity": "rare",
+            "tournament_event_id": 8,
+            "tournament_team_id": 1,
+            "tournament_player_id": 21771190
+          }
+        }
+      },
+      "1008": {
+        "full_name": "Sticker | Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
+        "full_type_name": "Remarkable Sticker",
+        "rarity_name": "Remarkable",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
+        "tool_name": "Sticker",
+        "name_id": "[columbus2016_team_nip_holo]sticker",
+        "crate_name_id": "crate_sticker_pack_columbus2016_legends",
+        "crate_defindex": 4205,
+        "crate_name": "MLG Columbus 2016 Legends (Holo/Foil)",
+        "defs": {
+          "item_def": {
+            "name": "sticker",
+            "first_sale_date": "2014/01/29",
+            "prefab": "csgo_tool",
+            "item_name": "#CSGO_Tool_Sticker",
+            "item_type_name": "#CSGO_Tool_Sticker",
+            "item_description": "#CSGO_Tool_Sticker_Desc",
+            "tool": {
+              "type": "sticker",
+              "usage_capabilities": {
+                "can_sticker": 1,
+                "usable_out_of_game": 1
+              }
+            },
+            "inv_graphic_art": "sticker",
+            "item_class": "tool",
+            "craft_class": "tool",
+            "craft_material_type": "tool",
+            "item_type": "type_tool",
+            "item_quality": "unique",
+            "item_rarity": "common",
+            "min_ilevel": 1,
+            "max_ilevel": 1,
+            "image_inventory_size_w": 128,
+            "image_inventory_size_h": 82,
+            "mouse_pressed_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "drop_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "hidden": 1,
+            "flexible_loadout_category": "melee"
+          },
+          "sticker_kit_def": {
+            "name": "columbus2016_team_nip_holo",
+            "item_name": "#StickerKit_columbus2016_team_nip_holo",
+            "description_string": "#StickerKit_desc_columbus2016_team_nip_holo",
+            "sticker_material": "columbus2016/nip_holo",
+            "item_rarity": "mythical",
+            "tournament_event_id": 9,
+            "tournament_team_id": 1
+          }
+        }
+      },
+      "1223": {
+        "full_name": "Sticker | Xizt (Foil) | MLG Columbus 2016",
+        "full_type_name": "Exotic Sticker",
+        "rarity_name": "Exotic",
+        "quality_name": "Unique",
+        "type_name": "Sticker",
+        "item_name": "Xizt (Foil) | MLG Columbus 2016",
+        "tool_name": "Sticker",
+        "name_id": "[columbus2016_signature_xizt_foil]sticker",
+        "crate_name_id": "crate_signature_pack_columbus2016_group_2",
+        "crate_defindex": 4208,
+        "crate_name": "Autograph Capsule | Legends (Foil) | MLG Columbus 2016",
+        "defs": {
+          "item_def": {
+            "name": "sticker",
+            "first_sale_date": "2014/01/29",
+            "prefab": "csgo_tool",
+            "item_name": "#CSGO_Tool_Sticker",
+            "item_type_name": "#CSGO_Tool_Sticker",
+            "item_description": "#CSGO_Tool_Sticker_Desc",
+            "tool": {
+              "type": "sticker",
+              "usage_capabilities": {
+                "can_sticker": 1,
+                "usable_out_of_game": 1
+              }
+            },
+            "inv_graphic_art": "sticker",
+            "item_class": "tool",
+            "craft_class": "tool",
+            "craft_material_type": "tool",
+            "item_type": "type_tool",
+            "item_quality": "unique",
+            "item_rarity": "common",
+            "min_ilevel": 1,
+            "max_ilevel": 1,
+            "image_inventory_size_w": 128,
+            "image_inventory_size_h": 82,
+            "mouse_pressed_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "drop_sound": "sounds/weapons/c4/c4_disarm.vsnd",
+            "hidden": 1,
+            "flexible_loadout_category": "melee"
+          },
+          "sticker_kit_def": {
+            "name": "columbus2016_signature_xizt_foil",
+            "item_name": "#StickerKit_columbus2016_signature_xizt_foil",
+            "description_string": "#StickerKit_desc_columbus2016_signature_xizt_foil",
+            "sticker_material": "columbus2016/sig_xizt_foil",
+            "item_rarity": "legendary",
+            "tournament_event_id": 9,
+            "tournament_team_id": 1,
+            "tournament_player_id": 26224992
+          }
+        }
+      }
+    },
     "defs": {
       "item_def": {
         "name": "weapon_ak47",

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -8,13 +9,13 @@ namespace CS2Interface {
 	public class Item : GameObject {
 		public uint DefIndex;
 		public uint PaintIndex;
-		public uint? StickerID;
+		public HashSet<uint> StickerIDs = new();
 		public uint? TintID;
 		public uint? MusicID;
 		public uint? KeychainID;
 		public uint Quality;
 		public uint Rarity;
-		public uint Origin;
+		public uint? Origin;
 
 		[JsonInclude]
 		[JsonPropertyName("full_name")]
@@ -101,6 +102,14 @@ namespace CS2Interface {
 		public string? CrateName { get; private set; }
 
 		[JsonInclude]
+		[JsonPropertyName("stickers")]
+		public Dictionary<uint, Item> Stickers { get; private set; } = new();
+
+		[JsonInclude]
+		[JsonPropertyName("keychains")]
+		public Dictionary<uint, Item> Keychains { get; private set; } = new();
+
+		[JsonInclude]
 		[JsonPropertyName("defs")]
 		public ItemData? ItemData { get; private set; }
 
@@ -125,6 +134,8 @@ namespace CS2Interface {
 		public bool ShouldSerializeCrateNameID() => CrateNameID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateDefIndex() => CrateDefIndex != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCrateName() => CrateName != null && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeStickers() => Stickers.Count > 0 && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeKeychains() => Keychains.Count > 0 && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
 		protected override bool SetDefs() {
@@ -156,7 +167,9 @@ namespace CS2Interface {
 
 			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value?.Substring(1)];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
-			OriginName = GameDataText.GetOriginName(Origin);
+			if (Origin != null) {
+				OriginName = GameDataText.GetOriginName(Origin.Value);
+			}
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
@@ -239,7 +252,59 @@ namespace CS2Interface {
 				}
 			}
 
+			// Also set details for any attached stickers, patches, or keychains
+			if (StickerIDs.Count > 0 && !IsSticker()) {
+				uint stickerDefIndex = 1209; // Sticker
+				if (ItemData.ItemDef["stickers"].Value == "agent") {
+					stickerDefIndex = 4609; // Patch
+				}
+
+				foreach (uint stickerID in StickerIDs) {
+					Item sticker = new Item() {
+						DefIndex = stickerDefIndex,
+						PaintIndex = 0,
+						StickerIDs = [stickerID],
+						Quality = 4
+					};
+
+					sticker.SetDefs();
+					sticker.Rarity = GameData.ItemsGame["rarities"][sticker.ItemData?.StickerKitDef?["item_rarity"].Value ?? "default"]["value"].AsUnsignedInteger();
+					sticker.SetAdditionalProperties();
+
+					Stickers[stickerID] = sticker;
+				}
+			}
+
+			if (KeychainID != null && !IsKeychain()) {
+				Item keychain = new Item() {
+					DefIndex = 1355,
+					PaintIndex = 0,
+					KeychainID = KeychainID,
+					Quality = 4
+				};
+
+				keychain.SetDefs();
+				keychain.Rarity = GameData.ItemsGame["rarities"][keychain.ItemData?.KeychainDef?["item_rarity"].Value ?? "default"]["value"].AsUnsignedInteger();
+				keychain.SetAdditionalProperties();
+
+				Keychains[KeychainID.Value] = keychain;
+			}
+
 			return true;
+		}
+
+		public bool IsSticker() {
+			return DefIndex == 1209 // Sticker
+				|| DefIndex == 4609; // Patch
+		}
+
+		public bool IsGraffiti() {
+			return DefIndex == 1348 // Sealed Graffiti
+				|| DefIndex == 1349; // Graffiti
+		}
+
+		public bool IsKeychain() {
+			return DefIndex == 1355; // Charm
 		}
 	}
 }

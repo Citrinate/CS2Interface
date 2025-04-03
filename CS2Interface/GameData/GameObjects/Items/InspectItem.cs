@@ -22,7 +22,6 @@ namespace CS2Interface {
 
 			DefIndex = ItemInfo.defindex;
 			PaintIndex = ItemInfo.paintindex;
-			StickerID = ItemInfo.stickers.FirstOrDefault()?.sticker_id;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;
 			KeychainID = ItemInfo.keychains.FirstOrDefault()?.sticker_id;
 			Quality = ItemInfo.quality;
@@ -31,6 +30,10 @@ namespace CS2Interface {
 
 			if (ItemInfo.paintwear != 0) {
 				Wear = (double) BitConverter.UInt32BitsToSingle(ItemInfo.paintwear);
+			}
+
+			if (ItemInfo.stickers.Count > 0) {
+				StickerIDs = ItemInfo.stickers.Select(sticker => sticker.sticker_id).ToHashSet();
 			}
 
 			SetDefs();
