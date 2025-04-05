@@ -167,7 +167,7 @@ namespace CS2Interface {
 				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"].Children.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
 			}
 
-			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value?.Substring(1)];
+			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
 			if (Origin != null) {
 				OriginName = GameDataText.GetOriginName(Origin.Value);
@@ -175,11 +175,11 @@ namespace CS2Interface {
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)?.Substring(1)];
+			ItemName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)];
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
 			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
-				ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
+				ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
 			}
 
 			// Set the graffiti color
@@ -189,7 +189,7 @@ namespace CS2Interface {
 
 			// Set various weapon-only attributes
 			if (ItemData.PaintKitDef != null) {
-				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value?.Substring(1)];
+				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
 
 				if (Wear != null) {
 					WearName = GameData.CsgoEnglish.GetWearName(Wear.Value);
@@ -237,7 +237,7 @@ namespace CS2Interface {
 					KeyValue? setItemDef = GameData.ItemsGame["item_sets"].Children.FirstOrDefault(x => x["items"][NameID] != KeyValue.Invalid);
 					if (setItemDef != null) {
 						SetNameID = setItemDef.Name;
-						SetName = GameData.CsgoEnglish[setItemDef["name"].Value?.Substring(1)];
+						SetName = GameData.CsgoEnglish[setItemDef["name"].Value];
 					}
 				}
 
@@ -249,7 +249,7 @@ namespace CS2Interface {
 					if (crateItemDef != null && crateItemDef.Name != null) {
 						CrateNameID = crateItemDef["name"].Value;
 						CrateDefIndex = uint.Parse(crateItemDef.Name);
-						CrateName = GameData.CsgoEnglish[crateItemDef["item_name"].Value?.Substring(1)];
+						CrateName = GameData.CsgoEnglish[crateItemDef["item_name"].Value];
 					}
 				}
 			}

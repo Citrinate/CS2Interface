@@ -32,6 +32,10 @@ namespace CS2Interface {
 					return null;
 				}
 
+				if (key[0] == '#') {
+					key = key.Substring(1);
+				}
+
 				return Data.Children.Where(x => x.Name?.ToUpper().Trim() == key.ToUpper().Trim()).FirstOrDefault()?.Value;
 			}
 		}
