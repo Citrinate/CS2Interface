@@ -39,8 +39,10 @@ namespace CS2Interface {
 					};
 				default:
 					switch (args[0].ToUpperInvariant()) {
+						case "CSTART" or "CSSTART" or "CS2START" or "CRUN" or "CSRUN" or "CS2RUN" when args.Length > 2:
+							return await ResponseRun(access, steamID, args[1], args[2]).ConfigureAwait(false);
 						case "CSTART" or "CSSTART" or "CS2START" or "CRUN" or "CSRUN" or "CS2RUN":
-							return await ResponseRun(access, steamID, Utilities.GetArgsAsText(args, 1, ",")).ConfigureAwait(false);
+							return await ResponseRun(access, steamID, args[1]).ConfigureAwait(false);
 
 						case "CSTOP" or "CSSTOP" or "CS2STOP":
 							return ResponseStop(access, steamID, Utilities.GetArgsAsText(args, 1, ","));
@@ -54,7 +56,7 @@ namespace CS2Interface {
 			}
 		}
 
-		private static async Task<string?> ResponseRun(Bot bot, EAccess access) {
+		private static async Task<string?> ResponseRun(Bot bot, EAccess access, string? autoStopAfterMinutesText = null) {
 			if (access < EAccess.Master) {
 				return null;
 			}
@@ -63,12 +65,25 @@ namespace CS2Interface {
 				return FormatBotResponse(bot, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
-			(_, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
+			uint autoStopAfterMinutes = 0;
+			if (autoStopAfterMinutesText != null) {
+				if (uint.TryParse(autoStopAfterMinutesText, out uint outValue)) {
+					autoStopAfterMinutes = outValue;
+				} else {
+					return FormatBotResponse(bot, String.Format(ArchiSteamFarm.Localization.Strings.ErrorIsInvalid, nameof(autoStopAfterMinutesText)));
+				}
+			}
+
+			(bool success, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
+
+			if (success) {
+				ClientHandler.ClientHandlers[bot.BotName].UpdateAutoStopTimer(autoStopAfterMinutes);
+			}
 
 			return FormatBotResponse(bot, message);
 		}
 
-		private static async Task<string?> ResponseRun(EAccess access, ulong steamID, string botNames) {
+		private static async Task<string?> ResponseRun(EAccess access, ulong steamID, string botNames, string? autoStopAfterMinutesText = null) {
 			if (String.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -79,7 +94,7 @@ namespace CS2Interface {
 				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
-			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseRun(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)))).ConfigureAwait(false);
+			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseRun(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID), autoStopAfterMinutesText))).ConfigureAwait(false);
 
 			List<string?> responses = new(results.Where(result => !String.IsNullOrEmpty(result)));
 

@@ -22,7 +22,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 Command | Access | Description
 --- | --- | ---
 `cs2interface`|`FamilySharing`|Prints the current version of the plugin
-`cstart [Bots]`|`Master`|Starts the CS2 Interface
+`cstart [Bots] [Minutes]`|`Master`|Starts the CS2 Interface.  Optinally, automatically stop the interface after `Minutes` of inactivity
 `cstop [Bots]`|`Master`|Stops the CS2 Interface
 `cstatus [Bots]`|`Master`|Displays the status of the CS2 Interface
 

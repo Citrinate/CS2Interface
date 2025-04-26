@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Steam;
 using CS2Interface.Localization;
@@ -11,10 +12,13 @@ namespace CS2Interface {
 		private readonly Bot Bot;
 		private readonly Client Client;
 		internal static ConcurrentDictionary<string, ClientHandler> ClientHandlers = new();
+		private uint AutoStopAfterMinutes = 0;
+		private readonly Timer AutoStopTimer;
 
 		internal ClientHandler(Bot bot, CallbackManager callbackManager) {
 			Bot = bot;
 			Client = new Client(bot, callbackManager);
+			AutoStopTimer = new Timer(_ => Stop(), null, Timeout.Infinite, Timeout.Infinite);
 		}
 
 		internal static void AddHandler(Bot bot, CallbackManager callbackManager) {
@@ -31,8 +35,8 @@ namespace CS2Interface {
 			}
 
 			(_, _, EClientStatus status) = await VerifyConnection().ConfigureAwait(false);
-			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
-			bool ready = ((status & EClientStatus.Ready) == EClientStatus.Ready);
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
+			bool ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
 
 			if (connected) {
 				return (true, Strings.InterfaceAlreadyRunning);
@@ -47,7 +51,8 @@ namespace CS2Interface {
 				if (!await Client.VerifyConnection().ConfigureAwait(false)) {
 					throw new ClientException(EClientExceptionType.Failed, Strings.InterfaceStartFailedUnexpectedly);
 				}
-			} catch (ClientException e) {
+			}
+			catch (ClientException e) {
 				Bot.ArchiLogger.LogGenericError(e.Message);
 				if (numAttempts > 0 && e.Type != EClientExceptionType.FatalError) {
 					await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
@@ -65,19 +70,20 @@ namespace CS2Interface {
 
 			CS2Interface.AutoStart[Bot.BotName] = true;
 			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStarted);
-			
+
 			return (true, Strings.InterfaceStarted);
 		}
 
+		// An intentional stop
 		internal string Stop() {
-			// The user has decided to stop the interface
-
 			if (!Bot.IsConnectedAndLoggedOn) {
 				return ArchiSteamFarm.Localization.Strings.BotNotConnected;
 			}
 
+			UpdateAutoStopTimer(0);
+
 			EClientStatus status = Client.Status();
-			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
 			if (!connected) {
 				return Strings.IntefaceNotRunning;
 			}
@@ -90,11 +96,10 @@ namespace CS2Interface {
 			return Strings.InterfaceStoppedSuccessfully;
 		}
 
+		// An unexpected stop
 		internal void ForceStop() {
-			// The interface has decided to stop itself
-
 			EClientStatus status = Client.Status();
-			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
 			if (connected) {
 				Client.Stop(); // Stop even if bot is logged out, to update the client state
 				Bot.Actions.Resume();
@@ -106,6 +111,8 @@ namespace CS2Interface {
 			if (!Bot.IsConnectedAndLoggedOn) {
 				return (EClientStatus.BotOffline, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
+
+			UpdateAutoStopTimer(AutoStopAfterMinutes);
 
 			EClientStatus status = Client.Status();
 			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
@@ -128,7 +135,7 @@ namespace CS2Interface {
 
 		internal async Task<(bool Connected, string Message, EClientStatus ClientStatus)> VerifyConnection() {
 			EClientStatus status = Client.Status();
-			bool connected = ((status & EClientStatus.Connected) == EClientStatus.Connected);
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
 
 			if (!connected) {
 				return (false, Strings.InterfaceNotConnected, status);
@@ -166,6 +173,16 @@ namespace CS2Interface {
 			}
 
 			return (Client, message);
+		}
+
+		internal void UpdateAutoStopTimer(uint minutes) {
+			AutoStopAfterMinutes = minutes;
+
+			if (AutoStopAfterMinutes == 0) {
+				AutoStopTimer.Change(Timeout.Infinite, Timeout.Infinite);
+			} else {
+				AutoStopTimer.Change(TimeSpan.FromMinutes(minutes), Timeout.InfiniteTimeSpan);
+			}
 		}
 	}
 }

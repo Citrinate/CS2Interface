@@ -20,7 +20,7 @@ namespace CS2Interface.IPC {
 		[EndpointSummary("Starts the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
+		public async Task<ActionResult<GenericResponse>> Start(string botNames, [FromQuery] uint autoStop = 0) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -31,10 +31,13 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			
 			IEnumerable<(Bot Bot, GenericResponse Response)> results = await Utilities.InParallel(bots.Select(
-				async static bot => {
+				async bot => {
 					(bool success, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
+
+					if (success) {
+						ClientHandler.ClientHandlers[bot.BotName].UpdateAutoStopTimer(autoStop);
+					}
 
 					return (bot, new GenericResponse(success, message));
 				}

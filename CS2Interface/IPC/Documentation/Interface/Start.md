@@ -15,7 +15,12 @@ Name | Required | Description
 
 ## Query Parameters
 
-None
+Name | Required | Description
+--- | --- | ---
+`autoStop` | No | The interface will automatically stop for `botNames` after this many minutes of inactivity.  If not provided, `botNames` will remain connected indefinitely.  If the bot is already connected, the existing value of `autoStop` for that bot will be overridden.
+
+> [!NOTE]
+> When using `autoStop`, checking the [status](/CS2Interface/IPC/Documentation/Interface/Status.md) of a bot counts as activity.
 
 ## Response Result
 
