@@ -15,16 +15,21 @@ namespace CS2Interface.IPC {
 		public bool Ready;
 
 		[JsonInclude]
+		[JsonPropertyName("InventoryLoaded")]
+		public bool InventoryLoaded;
+
+		[JsonInclude]
 		[JsonPropertyName("Message")]
 		public string Message;
 
-		public ClientStatus((EClientStatus status, string message) @params) : this(@params.status, @params.message) {}
+		internal ClientStatus((Client? client, string message) @paramsA, (EClientStatus status, string message) @paramsB) : this(@paramsA.client, @paramsB.status, @paramsB.message) {}
 
-		public ClientStatus(EClientStatus status, string message) {
+		internal ClientStatus(Client? client, EClientStatus status, string message) {
 			Connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
 			Ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
 			bool botOffline = (status & EClientStatus.BotOffline) == EClientStatus.BotOffline;
 			Connecting = !Connected && !Ready && !botOffline;
+			InventoryLoaded = client != null && client.Inventory != null;
 			Message = message;
 		}
 	}

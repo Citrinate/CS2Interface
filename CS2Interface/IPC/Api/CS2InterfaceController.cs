@@ -81,7 +81,7 @@ namespace CS2Interface.IPC {
 			}
 
 			IEnumerable<(Bot Bot, ClientStatus Response)> results = bots.Select(
-				static bot => (bot, new ClientStatus(ClientHandler.ClientHandlers[bot.BotName].Status()))
+				static bot => (bot, new ClientStatus(ClientHandler.ClientHandlers[bot.BotName].GetClient(), ClientHandler.ClientHandlers[bot.BotName].Status()))
 			);
 
 			return Ok(new GenericResponse<IReadOnlyDictionary<string, ClientStatus>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
