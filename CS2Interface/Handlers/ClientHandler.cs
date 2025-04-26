@@ -145,9 +145,12 @@ namespace CS2Interface {
 			return (true, Strings.InterfaceConnected, Client.Status());
 		}
 
-		internal static (Bot?, Client?, string) GetAvailableClient(HashSet<Bot> bots) {
-			foreach (Bot bot in bots) {
-				(Client? client, string status) = ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected | EClientStatus.Ready);
+		internal static (Bot?, Client?, string) GetAvailableClient(HashSet<Bot> bots, EClientStatus desiredStatus = EClientStatus.Connected | EClientStatus.Ready) {
+			List<Bot> shuffledBots = new List<Bot>(bots);
+			shuffledBots.Shuffle();
+
+			foreach (Bot bot in shuffledBots) {
+				(Client? client, string status) = ClientHandlers[bot.BotName].GetClient(desiredStatus);
 				if (client != null || bots.Count == 1) {
 					return (bot, client, status);
 				}

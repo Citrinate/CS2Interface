@@ -20,7 +20,6 @@ Property | Type | Description
 --- | --- | ---
 `botName.Connected` | `bool` | True if the interface is connected for `botName`
 `botName.Connecting` | `bool` | True if the interface is attempting to connect for `botName`
-`botName.Ready` | `bool` | True if the interface is currently able to handle a new request for `botName`
 `botName.InventoryLoaded` | `bool` | True if the inventory is loaded for `botName`
 `botName.Message` | `string` | A description of the status for `botName`
 
@@ -38,7 +37,6 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Status
     "Bot1": {
       "Connected": true,
       "Connecting": false,
-      "Ready": true,
       "InventoryLoaded": true,
       "Message": "Ready"
     }

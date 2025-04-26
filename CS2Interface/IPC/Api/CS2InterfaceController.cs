@@ -104,7 +104,11 @@ namespace CS2Interface.IPC {
 
 			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
 			if (bot == null || client == null) {
-				return BadRequest(new GenericResponse(false, status));
+				(bot, client, status) = ClientHandler.GetAvailableClient(bots, EClientStatus.Connected);
+
+				if (bot == null || client == null) {
+					return BadRequest(new GenericResponse(false, status));
+				}
 			}
 
 			if (url != null) {
@@ -158,7 +162,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -217,7 +221,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 			
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -249,7 +253,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -278,7 +282,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -307,7 +311,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
