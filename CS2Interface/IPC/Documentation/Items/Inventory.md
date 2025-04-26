@@ -22,39 +22,13 @@ Name | Required | Description
 
 ## Response Result
 
+This response is the same as in [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md), but with the following additions and changes:
+
 Property | Type | Description
 --- | --- | ---
 `iteminfo` | `object` | The raw item info recieved from CS2.  The details of this object are defined by [`CSOEconItem`](https://github.com/SteamDatabase/Protobufs/blob/master/csgo/base_gcmessages.proto)
 `attributes` | `object` | Item attributes which will vary depending on the item.  The type for these attribute's values will depend on the attribute, and can be any of: `string`, `float`, or `uint`
 `moveable` | `bool` | True if this item can be placed into a storage unit
-`full_name` | `string` | The item's name (as it would appear in the url of the item's Steam Marketplace listing page)
-`full_type_name` | `string` | The item's type (as it would appear on the Steam Marketplace)
-`rarity_name` | `string` | The item's rarity
-`quality_name` | `string` | The item's quality
-`origin_name` | `string` | How the item was obtained
-`type_name` | `string` | The item's type
-`item_name` | `string` | The item's name
-`tool_name` | `string` | What type of tool this is (usually the same as `type_name`, except for Sealed Graffiti)
-`tint_name` | `string` | The item's tint
-`weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md))
-`weapon_name` | `string` | The weapon this applies to
-`wear_name` | `string` | The name for the float range this item falls into
-`wear` | `float` | The item's float value
-`wear_min` | `float` | The item's minimum possible float
-`wear_max` | `float` | The item's maximum possible float
-`name_id` | `string` | The unique string ID for this kind of item
-`set_name_id` | `string` | The unique string ID for the collection this item belongs to
-`set_name` | `string` | The name of the collection this item belongs to
-`crate_name_id` | `string` | The unique string ID for the crate this item can be found in
-`crate_defindex` | `uint` | The definition index for the crate this item can be found in (the definition for which can be found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`)
-`crate_name` | `string` | The name of the crate this item can be found in
-`stickers` | `object` | Details for each of the stickers or patches attached to this item
-`keychains` | `object` | Details for each of the keychains attached to this item
-`defs.item_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
-`defs.paint_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `paint_kits`
-`defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
-`defs.music_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `music_definitions`
-`defs.keychain_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `keychain_definitions`
 
 ## Example Responses
 
@@ -100,6 +74,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Level Up Reward",
       "type_name": "Container",
       "item_name": "Dreams & Nightmares Case",
+      "commodity": true,
       "name_id": "crate_community_30"
     },
     {
@@ -155,6 +130,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "wear": 0.069684237241745,
       "wear_min": 0,
       "wear_max": 0.7,
+      "commodity": false,
       "name_id": "[soch_hunter_blaze_p250]weapon_p250",
       "set_name_id": "set_realism_camo",
       "set_name": "The Sport & Field Collection"
@@ -185,6 +161,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Timed Drop",
       "type_name": "Collectible",
       "item_name": "5 Year Veteran Coin",
+      "commodity": true,
       "name_id": "Five Year Service Coin"
     },
     {
@@ -230,6 +207,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Purchased",
       "type_name": "Tool",
       "item_name": "Storage Unit",
+      "commodity": true,
       "name_id": "casket"
     },
     {
@@ -270,6 +248,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Timed Drop",
       "type_name": "Music Kit",
       "item_name": "Halo, The Master Chief Collection",
+      "commodity": true,
       "name_id": "[halo_01]musickit"
     }
   ]

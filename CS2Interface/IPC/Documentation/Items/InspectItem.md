@@ -45,6 +45,7 @@ Property | Type | Description
 `wear` | `float` | The item's float value
 `wear_min` | `float` | The item's minimum possible float
 `wear_max` | `float` | The item's maximum possible float
+`commodity` | `boolean` | True if the item would be a commodity on the Steam marketplace
 `name_id` | `string` | The unique string ID for this kind of item
 `set_name_id` | `string` | The unique string ID for the collection this item belongs to
 `set_name` | `string` | The name of the collection this item belongs to
@@ -115,6 +116,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "wear": 0.14862100780010223,
     "wear_min": 0.1,
     "wear_max": 0.7,
+    "commodity": false,
     "name_id": "[cu_ak47_cobra]weapon_ak47",
     "set_name_id": "set_community_2",
     "set_name": "The Phoenix Collection",
@@ -130,6 +132,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Ninjas in Pyjamas (Foil) | Katowice 2015",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[eslkatowice2015_ninjasinpyjamas_foil]sticker",
         "crate_name_id": "crate_sticker_pack_eslkatowice2015_01",
         "crate_defindex": 4086,
@@ -143,6 +146,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "GeT_RiGhT | Cluj-Napoca 2015",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[cluj2015_signature_getright]sticker",
         "crate_name_id": "crate_signature_pack_cluj2015_nip",
         "crate_defindex": 4160,
@@ -156,6 +160,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[columbus2016_team_nip_holo]sticker",
         "crate_name_id": "crate_sticker_pack_columbus2016_legends",
         "crate_defindex": 4205,
@@ -169,6 +174,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Xizt (Foil) | MLG Columbus 2016",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[columbus2016_signature_xizt_foil]sticker",
         "crate_name_id": "crate_signature_pack_columbus2016_group_2",
         "crate_defindex": 4208,
@@ -235,6 +241,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
     "wear": 0.14862100780010223,
     "wear_min": 0.1,
     "wear_max": 0.7,
+    "commodity": false,
     "name_id": "[cu_ak47_cobra]weapon_ak47",
     "set_name_id": "set_community_2",
     "set_name": "The Phoenix Collection",
@@ -250,6 +257,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Ninjas in Pyjamas (Foil) | Katowice 2015",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[eslkatowice2015_ninjasinpyjamas_foil]sticker",
         "crate_name_id": "crate_sticker_pack_eslkatowice2015_01",
         "crate_defindex": 4086,
@@ -304,6 +312,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "GeT_RiGhT | Cluj-Napoca 2015",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[cluj2015_signature_getright]sticker",
         "crate_name_id": "crate_signature_pack_cluj2015_nip",
         "crate_defindex": 4160,
@@ -359,6 +368,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Ninjas in Pyjamas (Holo) | MLG Columbus 2016",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[columbus2016_team_nip_holo]sticker",
         "crate_name_id": "crate_sticker_pack_columbus2016_legends",
         "crate_defindex": 4205,
@@ -413,6 +423,7 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/InspectItem?url=steam://rungame/730/7
         "type_name": "Sticker",
         "item_name": "Xizt (Foil) | MLG Columbus 2016",
         "tool_name": "Sticker",
+        "commodity": true,
         "name_id": "[columbus2016_signature_xizt_foil]sticker",
         "crate_name_id": "crate_signature_pack_columbus2016_group_2",
         "crate_defindex": 4208,

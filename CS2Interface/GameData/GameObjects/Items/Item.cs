@@ -78,6 +78,10 @@ namespace CS2Interface {
 		public float? WearMax { get; private set; }
 
 		[JsonInclude]
+		[JsonPropertyName("commodity")]
+		public bool? Commodity { get; private set; }
+
+		[JsonInclude]
 		[JsonPropertyName("name_id")]
 		public string? NameID { get; private set; }
 		
@@ -128,6 +132,7 @@ namespace CS2Interface {
 		public bool ShouldSerializeWear() => Wear != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWearMin() => WearMin != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWearMax() => WearMax != null && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeCommodity() => Commodity != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeNameID() => NameID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeSetNameID() => SetNameID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeSetName() => SetName != null && ShouldSerializeAdditionalProperties;
@@ -222,6 +227,34 @@ namespace CS2Interface {
 					FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers
 				} else {
 					FullName = String.Format("{0} {1}", displayQualityName, WeaponName ?? ToolName ?? TypeName).Trim(); // Agents, Cases
+				}
+			}
+
+			{ // Determine if item is a commodity on the marketplace or not
+				string? itemTypeName = ItemData.ItemDef["item_type_name"].Value;
+				if (itemTypeName != null) {
+					HashSet<string> commodityTypes = new HashSet<string>{ 
+						"#CSGO_Type_Collectible", // Collectible
+						"#CSGO_Type_WeaponCase", // Container
+						"#CSGO_Tool_GiftTag", // Gift
+						"#CSGO_Type_Spray", // Graffiti
+						"#CSGO_Tool_WeaponCase_KeyTag", // Key
+						"#CSGO_Type_MusicKit", // Music Kit
+						"#CSGO_Type_Ticket", // Pass
+						"#CSGO_Tool_Patch", // Patch
+						"#CSGO_Tool_Sticker", // Sticker
+						"#CSGO_Tool_Name_TagTag", // Tag
+						"#CSGO_Type_Tool" // Tool
+					};
+
+					Commodity = commodityTypes.Contains(itemTypeName);
+
+					if (Commodity.Value) {
+						if (ItemData.ItemDef["prefab"].Value == "weapon_case_souvenirpkg") {
+							// Souvenir Packages are not commodities
+							Commodity = false;
+						}
+					}
 				}
 			}
 
