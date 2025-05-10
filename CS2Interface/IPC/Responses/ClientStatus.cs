@@ -25,7 +25,7 @@ namespace CS2Interface.IPC {
 			bool ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
 			bool botOffline = (status & EClientStatus.BotOffline) == EClientStatus.BotOffline;
 			Connecting = !Connected && !ready && !botOffline;
-			InventoryLoaded = client != null && client.Inventory != null;
+			InventoryLoaded = client != null && client.InventoryLoaded;
 			Message = message;
 		}
 	}

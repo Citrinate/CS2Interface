@@ -24,6 +24,7 @@ namespace CS2Interface {
 		private SemaphoreSlim GCSemaphore = new SemaphoreSlim(MaxSimultaneousGCRequests, MaxSimultaneousGCRequests);
 		private SemaphoreSlim ConnectionSemaphore = new SemaphoreSlim(1, 1);
 		internal ConcurrentDictionary<ulong, InventoryItem>? Inventory = null;
+		internal bool InventoryLoaded = false;
 		private bool FatalError = false;
 
 		internal Client(Bot bot, CallbackManager callbackManager) {
@@ -168,7 +169,8 @@ namespace CS2Interface {
 							return new KeyValuePair<ulong, InventoryItem>(item.id, new InventoryItem(item));
 						}
 					}));
-
+					
+					InventoryLoaded = true;
 					Bot.ArchiLogger.LogGenericDebug(Strings.InventoryLoaded);
 					
 					return;
@@ -336,7 +338,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
-			if (Inventory == null) {
+			if (!InventoryLoaded || Inventory == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
@@ -404,7 +406,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
-			if (Inventory == null) {
+			if (!InventoryLoaded || Inventory == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
@@ -475,7 +477,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
-			if (Inventory == null) {
+			if (!InventoryLoaded || Inventory == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 
@@ -532,7 +534,7 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
 
-			if (Inventory == null) {
+			if (!InventoryLoaded || Inventory == null) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
 			}
 

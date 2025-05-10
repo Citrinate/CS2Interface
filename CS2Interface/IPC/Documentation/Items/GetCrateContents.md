@@ -5,7 +5,7 @@
 Get the contents of storage unit `crateID` owned by the given `botName`
 
 > [!NOTE]
-> Requests might fail if too many are made in a short period of time.  It's recommended that you cache this data and use the crate's `attributes.modification date` property to determine if your cache is fresh.
+> Requests might time out if too many are made in a short period of time.  It's recommended that you cache this data and use the crate's `attributes.modification date` property to determine if your cache is fresh.
 
 ## Path Parameters
 

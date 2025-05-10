@@ -126,11 +126,7 @@ namespace CS2Interface {
 				return (status, Strings.InterfaceNotConnected);
 			}
 
-			if (!ready) {
-				return (status, Strings.InterfaceBusy);
-			}
-
-			return (status, Strings.Ready);
+			return (status, Strings.InterfaceConnected);
 		}
 
 		internal async Task<(bool Connected, string Message, EClientStatus ClientStatus)> VerifyConnection() {
