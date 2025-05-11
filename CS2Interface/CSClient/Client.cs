@@ -438,6 +438,7 @@ namespace CS2Interface {
 
 			var fetcher = new GCFetcher{
 				GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Destroy,
+				TTLSeconds = 10,
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
@@ -488,6 +489,7 @@ namespace CS2Interface {
 
 			var fetcher = new GCFetcher{
 				GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Create,
+				TTLSeconds = 10,
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
