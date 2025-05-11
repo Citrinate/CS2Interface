@@ -52,9 +52,6 @@ Command | Alias |
 
 ### IPC Interface
 
-> [!NOTE]
-> Each bot can only process 1 request at a time.
-
 #### Interface
 
 API | Method | Parameters | Description

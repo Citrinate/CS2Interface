@@ -4,6 +4,9 @@
 
 Crafts an item for the given `botName` using the specified crafting `recipeID`
 
+> [!NOTE]
+> Each bot can only process 1 `CraftItem` request at a time.
+
 ## Path Parameters
 
 Name | Required | Description

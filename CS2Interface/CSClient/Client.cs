@@ -74,7 +74,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(Strings.SendingHello);
 
-				if (fetcher.Fetch<CMsgClientWelcome>(this, msg, resendMsg: true) == null) {
+				if (await fetcher.Fetch<CMsgClientWelcome>(this, msg, resendMsg: true).ConfigureAwait(false) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.GCConnectionFailed);
 				}
 
@@ -128,9 +128,9 @@ namespace CS2Interface {
 				return;
 			}
 			
-#if DEBUG
+// #if DEBUG
 			Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.MessageRecieved, callback.EMsg));
-#endif
+// #endif
 
 			OnGCMessageRecieved?.Invoke(callback);
 
@@ -281,7 +281,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", Strings.InspectingItem, param_s, param_a, param_d, param_m));
 
-				var response = fetcher.Fetch<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(this, msg);
+				var response = await fetcher.Fetch<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(this, msg).ConfigureAwait(false);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
@@ -322,7 +322,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.InspectingPlayer, steam_id));
 
-				var response = fetcher.Fetch<CMsgGCCStrike15_v2_PlayersProfile>(this, msg);
+				var response = await fetcher.Fetch<CMsgGCCStrike15_v2_PlayersProfile>(this, msg).ConfigureAwait(false);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
@@ -380,7 +380,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.OpeningCasket, casket_id));
 
-				if (fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg) == null) {
+				if (await fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg).ConfigureAwait(false) == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
@@ -431,45 +431,39 @@ namespace CS2Interface {
 				throw new ClientException(EClientExceptionType.BadRequest, Strings.CasketFull);
 			}
 
-			await GCSemaphore.WaitAsync().ConfigureAwait(false);
-			
-			try {
-				var msg = new ClientGCMsgProtobuf<CMsgCasketItem>((uint) EGCItemMsg.k_EMsgGCCasketItemAdd) { Body = {
-					casket_item_id = casket_id,
-					item_item_id = item_id
-				}};
+			var msg = new ClientGCMsgProtobuf<CMsgCasketItem>((uint) EGCItemMsg.k_EMsgGCCasketItemAdd) { Body = {
+				casket_item_id = casket_id,
+				item_item_id = item_id
+			}};
 
-				var fetcher = new GCFetcher{
-					GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Destroy,
-					VerifyResponse = message => {
-						var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
+			var fetcher = new GCFetcher{
+				GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Destroy,
+				VerifyResponse = message => {
+					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-						if (response.Body.type_id != 1) {
-							// Ignore non-inventory changes
-							return false;
-						}
-
-						using (MemoryStream ms = new MemoryStream(response.Body.object_data)) {
-							var item = Serializer.Deserialize<CSOEconItem>(ms);
-							if (item.id == item_id) {
-								return true;
-							}
-						}
-
+					if (response.Body.type_id != 1) {
+						// Ignore non-inventory changes
 						return false;
 					}
-				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.AddingItemToCasket, item_id, casket_id));
+					using (MemoryStream ms = new MemoryStream(response.Body.object_data)) {
+						var item = Serializer.Deserialize<CSOEconItem>(ms);
+						if (item.id == item_id) {
+							return true;
+						}
+					}
 
-				if (fetcher.Fetch<CMsgSOSingleObject>(this, msg) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+					return false;
 				}
+			};
 
-				return true;
-			} finally {
-				GCSemaphore.Release();
+			Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.AddingItemToCasket, item_id, casket_id));
+
+			if (await fetcher.Fetch<CMsgSOSingleObject>(this, msg).ConfigureAwait(false) == null) {
+				throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 			}
+
+			return true;
 		}
 		
 		internal async Task<bool> RemoveItemFromCasket(ulong casket_id, ulong item_id) {
@@ -487,46 +481,39 @@ namespace CS2Interface {
 			}
 
 			// Does not verify that the item is actually in the crate, to do that we would need to request the crate contents first
+			var msg = new ClientGCMsgProtobuf<CMsgCasketItem>((uint) EGCItemMsg.k_EMsgGCCasketItemExtract) { Body = {
+				casket_item_id = casket_id,
+				item_item_id = item_id
+			}};
 
-			await GCSemaphore.WaitAsync().ConfigureAwait(false);
-			
-			try {
-				var msg = new ClientGCMsgProtobuf<CMsgCasketItem>((uint) EGCItemMsg.k_EMsgGCCasketItemExtract) { Body = {
-					casket_item_id = casket_id,
-					item_item_id = item_id
-				}};
+			var fetcher = new GCFetcher{
+				GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Create,
+				VerifyResponse = message => {
+					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-				var fetcher = new GCFetcher{
-					GCResponseMsgType = (uint) ESOMsg.k_ESOMsg_Create,
-					VerifyResponse = message => {
-						var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
-
-						if (response.Body.type_id != 1) {
-							// Ignore non-inventory changes
-							return false;
-						}
-
-						using (MemoryStream ms = new MemoryStream(response.Body.object_data)) {
-							var item = Serializer.Deserialize<CSOEconItem>(ms);
-							if (item.id == item_id) {
-								return true;
-							}
-						}
-
+					if (response.Body.type_id != 1) {
+						// Ignore non-inventory changes
 						return false;
 					}
-				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RemovingItemFromCasket, item_id, casket_id));
+					using (MemoryStream ms = new MemoryStream(response.Body.object_data)) {
+						var item = Serializer.Deserialize<CSOEconItem>(ms);
+						if (item.id == item_id) {
+							return true;
+						}
+					}
 
-				if (fetcher.Fetch<CMsgSOSingleObject>(this, msg) == null) {
-					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+					return false;
 				}
+			};
 
-				return true;				
-			} finally {
-				GCSemaphore.Release();
+			Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RemovingItemFromCasket, item_id, casket_id));
+
+			if (await fetcher.Fetch<CMsgSOSingleObject>(this, msg).ConfigureAwait(false) == null) {
+				throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 			}
+
+			return true;
 		}
 		
 		internal async Task<GCMsg.MsgCraftResponse> Craft(ushort recipe, List<ulong> item_ids) {
@@ -587,7 +574,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.CraftingItem, recipe, String.Join(", ", item_ids)));
 
-				var response = fetcher.RawFetch<GCMsg.MsgCraftResponse>(this, msg);
+				var response = await fetcher.RawFetch<GCMsg.MsgCraftResponse>(this, msg).ConfigureAwait(false);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}

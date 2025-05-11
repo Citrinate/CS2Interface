@@ -1,4 +1,7 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using ArchiSteamFarm.Core;
 using ProtoBuf;
 using SteamKit2;
 using SteamKit2.GC;
@@ -20,8 +23,8 @@ namespace CS2Interface {
 			VerifyResponse = verifyResponse;
 		}
 
-		internal ClientGCMsgProtobuf<TResponse>? Fetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IExtensible, new() {
-			GetResponse(client, msg, resendMsg);
+		internal async Task<ClientGCMsgProtobuf<TResponse>?> Fetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IExtensible, new() {
+			await GetResponse(client, msg, resendMsg).ConfigureAwait(false);
 
 			if (!GotMatch || PacketMsg == null) {
 				return null;
@@ -30,8 +33,8 @@ namespace CS2Interface {
 			return new ClientGCMsgProtobuf<TResponse>(PacketMsg);
 		}
 
-		internal ClientGCMsg<TResponse>? RawFetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IGCSerializableMessage, new() {
-			GetResponse(client, msg, resendMsg);
+		internal async Task<ClientGCMsg<TResponse>?> RawFetch<TResponse>(Client client, IClientGCMsg msg, bool resendMsg = false) where TResponse : IGCSerializableMessage, new() {
+			await GetResponse(client, msg, resendMsg).ConfigureAwait(false);
 
 			if (!GotMatch || PacketMsg == null) {
 				return null;
@@ -40,7 +43,7 @@ namespace CS2Interface {
 			return new ClientGCMsg<TResponse>(PacketMsg);
 		}
 
-		private void GetResponse(Client client, IClientGCMsg msg, bool resendMsg = false) {
+		private async Task GetResponse(Client client, IClientGCMsg msg, bool resendMsg = false) {
 			client.OnGCMessageRecieved += CheckMatch;
 			client.GameCoordinator.Send(msg, Client.AppID);
 
@@ -53,10 +56,13 @@ namespace CS2Interface {
 					resendTime = DateTime.Now.AddSeconds(resendSeconds);
 					client.GameCoordinator.Send(msg, Client.AppID);
 				}
-				
+
 				try {
-					client.CallbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
-				} catch {
+					CancellationTokenSource cts = new CancellationTokenSource();
+					cts.CancelAfter(TimeSpan.FromSeconds(1));
+					await client.CallbackManager.RunWaitCallbackAsync(cts.Token).ConfigureAwait(false);
+				}
+				catch {
 					// Sometimes get a "System.InvalidOperationException: Queue empty" exception here which can be ignored
 				}
 			}

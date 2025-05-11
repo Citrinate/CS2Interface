@@ -4,6 +4,9 @@
 
 Inspect a CS2 Item
 
+> [!NOTE]
+> Each bot can only process 1 `InspectItem` request at a time.
+
 ## Path Parameters
 
 Name | Required | Description
