@@ -91,6 +91,7 @@ namespace CS2Interface {
 				return;
 			}
 
+			InventoryLoaded = false;
 			HasGCSession = false;
 
 			return;
