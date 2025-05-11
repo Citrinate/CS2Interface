@@ -128,9 +128,9 @@ namespace CS2Interface {
 				return;
 			}
 			
-// #if DEBUG
+#if DEBUG
 			Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.MessageRecieved, callback.EMsg));
-// #endif
+#endif
 
 			OnGCMessageRecieved?.Invoke(callback);
 
