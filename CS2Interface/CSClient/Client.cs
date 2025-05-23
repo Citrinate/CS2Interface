@@ -273,6 +273,7 @@ namespace CS2Interface {
 
 				var fetcher = new GCFetcher {
 					GCResponseMsgType = (uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse,
+					TTLSeconds = 5,
 					VerifyResponse = message => {
 						var response = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(message);
 					
@@ -372,6 +373,7 @@ namespace CS2Interface {
 
 				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
+					TTLSeconds = 15,
 					VerifyResponse = message => {
 						var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
 
