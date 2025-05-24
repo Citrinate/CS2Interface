@@ -18,7 +18,7 @@ namespace CS2Interface {
 				return false;
 			}
 
-			// Combine any duplicated names
+			// Combine any duplicated top level names
 			KeyValue mergedData = new();
 			foreach (KeyValue kv in data.Children) {
 				if (kv.Name == null) {
@@ -28,7 +28,7 @@ namespace CS2Interface {
 				if (mergedData[kv.Name] == KeyValue.Invalid) {
 					mergedData[kv.Name] = kv.Clone();
 				} else {
-					mergedData[kv.Name].Merge(kv);
+					mergedData[kv.Name].Merge(kv, mergeDepth: 0);
 				}
 			}
 

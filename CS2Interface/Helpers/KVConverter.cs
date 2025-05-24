@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SteamKit2;
@@ -17,14 +18,25 @@ namespace CS2Interface {
 		public static void ConvertKVObjectToJson (ref Utf8JsonWriter writer, KeyValue vdf) {
 			if (vdf.Children.Count > 0) {
 				writer.WriteStartObject();
-				
-				foreach (KeyValue child in vdf.Children) {
-					if (child.Name == null) {
+
+				foreach (IGrouping<string?, KeyValue> group in vdf.Children.GroupBy(child => child.Name)) {
+					if (group.Key == null) {
 						continue;
 					}
 
-					writer.WritePropertyName(child.Name);
-					ConvertKVObjectToJson(ref writer, child);
+					writer.WritePropertyName(group.Key);
+
+					if (group.Count() == 1) {
+						ConvertKVObjectToJson(ref writer, group.First());
+					} else {
+						writer.WriteStartArray();
+
+						foreach (KeyValue child in group) {
+							ConvertKVObjectToJson(ref writer, child);
+						}
+
+						writer.WriteEndArray();
+					}
 				}
 
 				writer.WriteEndObject();

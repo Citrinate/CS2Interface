@@ -274,15 +274,26 @@ namespace CS2Interface {
 					}
 				}
 
-				{ // Determine what crate, if any, this item belongs to.  Doesn't work for souvenir skins, knives, or gloves
+				{ // Determine what crate or armory set, if any, this item belongs to.  Doesn't work for souvenir skins, knives, or gloves
 					string? lootListName = GameData.ItemsGame["client_loot_lists"].Children.FirstOrDefault(x => x[NameID] != KeyValue.Invalid)?.Name;
 					lootListName = lootListName == null ? null : GameData.ItemsGame["client_loot_lists"].Children.FirstOrDefault(x => x[lootListName] != KeyValue.Invalid)?.Name ?? lootListName; // Some lists in client_loot_lists are nested (1 or 2 layers), we want the top-most layer
+
+					// Crate
 					string? lootListID = lootListName == null ? null : GameData.ItemsGame["revolving_loot_lists"].Children.FirstOrDefault(x => x.Value == lootListName)?.Name;
 					KeyValue? crateItemDef = lootListID == null ? null : GameData.ItemsGame["items"].Children.FirstOrDefault(x => x["attributes"]["set supply crate series"]["value"].Value == lootListID);
 					if (crateItemDef != null && crateItemDef.Name != null) {
 						CrateNameID = crateItemDef["name"].Value;
 						CrateDefIndex = uint.Parse(crateItemDef.Name);
 						CrateName = GameData.CsgoEnglish[crateItemDef["item_name"].Value];
+					}
+
+					// Armory Set
+					if (SetNameID == null) {
+						KeyValue? armorySetDef = GameData.ItemsGame["seasonaloperations"].Children.SelectMany(x => x.Children).Where(x => x.Name == "operational_point_redeemable").FirstOrDefault(x => x["item_name"].Value == "lootlist:" + lootListName);
+						if (armorySetDef != null) {
+							SetNameID = lootListName;
+							SetName = GameData.CsgoEnglish[armorySetDef["callout"].Value];
+						}
 					}
 				}
 			}
