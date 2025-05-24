@@ -250,7 +250,7 @@ namespace CS2Interface {
 					Commodity = commodityTypes.Contains(itemTypeName);
 
 					if (Commodity.Value) {
-						if (ItemData.ItemDef["prefab"].Value == "weapon_case_souvenirpkg") {
+						if (ItemData.ItemDef["inv_container_and_tools"].Value == "souvenir_case") {
 							// Souvenir Packages are not commodities
 							Commodity = false;
 						}
