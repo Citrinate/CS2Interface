@@ -169,7 +169,7 @@ namespace CS2Interface {
 
 			{ // Set rarity name, which differs based on the type of item
 				string locKey = "loc_key"; // General rarities
-				if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1") {
+				if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1" || ItemData.ItemDef["taxonomy"]["equipment"].Value == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
 				} else if (ItemData.ItemDef["item_slot"].Value == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
