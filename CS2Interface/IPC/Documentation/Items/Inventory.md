@@ -74,6 +74,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Level Up Reward",
       "type_name": "Container",
       "item_name": "Dreams & Nightmares Case",
+      "stattrak": false,
       "commodity": true,
       "name_id": "crate_community_30"
     },
@@ -130,6 +131,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "wear": 0.069684237241745,
       "wear_min": 0,
       "wear_max": 0.7,
+      "stattrak": false,
       "commodity": false,
       "name_id": "[soch_hunter_blaze_p250]weapon_p250",
       "set_name_id": "set_realism_camo",
@@ -161,6 +163,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Timed Drop",
       "type_name": "Collectible",
       "item_name": "5 Year Veteran Coin",
+      "stattrak": false,
       "commodity": true,
       "name_id": "Five Year Service Coin"
     },
@@ -207,6 +210,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Purchased",
       "type_name": "Tool",
       "item_name": "Storage Unit",
+      "stattrak": false,
       "commodity": true,
       "name_id": "casket"
     },
@@ -248,6 +252,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Inventory
       "origin_name": "Timed Drop",
       "type_name": "Music Kit",
       "item_name": "Halo, The Master Chief Collection",
+      "stattrak": false,
       "commodity": true,
       "name_id": "[halo_01]musickit"
     }

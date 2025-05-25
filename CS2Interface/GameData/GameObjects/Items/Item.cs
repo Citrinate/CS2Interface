@@ -78,6 +78,10 @@ namespace CS2Interface {
 		public float? WearMax { get; private set; }
 
 		[JsonInclude]
+		[JsonPropertyName("stattrak")]
+		public bool? StatTrak { get; protected set; }
+
+		[JsonInclude]
 		[JsonPropertyName("commodity")]
 		public bool? Commodity { get; private set; }
 
@@ -132,6 +136,7 @@ namespace CS2Interface {
 		public bool ShouldSerializeWear() => Wear != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWearMin() => WearMin != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWearMax() => WearMax != null && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeStatTrak() => StatTrak != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeCommodity() => Commodity != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeNameID() => NameID != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeSetNameID() => SetNameID != null && ShouldSerializeAdditionalProperties;
@@ -174,6 +179,10 @@ namespace CS2Interface {
 
 			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value];
 			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
+			if (Quality != 9 && StatTrak == true) {
+				// account for ★ StatTrak™ items
+				QualityName = String.Format("{0} {1}", QualityName, GameData.CsgoEnglish["strange"]);
+			}
 			if (Origin != null) {
 				OriginName = GameDataText.GetOriginName(Origin.Value);
 			}

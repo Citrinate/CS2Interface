@@ -27,6 +27,7 @@ namespace CS2Interface {
 			Quality = ItemInfo.quality;
 			Rarity = ItemInfo.rarity;
 			Origin = ItemInfo.origin;
+			StatTrak = ItemInfo.quality == 9 || ItemInfo.ShouldSerializekilleaterscoretype();
 
 			if (ItemInfo.paintwear != 0) {
 				Wear = (double) BitConverter.UInt32BitsToSingle(ItemInfo.paintwear);

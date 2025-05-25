@@ -87,6 +87,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/GetCrateContents/31555237276
       "origin_name": "Level Up Reward",
       "type_name": "Container",
       "item_name": "Dreams & Nightmares Case",
+      "stattrak": false,
       "commodity": true,
       "name_id": "crate_community_30"
     },
@@ -154,6 +155,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/GetCrateContents/31555237276
       "wear": 0.069684237241745,
       "wear_min": 0,
       "wear_max": 0.7,
+      "stattrak": false,
       "commodity": false,
       "name_id": "[soch_hunter_blaze_p250]weapon_p250",
       "set_name_id": "set_realism_camo",
