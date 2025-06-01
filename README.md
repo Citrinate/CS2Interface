@@ -9,7 +9,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 ## Installation
 
 - Download the .zip file from the [latest release](https://github.com/Citrinate/CS2Interface/releases/latest)
-- Unpack the downloaded .zip file to the `plugins` folder inside your ASF folder.
+- Locate the `plugins` folder inside your ASF folder.  Create a new folder here and unpack the downloaded .zip file to that folder.
 - (Re)start ASF, you should get a message indicating that the plugin loaded successfully. 
 
 > [!NOTE]
