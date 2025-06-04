@@ -12,13 +12,14 @@ namespace CS2Interface {
 		private readonly Bot Bot;
 		private readonly Client Client;
 		internal static ConcurrentDictionary<string, ClientHandler> ClientHandlers = new();
-		private uint AutoStopAfterMinutes = 0;
-		private readonly Timer AutoStopTimer;
+		private readonly ScheduledAction AutoStop;
+		private Task<(bool, string)>? RunTask;
+		private CancellationTokenSource? RunCancellation;
 
 		internal ClientHandler(Bot bot, CallbackManager callbackManager) {
 			Bot = bot;
 			Client = new Client(bot, callbackManager);
-			AutoStopTimer = new Timer(_ => Stop(), null, Timeout.Infinite, Timeout.Infinite);
+			AutoStop = new ScheduledAction(() => _ = Stop());
 		}
 
 		internal static void AddHandler(Bot bot, CallbackManager callbackManager) {
@@ -29,81 +30,119 @@ namespace CS2Interface {
 			ClientHandlers.TryAdd(bot.BotName, new ClientHandler(bot, callbackManager));
 		}
 
-		internal async Task<(bool Success, string Message)> Run(int numAttempts = 3) {
-			if (!Bot.IsConnectedAndLoggedOn) {
-				return (false, ArchiSteamFarm.Localization.Strings.BotNotConnected);
+		internal Task<(bool Success, string Message)> Run() {
+			if (RunTask?.IsCompleted == false) {
+				return RunTask;
 			}
 
-			(_, _, EClientStatus status) = await VerifyConnection().ConfigureAwait(false);
-			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
-			bool ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
+			RunCancellation = new CancellationTokenSource();
+			RunTask = StartClient(RunCancellation.Token);
 
-			if (connected) {
-				return (true, Strings.InterfaceAlreadyRunning);
-			}
-
-			if (!connected && !ready) {
-				return (false, Strings.InterfaceAlreadyStarting);
-			}
-
-			try {
-				await Client.Run().ConfigureAwait(false);
-				if (!await Client.VerifyConnection().ConfigureAwait(false)) {
-					throw new ClientException(EClientExceptionType.Failed, Strings.InterfaceStartFailedUnexpectedly);
-				}
-			}
-			catch (ClientException e) {
-				Bot.ArchiLogger.LogGenericError(e.Message);
-				if (numAttempts > 0 && e.Type != EClientExceptionType.FatalError) {
-					await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
-					Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailedRetry);
-
-					return await Run(numAttempts - 1).ConfigureAwait(false);
-				}
-
-				ForceStop();
-				Bot.Actions.Resume();
-				Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailed);
-
-				return (false, String.Format("{0}: {1}", Strings.InterfaceStartFailed, e.Message));
-			}
-
-			CS2Interface.AutoStart[Bot.BotName] = true;
-			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStarted);
-
-			return (true, Strings.InterfaceStarted);
+			return RunTask;
 		}
 
-		// An intentional stop
-		internal string Stop() {
-			if (!Bot.IsConnectedAndLoggedOn) {
-				return ArchiSteamFarm.Localization.Strings.BotNotConnected;
+		private async Task<(bool Success, string Message)> StartClient(CancellationToken cancellationToken) {
+			try {
+				if (!Bot.IsConnectedAndLoggedOn) {
+					return (false, ArchiSteamFarm.Localization.Strings.BotNotConnected);
+				}
+
+				(_, _, EClientStatus status) = await VerifyClientConnection().ConfigureAwait(false);
+				bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
+
+				if (connected) {
+					return (true, Strings.InterfaceAlreadyRunning);
+				}
+
+				int maxAttempts = 3;
+				for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+					if (!Bot.IsConnectedAndLoggedOn) {
+						return (false, ArchiSteamFarm.Localization.Strings.BotNotConnected);
+					}
+
+					try {
+						cancellationToken.ThrowIfCancellationRequested();
+						await Client.Run().ConfigureAwait(false);
+
+						cancellationToken.ThrowIfCancellationRequested();
+						if (!await Client.VerifyConnection().ConfigureAwait(false)) {
+							throw new ClientException(EClientExceptionType.Failed, Strings.InterfaceStartFailedUnexpectedly);
+						}
+
+						break;
+					} catch (OperationCanceledException) {
+						Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStartCancelled);
+						Client.Stop();
+
+						return (false, Strings.InterfaceStartCancelled);
+					} catch (ClientException e) {
+						Bot.ArchiLogger.LogGenericError(e.Message);
+
+						if (e.Type == EClientExceptionType.FatalError || attempt == maxAttempts) {
+							Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailed);
+							Client.Stop();
+
+							return (false, String.Format("{0}: {1}", Strings.InterfaceStartFailed, e.Message));
+						}
+
+						await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken).ConfigureAwait(false);
+
+						Bot.ArchiLogger.LogGenericError(Strings.InterfaceStartFailedRetry);
+					}
+				}
+
+				CS2Interface.AutoStart[Bot.BotName] = true;
+				Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStarted);
+
+				return (true, Strings.InterfaceStarted);
+			} finally {				
+				RunCancellation?.Dispose();
+				RunCancellation = null;
+			}
+		}
+
+		internal async Task<(bool Connected, string Message, EClientStatus ClientStatus)> VerifyClientConnection() {
+			EClientStatus status = Client.Status();
+			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
+
+			if (!connected) {
+				return (false, Strings.InterfaceNotConnected, status);
 			}
 
-			UpdateAutoStopTimer(0);
+			connected = await Client.VerifyConnection().ConfigureAwait(false);
+			if (!connected) {
+				Client.Stop();
+				Bot.ArchiLogger.LogGenericError(Strings.InterfaceStoppedUnexpectedly);
+
+				return (false, Strings.InterfaceStoppedUnexpectedly, Client.Status());
+			}
+
+			return (true, Strings.InterfaceConnected, Client.Status());
+		}
+
+		internal async Task<string> Stop(bool preventAutoStart = true) {
+			AutoStop.Cancel();
+
+			RunCancellation?.Cancel();
+			if (RunTask?.IsCompleted == false) {
+				await RunTask.ConfigureAwait(false);
+			}
+
+			if (preventAutoStart) {
+				CS2Interface.AutoStart[Bot.BotName] = false;
+			}
 
 			EClientStatus status = Client.Status();
 			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
-			if (!connected) {
-				return Strings.IntefaceNotRunning;
-			}
 
 			Client.Stop();
-			CS2Interface.AutoStart[Bot.BotName] = false;
-			Bot.Actions.Resume();
-			Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStopped);
 
-			return Strings.InterfaceStoppedSuccessfully;
-		}
+			if (!connected) {
+				return Strings.IntefaceNotRunning;
+			} else {
+				Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceStopped);
 
-		// An unexpected stop
-		internal void ForceStop() {
-			EClientStatus status = Client.Status();
-			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
-			if (connected) {
-				Client.Stop(); // Stop even if bot is logged out, to update the client state
-				Bot.Actions.Resume();
-				Bot.ArchiLogger.LogGenericInfo(Strings.InterfaceForciblyStopped);
+				return Strings.InterfaceStopped;
 			}
 		}
 
@@ -112,7 +151,7 @@ namespace CS2Interface {
 				return (EClientStatus.BotOffline, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
-			UpdateAutoStopTimer(AutoStopAfterMinutes);
+			AutoStop.Refresh();
 
 			EClientStatus status = Client.Status();
 			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
@@ -127,25 +166,6 @@ namespace CS2Interface {
 			}
 
 			return (status, Strings.InterfaceConnected);
-		}
-
-		internal async Task<(bool Connected, string Message, EClientStatus ClientStatus)> VerifyConnection() {
-			EClientStatus status = Client.Status();
-			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
-
-			if (!connected) {
-				return (false, Strings.InterfaceNotConnected, status);
-			}
-
-			connected = await Client.VerifyConnection().ConfigureAwait(false);
-			if (!connected) {
-				ForceStop();
-				Bot.ArchiLogger.LogGenericError(Strings.InterfaceStoppedUnexpectedly);
-
-				return (false, Strings.InterfaceStoppedUnexpectedly, Client.Status());
-			}
-
-			return (true, Strings.InterfaceConnected, Client.Status());
 		}
 
 		internal static (Bot?, Client?, string) GetAvailableClient(HashSet<Bot> bots, EClientStatus desiredStatus = EClientStatus.Connected | EClientStatus.Ready) {
@@ -172,12 +192,10 @@ namespace CS2Interface {
 		}
 
 		internal void UpdateAutoStopTimer(uint minutes) {
-			AutoStopAfterMinutes = minutes;
-
-			if (AutoStopAfterMinutes == 0) {
-				AutoStopTimer.Change(Timeout.Infinite, Timeout.Infinite);
+			if (minutes == 0) {
+				AutoStop.Cancel();
 			} else {
-				AutoStopTimer.Change(TimeSpan.FromMinutes(minutes), Timeout.InfiniteTimeSpan);
+				AutoStop.Schedule(TimeSpan.FromMinutes(minutes));
 			}
 		}
 	}

@@ -27,7 +27,7 @@ namespace CS2Interface {
 							return await ResponseRun(bot, access).ConfigureAwait(false);
 
 						case "CSTOP" or "CSSTOP" or "CS2STOP":
-							return ResponseStop(bot, access);
+							return await ResponseStop(bot, access).ConfigureAwait(false);
 
 						case "CSA":
 							return ResponseStatus(access, steamID, "ASF");
@@ -45,7 +45,7 @@ namespace CS2Interface {
 							return await ResponseRun(access, steamID, args[1]).ConfigureAwait(false);
 
 						case "CSTOP" or "CSSTOP" or "CS2STOP":
-							return ResponseStop(access, steamID, Utilities.GetArgsAsText(args, 1, ","));
+							return await ResponseStop(access, steamID, Utilities.GetArgsAsText(args, 1, ",")).ConfigureAwait(false);
 
 						case "CSTATUS" or "CSSTATUS" or "CS2STATUS":
 							return ResponseStatus(access, steamID, Utilities.GetArgsAsText(args, 1, ","));
@@ -101,7 +101,7 @@ namespace CS2Interface {
 			return responses.Count > 0 ? string.Join(Environment.NewLine, responses) : null;
 		}
 
-		private static string? ResponseStop(Bot bot, EAccess access) {
+		private static async Task<string?> ResponseStop(Bot bot, EAccess access) {
 			if (access < EAccess.Master) {
 				return null;
 			}
@@ -110,12 +110,12 @@ namespace CS2Interface {
 				return FormatBotResponse(bot, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
-			string message = ClientHandler.ClientHandlers[bot.BotName].Stop();
+			string message = await ClientHandler.ClientHandlers[bot.BotName].Stop().ConfigureAwait(false);
 
 			return FormatBotResponse(bot, message);
 		}
 
-		private static string? ResponseStop(EAccess access, ulong steamID, string botNames) {
+		private static async Task<string?> ResponseStop(EAccess access, ulong steamID, string botNames) {
 			if (String.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -126,7 +126,7 @@ namespace CS2Interface {
 				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
-			IEnumerable<string?> results = bots.Select(bot => ResponseStop(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)));
+			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseStop(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)))).ConfigureAwait(false);
 
 			List<string?> responses = new(results.Where(result => !String.IsNullOrEmpty(result)));
 

@@ -50,7 +50,7 @@ namespace CS2Interface.IPC {
 		[EndpointSummary("Stops the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Stop(string botNames) {
+		public async Task<ActionResult<GenericResponse>> Stop(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -61,9 +61,13 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			IEnumerable<(Bot Bot, GenericResponse Response)> results = bots.Select(
-				static bot => (bot, new GenericResponse(true, ClientHandler.ClientHandlers[bot.BotName].Stop()))
-			);
+			IEnumerable<(Bot Bot, GenericResponse Response)> results = await Utilities.InParallel(bots.Select(
+				async bot => {
+					string message = await ClientHandler.ClientHandlers[bot.BotName].Stop().ConfigureAwait(false);
+
+					return (bot, new GenericResponse(true, message));
+				}
+			)).ConfigureAwait(false);
 
 			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
@@ -407,7 +411,7 @@ namespace CS2Interface.IPC {
 			bot.ArchiLogger.LogGenericError(e.Message);
 			if (e.Type == EClientExceptionType.Timeout) {
 				// On timeout, verify that the client is still connected
-				(bool connected, string status, _) = await ClientHandler.ClientHandlers[bot.BotName].VerifyConnection().ConfigureAwait(false);
+				(bool connected, string status, _) = await ClientHandler.ClientHandlers[bot.BotName].VerifyClientConnection().ConfigureAwait(false);
 				if (!connected) {
 					bot.ArchiLogger.LogGenericError(status);
 

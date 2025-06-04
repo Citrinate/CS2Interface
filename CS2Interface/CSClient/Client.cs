@@ -25,6 +25,8 @@ namespace CS2Interface {
 		private SemaphoreSlim ConnectionSemaphore = new SemaphoreSlim(1, 1);
 		internal ConcurrentDictionary<ulong, InventoryItem>? Inventory = null;
 		internal bool InventoryLoaded = false;
+		private bool OwnsApp = false;
+		private bool AppRunning = false;
 		private bool FatalError = false;
 
 		internal Client(Bot bot, CallbackManager callbackManager) {
@@ -50,14 +52,16 @@ namespace CS2Interface {
 			await ConnectionSemaphore.WaitAsync().ConfigureAwait(false);
 			try {
 				if (!await GameData.IsLoaded(0).ConfigureAwait(false)) {
-					throw new ClientException(EClientExceptionType.Failed, Strings.GameDataLoadingFailed);
+					throw new ClientException(EClientExceptionType.FatalError, Strings.GameDataLoadingFailed);
 				}
 
-				// TODO: Verify that this account owns CS2
+				if (!Bot.IsPlayingPossible) {
+					throw new ClientException(EClientExceptionType.FatalError, Strings.AccountInUse);
+				}
 
-				(bool play_success, string play_message) = await Bot.Actions.Play(new HashSet<uint> { AppID }).ConfigureAwait(false);
+				(AppRunning, string play_message) = await Bot.Actions.Play(new HashSet<uint> { AppID }).ConfigureAwait(false);
 				Bot.ArchiLogger.LogGenericInfo(play_message);
-				if (!play_success) {
+				if (!AppRunning) {
 					throw new ClientException(EClientExceptionType.Failed, play_message);
 				}
 
@@ -69,15 +73,29 @@ namespace CS2Interface {
 					client_launcher = 0,
 					steam_launcher = 0
 				}};
-				// var fetcher = new GCFetcher<CMsgClientHello, CMsgClientWelcome>((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
-				var fetcher = new GCFetcher((uint) EGCBaseClientMsg.k_EMsgGCClientWelcome);
+
+				var fetcher = new GCFetcher {
+					GCResponseMsgType = (uint) EGCBaseClientMsg.k_EMsgGCClientWelcome,
+					TTLSeconds = 15
+				};
 
 				Bot.ArchiLogger.LogGenericDebug(Strings.SendingHello);
+				InventoryLoaded = false;
 
-				if (await fetcher.Fetch<CMsgClientWelcome>(this, msg, resendMsg: true).ConfigureAwait(false) == null) {
+				if (await fetcher.Fetch<CMsgClientWelcome>(this, msg).ConfigureAwait(false) == null) {
+					if (!OwnsApp) {
+						Dictionary<uint, string>? gamesOwned = await Bot.ArchiHandler.GetOwnedGames(Bot.SteamID).ConfigureAwait(false);
+						if (gamesOwned != null && gamesOwned.ContainsKey(AppID)) {
+							OwnsApp = true;
+						} else {
+							throw new ClientException(EClientExceptionType.FatalError, Strings.GameNotOwned);
+						}
+					}
+
 					throw new ClientException(EClientExceptionType.Timeout, Strings.GCConnectionFailed);
 				}
 
+				OwnsApp = true;
 				HasGCSession = true;
 
 				return true;
@@ -87,14 +105,12 @@ namespace CS2Interface {
 		}
 
 		internal void Stop() {
-			if (!HasGCSession) {
-				return;
+			if (AppRunning) {
+				Bot.Actions.Resume();
+				AppRunning = false;
 			}
 
-			InventoryLoaded = false;
 			HasGCSession = false;
-
-			return;
 		}
 
 		internal EClientStatus Status() {
