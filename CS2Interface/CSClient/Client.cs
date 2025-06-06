@@ -278,7 +278,7 @@ namespace CS2Interface {
 			}
 
 			await GCSemaphore.WaitAsync().ConfigureAwait(false);
-
+			DateTime startTime = DateTime.UtcNow;
 			try {
 				var msg = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockRequest>((uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockRequest) { Body = {
 					param_s = param_s,
@@ -299,6 +299,7 @@ namespace CS2Interface {
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", Strings.InspectingItem, param_s, param_a, param_d, param_m));
 
+				startTime = DateTime.UtcNow;
 				var response = await fetcher.Fetch<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(this, msg).ConfigureAwait(false);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
@@ -306,6 +307,12 @@ namespace CS2Interface {
 
 				return response.Body;
 			} finally {
+				// Help prevent inspection timeouts by ensuring a 1 request per second limit against this endpoint
+				double elapsedMs = (DateTime.UtcNow - startTime).TotalMilliseconds;
+				if (elapsedMs < 1000) {
+					await Task.Delay(TimeSpan.FromMilliseconds(1000 - elapsedMs)).ConfigureAwait(false);
+				}
+
 				GCSemaphore.Release();
 			}
 		}
