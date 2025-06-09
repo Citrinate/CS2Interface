@@ -171,7 +171,7 @@ namespace CS2Interface {
 				string locKey = "loc_key"; // General rarities
 				if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1" || ItemData.ItemDef["taxonomy"]["equipment"].Value == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
-				} else if (ItemData.ItemDef["item_slot"].Value == "customplayer") {
+				} else if (ItemData.ItemDef["inv_group_equipment"].Value == "customplayer") {
 					locKey = "loc_key_character"; // Agent rarities
 				}
 				RarityName = GameData.CsgoEnglish[GameData.ItemsGame["rarities"].Children.FirstOrDefault(x => x["value"].Value == Rarity.ToString())?[locKey].Value];
