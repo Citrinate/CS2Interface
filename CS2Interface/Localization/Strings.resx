@@ -375,4 +375,8 @@
     <comment>
 </comment>
   </data>
+  <data name="InterfaceConnectedWithAutoStop" xml:space="preserve">
+    <value>CS2 Interface is connected and will auto-stop in {0} minutes</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
 </root>

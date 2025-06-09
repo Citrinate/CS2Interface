@@ -12,7 +12,9 @@ Name | Required | Description
 
 ## Query Parameters
 
-None
+Name | Required | Description
+--- | --- | ---
+`refreshAutoStop` | No | If set to `true` the auto-stop timer will be refreshed for any of `botNames` that had their inteface started with an `autoStop` value
 
 ## Response Result
 
@@ -22,6 +24,7 @@ Property | Type | Description
 `botName.Connecting` | `bool` | True if the interface is attempting to connect for `botName`
 `botName.InventoryLoaded` | `bool` | True if the inventory is loaded for `botName`
 `botName.InventorySize` | `int` | When `InventoryLoaded`, the number of items in the inventory of `botName`
+`botName.AutoStopAt` | `string` | When the inteface is started with an `autoStop` value for `botName`, contains a date and time string in ISO 8601 format representing when the interface will auto-stop
 `botName.Message` | `string` | A description of the status for `botName`
 
 ## Example Response
@@ -40,7 +43,8 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Status
       "Connecting": false,
       "InventoryLoaded": true,
       "InventorySize": 3,
-      "Message": "CS2 Interface is connected"
+      "AutoStopAt": "2025-06-09T19:25:50.3509119Z",
+      "Message": "CS2 Interface is connected and will auto-stop in 14.33 minutes"
     }
   }
 }

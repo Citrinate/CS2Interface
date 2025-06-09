@@ -76,7 +76,7 @@ namespace CS2Interface.IPC {
 		[EndpointSummary("Get the status of the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, ClientStatus>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Status(string botNames) {
+		public ActionResult<GenericResponse> Status(string botNames, [FromQuery] bool refreshAutoStop = false) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -87,8 +87,14 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
+			if (refreshAutoStop) {
+				foreach (Bot bot in bots) {
+					ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+				}
+			}
+
 			IEnumerable<(Bot Bot, ClientStatus Response)> results = bots.Select(
-				static bot => (bot, new ClientStatus(ClientHandler.ClientHandlers[bot.BotName].GetClient(), ClientHandler.ClientHandlers[bot.BotName].Status()))
+				static bot => (bot, new ClientStatus(ClientHandler.ClientHandlers[bot.BotName]))
 			);
 
 			return Ok(new GenericResponse<IReadOnlyDictionary<string, ClientStatus>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
@@ -107,6 +113,10 @@ namespace CS2Interface.IPC {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 			if ((bots == null) || (bots.Count == 0)) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			foreach (Bot b in bots) {
+				ClientHandler.ClientHandlers[b.BotName].RefreshAutoStopTimer();
 			}
 
 			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
@@ -169,6 +179,8 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
@@ -197,6 +209,8 @@ namespace CS2Interface.IPC {
 			if (bot == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
 
 			(Client? client, string status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
@@ -227,7 +241,9 @@ namespace CS2Interface.IPC {
 			if (bot == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
-			
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
@@ -259,6 +275,8 @@ namespace CS2Interface.IPC {
 			if (bot == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
 
 			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
@@ -294,6 +312,8 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
 
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
 			try {
 				await client.RemoveItemFromCasket(crateID, itemID).ConfigureAwait(false);
 			} catch (ClientException e) {
@@ -322,6 +342,8 @@ namespace CS2Interface.IPC {
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
 
 			List<ulong> item_ids = new();
 			foreach (string itemIDString in itemIDs.Split(",")) {

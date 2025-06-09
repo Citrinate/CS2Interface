@@ -12,7 +12,7 @@ namespace CS2Interface {
 		private readonly Bot Bot;
 		private readonly Client Client;
 		internal static ConcurrentDictionary<string, ClientHandler> ClientHandlers = new();
-		private readonly ScheduledAction AutoStop;
+		internal readonly ScheduledAction AutoStop;
 		private Task<(bool, string)>? RunTask;
 		private CancellationTokenSource? RunCancellation;
 
@@ -151,8 +151,6 @@ namespace CS2Interface {
 				return (EClientStatus.BotOffline, ArchiSteamFarm.Localization.Strings.BotNotConnected);
 			}
 
-			AutoStop.Refresh();
-
 			EClientStatus status = Client.Status();
 			bool connected = (status & EClientStatus.Connected) == EClientStatus.Connected;
 			bool ready = (status & EClientStatus.Ready) == EClientStatus.Ready;
@@ -163,6 +161,11 @@ namespace CS2Interface {
 				}
 
 				return (status, Strings.InterfaceNotConnected);
+			}
+
+			TimeSpan? autoStopTimeRemaining = AutoStop.GetTimeRemaining();
+			if (autoStopTimeRemaining != null) {
+				return (status, String.Format(Strings.InterfaceConnectedWithAutoStop, String.Format("{0:F2}", autoStopTimeRemaining.Value.TotalMinutes)));
 			}
 
 			return (status, Strings.InterfaceConnected);
@@ -197,6 +200,10 @@ namespace CS2Interface {
 			} else {
 				AutoStop.Schedule(TimeSpan.FromMinutes(minutes));
 			}
+		}
+
+		internal void RefreshAutoStopTimer() {
+			AutoStop.Refresh();
 		}
 	}
 }

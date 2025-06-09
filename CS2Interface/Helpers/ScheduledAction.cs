@@ -69,6 +69,16 @@ namespace CS2Interface {
 			}
 		}
 
+		public DateTime? GetScheduledTime() {
+			lock (LockObject) {
+				if (!IsScheduled) {
+					return null;
+				}
+
+				return ScheduledTime;
+			}
+		}
+
 		private async Task Run(TimeSpan delay, CancellationToken cancellationToken) {
 			try {
 				await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
