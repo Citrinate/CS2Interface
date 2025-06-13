@@ -18,7 +18,7 @@ namespace CS2Interface {
 				try {
 					if (attribute.Type == typeof(uint)) {
 						writer.WritePropertyName(attribute.Name);
-						writer.WriteNumberValue(attribute.ToUInt32());
+						writer.WriteNumberValue((long) attribute.ToUInt32());
 					} if (attribute.Type == typeof(float)) {
 						writer.WritePropertyName(attribute.Name);
 						writer.WriteNumberValue(attribute.ToSingle());
