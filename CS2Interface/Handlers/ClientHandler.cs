@@ -121,7 +121,9 @@ namespace CS2Interface {
 		}
 
 		internal async Task<string> Stop(bool preventAutoStart = true) {
-			AutoStop.Cancel();
+			if (preventAutoStart) {
+				AutoStop.Cancel();
+			}
 
 			RunCancellation?.Cancel();
 			if (RunTask?.IsCompleted == false) {
