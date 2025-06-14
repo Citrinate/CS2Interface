@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
 using CS2Interface.Localization;
@@ -8,11 +6,11 @@ using SteamKit2;
 
 namespace CS2Interface {
 	internal class GameDataItems : GameDataResource {
-		private KeyValue? Data;
+		internal KeyValue? Data {get; private set;}
 
 		internal GameDataItems(string url) : base(url) {}
 
-		internal async Task<bool> Update() {
+		internal override async Task<bool> Update() {
 			KeyValue? data = await FetchKVResource().ConfigureAwait(false);
 			if (data == null) {
 				ASF.ArchiLogger.LogGenericError(String.Format(Strings.GameDataSourceFailed, Url));
@@ -20,38 +18,34 @@ namespace CS2Interface {
 				return false;
 			}
 
-			Data = data;
+			// Combine any duplicated top level names
+			KeyValue mergedData = new();
+			foreach (KeyValue kv in data.Children) {
+				if (kv.Name == null) {
+					continue;
+				}
+
+				if (mergedData[kv.Name] == KeyValue.Invalid) {
+					mergedData[kv.Name] = kv.Clone();
+				} else {
+					mergedData[kv.Name].Merge(kv, mergeDepth: 0);
+				}
+			}
+
+			Data = mergedData;
 			Updated = true;
 
 			return true;
 		}
 
-		internal List<KeyValue>? this[string? key] {
+		internal KeyValue this[string? key] {
 			get {
 				if (key == null || Data == null) {
-					return null;
+					return KeyValue.Invalid;
 				}
 
-				return Data.Children.Where(x => x.Name == key).SelectMany(x => x.Children).ToList();
+				return Data[key];
 			}
-		}
-
-		internal KeyValue? GetDef(string value, string index, bool suppressErrorLogs = false) {
-			if (Data == null) {
-				return null;
-			}
-
-			KeyValue? def = this[value]?.Where(x => x.Name?.ToUpper().Trim() == index.ToUpper().Trim()).FirstOrDefault();
-
-			if (def == null) {
-				if (!suppressErrorLogs) {
-					ASF.ArchiLogger.LogGenericError(String.Format("{0}: {1}[{2}]", Strings.GameDataDefinitionUndefined, value, index));
-				}
-				
-				return null;
-			}
-
-			return def;
 		}
 	}
 }

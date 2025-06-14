@@ -20,23 +20,25 @@ namespace CS2Interface {
 			d = param_d.ToString();
 			m = param_m.ToString();
 
-			SetAdditionalProperties();
-		}
-
-		new bool SetAdditionalProperties() {
 			DefIndex = ItemInfo.defindex;
-			PaintIndex = ItemInfo.paintindex;            
-			StickerID = ItemInfo.stickers.FirstOrDefault()?.sticker_id;
+			PaintIndex = ItemInfo.paintindex;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;
+			KeychainID = ItemInfo.keychains.FirstOrDefault()?.sticker_id;
 			Quality = ItemInfo.quality;
 			Rarity = ItemInfo.rarity;
 			Origin = ItemInfo.origin;
+			StatTrak = ItemInfo.quality == 9 || ItemInfo.ShouldSerializekilleaterscoretype();
 
 			if (ItemInfo.paintwear != 0) {
 				Wear = (double) BitConverter.UInt32BitsToSingle(ItemInfo.paintwear);
 			}
 
-			return base.SetAdditionalProperties();
+			if (ItemInfo.stickers.Count > 0) {
+				StickerIDs = ItemInfo.stickers.Select(sticker => sticker.sticker_id).ToHashSet();
+			}
+
+			SetDefs();
+			SetAdditionalProperties();
 		}
 	}
 }

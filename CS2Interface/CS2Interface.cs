@@ -64,10 +64,24 @@ namespace CS2Interface {
 			return Task.FromResult<IReadOnlyCollection<ClientMsgHandler>?>(new HashSet<ClientMsgHandler> { });
 		}
 
-		public Task OnBotDisconnected(Bot bot, EResult reason) {
-			ClientHandler.ClientHandlers[bot.BotName].ForceStop();
+		public async Task OnBotDisconnected(Bot bot, EResult reason) {
+			await ClientHandler.ClientHandlers[bot.BotName].Stop(preventAutoStart: false).ConfigureAwait(false);
+		}
 
-			return Task.FromResult(0);
+		public async Task OnBotLoggedOn(Bot bot) {
+			await TryAutoStart(bot).ConfigureAwait(false);
+		}
+
+		public async Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
+			await TryAutoStart(bot).ConfigureAwait(false);
+		}
+
+		public async Task OnBotFarmingStarted(Bot bot) {
+			await ClientHandler.ClientHandlers[bot.BotName].Stop(preventAutoStart: false).ConfigureAwait(false);
+		}
+
+		public async Task OnBotFarmingStopped(Bot bot) {
+			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 
 		private async Task TryAutoStart(Bot bot) {
@@ -79,27 +93,8 @@ namespace CS2Interface {
 				return;
 			}
 
-			await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
 			(_, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
 			bot.ArchiLogger.LogGenericInfo(message);
-		}
-
-		public async Task OnBotLoggedOn(Bot bot) {
-			await TryAutoStart(bot).ConfigureAwait(false);
-		}
-
-		public async Task OnBotFarmingFinished(Bot bot, bool farmedSomething) {
-			await TryAutoStart(bot).ConfigureAwait(false);
-		}
-
-		public Task OnBotFarmingStarted(Bot bot) {
-			ClientHandler.ClientHandlers[bot.BotName].ForceStop();
-
-			return Task.FromResult(0);
-		}
-
-		public async Task OnBotFarmingStopped(Bot bot) {
-			await TryAutoStart(bot).ConfigureAwait(false);
 		}
 	}
 }

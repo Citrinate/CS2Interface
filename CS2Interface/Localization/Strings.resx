@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!--  
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,79 +26,79 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,35 +119,27 @@
   </resheader>
   <data name="ClientAlreadyStarting" xml:space="preserve">
     <value>CS2 Client is already attempting to run, please wait</value>
-    <comment/>
   </data>
   <data name="ClientFatalError" xml:space="preserve">
     <value>CS2 Client experienced a fatal error</value>
-    <comment/>
   </data>
   <data name="GameDataLoadingFailed" xml:space="preserve">
     <value>Failed to load Game Data</value>
-    <comment/>
   </data>
   <data name="SendingHello" xml:space="preserve">
     <value>Sending hello message</value>
-    <comment/>
   </data>
   <data name="GCConnectionFailed" xml:space="preserve">
     <value>CS2 Client wasn't able to connect to GC</value>
-    <comment/>
   </data>
   <data name="VerifyingGCConnection" xml:space="preserve">
     <value>Verifying CS2 Client's connection to GC</value>
-    <comment/>
   </data>
   <data name="MessageRecieved" xml:space="preserve">
     <value>Message Received</value>
-    <comment/>
   </data>
   <data name="InventoryLoaded" xml:space="preserve">
     <value>CS2 inventory loaded</value>
-    <comment/>
   </data>
   <data name="FatalLogonError" xml:space="preserve">
     <value>Fatal CS2 logon error {0}</value>
@@ -155,35 +147,27 @@
   </data>
   <data name="ClientNotConnectedToGC" xml:space="preserve">
     <value>CS2 Client is not connected to GC</value>
-    <comment/>
   </data>
   <data name="InspectingItem" xml:space="preserve">
     <value>Inspecting item</value>
-    <comment/>
   </data>
   <data name="RequestTimeout" xml:space="preserve">
     <value>Request timed out</value>
-    <comment/>
   </data>
   <data name="InvalidSteamID" xml:space="preserve">
     <value>Invalid Steam ID</value>
-    <comment/>
   </data>
   <data name="InspectingPlayer" xml:space="preserve">
     <value>Getting CS2 player profile</value>
-    <comment/>
   </data>
   <data name="InventoryNotLoaded" xml:space="preserve">
     <value>Inventory not loaded yet</value>
-    <comment/>
   </data>
   <data name="CasketNotFound" xml:space="preserve">
     <value>Storage unit not found in inventory</value>
-    <comment/>
   </data>
   <data name="CasketContentsUndefined" xml:space="preserve">
     <value>Could not determine storage unit item count</value>
-    <comment/>
   </data>
   <data name="OpeningCasket" xml:space="preserve">
     <value>Opening storage unit {0}</value>
@@ -198,12 +182,11 @@
     <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
   </data>
   <data name="InventoryItemNotFound" xml:space="preserve">
-    <value>Item not found in inventory</value>
-    <comment/>
+    <value>Item not found in inventory: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
   </data>
   <data name="CasketFull" xml:space="preserve">
     <value>Storage unit is full</value>
-    <comment/>
   </data>
   <data name="AddingItemToCasket" xml:space="preserve">
     <value>Adding item {0} to storage unit {1}</value>
@@ -215,11 +198,9 @@
   </data>
   <data name="GameDataLoadingSuccess" xml:space="preserve">
     <value>CS2 game data loaded</value>
-    <comment/>
   </data>
   <data name="GameDataRefreshing" xml:space="preserve">
     <value>Refreshing CS2 game data</value>
-    <comment/>
   </data>
   <data name="GameDataSourceFailed" xml:space="preserve">
     <value>Couldn't load game data from: {0}</value>
@@ -227,174 +208,175 @@
   </data>
   <data name="GameDataDefinitionUndefined" xml:space="preserve">
     <value>Couldn't find definition</value>
-    <comment/>
   </data>
   <data name="InterfaceAlreadyRunning" xml:space="preserve">
     <value>CS2 Interface is already running</value>
-    <comment/>
   </data>
   <data name="InterfaceAlreadyStarting" xml:space="preserve">
     <value>CS2 Interface is already attempting to run</value>
-    <comment/>
   </data>
   <data name="InterfaceStartFailedUnexpectedly" xml:space="preserve">
     <value>CS2 Interface seemed to start, but then didn't</value>
-    <comment/>
   </data>
   <data name="InterfaceStartFailedRetry" xml:space="preserve">
     <value>CS2 Interface failed to start, retrying</value>
-    <comment/>
   </data>
   <data name="InterfaceStartFailed" xml:space="preserve">
     <value>CS2 Interface failed to start</value>
-    <comment/>
   </data>
   <data name="InterfaceStarted" xml:space="preserve">
     <value>CS2 Interface started</value>
-    <comment/>
   </data>
   <data name="IntefaceNotRunning" xml:space="preserve">
     <value>CS2 Interface was not running</value>
-    <comment/>
   </data>
   <data name="InterfaceStopped" xml:space="preserve">
     <value>CS2 Interface stopped</value>
-    <comment/>
   </data>
   <data name="InterfaceStoppedSuccessfully" xml:space="preserve">
     <value>CS2 Interface successfully stopped</value>
-    <comment/>
   </data>
   <data name="InterfaceForciblyStopped" xml:space="preserve">
     <value>CS2 Interface was forcibly stopped</value>
-    <comment/>
   </data>
   <data name="InterfaceConnecting" xml:space="preserve">
     <value>CS2 Interface is connecting</value>
-    <comment/>
   </data>
   <data name="InterfaceNotConnected" xml:space="preserve">
     <value>CS2 Interface is not connected</value>
-    <comment/>
   </data>
   <data name="InterfaceBusy" xml:space="preserve">
     <value>CS2 Interface is busy</value>
-    <comment/>
   </data>
   <data name="Ready" xml:space="preserve">
     <value>Ready</value>
-    <comment/>
   </data>
   <data name="InterfaceStoppedUnexpectedly" xml:space="preserve">
     <value>CS2 Interface stopped unexpectedly</value>
-    <comment/>
   </data>
   <data name="InterfaceConnected" xml:space="preserve">
     <value>CS2 Interface is connected</value>
-    <comment/>
   </data>
   <data name="NoBotsAvailable" xml:space="preserve">
     <value>No bots are available</value>
-    <comment/>
   </data>
   <data name="ItemOrigin0" xml:space="preserve">
     <value>Timed Drop</value>
-    <comment/>
   </data>
   <data name="ItemOrigin1" xml:space="preserve">
     <value>Achievement</value>
-    <comment/>
   </data>
   <data name="ItemOrigin2" xml:space="preserve">
     <value>Purchased</value>
-    <comment/>
   </data>
   <data name="ItemOrigin3" xml:space="preserve">
     <value>Traded</value>
-    <comment/>
   </data>
   <data name="ItemOrigin4" xml:space="preserve">
     <value>Crafted</value>
-    <comment/>
   </data>
   <data name="ItemOrigin5" xml:space="preserve">
     <value>Store Promotion</value>
-    <comment/>
   </data>
   <data name="ItemOrigin6" xml:space="preserve">
     <value>Gifted</value>
-    <comment/>
   </data>
   <data name="ItemOrigin7" xml:space="preserve">
     <value>Support Granted</value>
-    <comment/>
   </data>
   <data name="ItemOrigin8" xml:space="preserve">
     <value>Found in Crate</value>
-    <comment/>
   </data>
   <data name="ItemOrigin9" xml:space="preserve">
     <value>Earned</value>
-    <comment/>
   </data>
   <data name="ItemOrigin10" xml:space="preserve">
     <value>Third-Party Promotion</value>
-    <comment/>
   </data>
   <data name="ItemOrigin11" xml:space="preserve">
     <value>Wrapped Gift</value>
-    <comment/>
   </data>
   <data name="ItemOrigin12" xml:space="preserve">
     <value>Halloween Drop</value>
-    <comment/>
   </data>
   <data name="ItemOrigin13" xml:space="preserve">
     <value>Steam Purchase</value>
-    <comment/>
   </data>
   <data name="ItemOrigin14" xml:space="preserve">
     <value>Foreign Item</value>
-    <comment/>
   </data>
   <data name="ItemOrigin15" xml:space="preserve">
     <value>CD Key</value>
-    <comment/>
   </data>
   <data name="ItemOrigin16" xml:space="preserve">
     <value>Collection Reward</value>
-    <comment/>
   </data>
   <data name="ItemOrigin17" xml:space="preserve">
     <value>Preview Item</value>
-    <comment/>
   </data>
   <data name="ItemOrigin18" xml:space="preserve">
     <value>Steam Workshop Contribution</value>
-    <comment/>
   </data>
   <data name="ItemOrigin19" xml:space="preserve">
     <value>Periodic Score Reward</value>
-    <comment/>
   </data>
   <data name="ItemOrigin20" xml:space="preserve">
     <value>Recycling</value>
-    <comment/>
   </data>
   <data name="ItemOrigin21" xml:space="preserve">
     <value>Tournament Drop</value>
-    <comment/>
   </data>
   <data name="ItemOrigin22" xml:space="preserve">
     <value>Stock Item</value>
-    <comment/>
   </data>
   <data name="ItemOrigin23" xml:space="preserve">
     <value>Quest Reward</value>
-    <comment/>
   </data>
   <data name="ItemOrigin24" xml:space="preserve">
     <value>Level Up Reward</value>
-    <comment/>
+  </data>
+  <data name="InvalidCraftRecipe" xml:space="preserve">
+    <value>No crafting recipe was found for the given inputs</value>
+  </data>
+  <data name="InventoryItemFoundInCrate" xml:space="preserve">
+    <value>Cannot use item that's currently in a storage unit: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="InvalidCraftInput" xml:space="preserve">
+    <value>This item cannot be used in crafting recipies: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="CraftingItem" xml:space="preserve">
+    <value>Crafting recipe {0} using items: {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a list of numbers</comment>
+  </data>
+  <data name="InvalidCraftDuplicateInput" xml:space="preserve">
+    <value>Same item ID used multiple times as an input: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
+  <data name="InvalidCraftTooManyInputs" xml:space="preserve">
+    <value>Too many crafting inputs given</value>
+  </data>
+  <data name="ClientVersionFail" xml:space="preserve">
+    <value>Failed to determine client version</value>
+  </data>
+  <data name="InterfaceStartCancelled" xml:space="preserve">
+    <value>CS2 Interface start attempt was cancelled</value>
+    <comment>
+</comment>
+  </data>
+  <data name="AccountInUse" xml:space="preserve">
+    <value>CS2 Interface cannot start as the account is currently being used to play a game</value>
+    <comment>
+</comment>
+  </data>
+  <data name="GameNotOwned" xml:space="preserve">
+    <value>CS2 Interfcae cannot start as the account does not own Counter-Strike 2</value>
+    <comment>
+</comment>
+  </data>
+  <data name="InterfaceConnectedWithAutoStop" xml:space="preserve">
+    <value>CS2 Interface is connected and will auto-stop in {0} minutes</value>
+    <comment>{0} will be replaced by a number</comment>
   </data>
 </root>

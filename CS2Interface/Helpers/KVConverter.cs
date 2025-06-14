@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SteamKit2;
@@ -18,14 +18,25 @@ namespace CS2Interface {
 		public static void ConvertKVObjectToJson (ref Utf8JsonWriter writer, KeyValue vdf) {
 			if (vdf.Children.Count > 0) {
 				writer.WriteStartObject();
-				
-				foreach (KeyValue child in vdf.Children) {
-					if (child.Name == null) {
+
+				foreach (IGrouping<string?, KeyValue> group in vdf.Children.GroupBy(child => child.Name)) {
+					if (group.Key == null) {
 						continue;
 					}
 
-					writer.WritePropertyName(child.Name);
-					ConvertKVObjectToJson(ref writer, child);
+					writer.WritePropertyName(group.Key);
+
+					if (group.Count() == 1) {
+						ConvertKVObjectToJson(ref writer, group.First());
+					} else {
+						writer.WriteStartArray();
+
+						foreach (KeyValue child in group) {
+							ConvertKVObjectToJson(ref writer, child);
+						}
+
+						writer.WriteEndArray();
+					}
 				}
 
 				writer.WriteEndObject();
@@ -45,34 +56,13 @@ namespace CS2Interface {
 				return;
 			}
 
-			if (float.TryParse(vdf.Value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float floatValue)) {
+			if (float.TryParse(vdf.Value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float floatValue) && !float.IsInfinity(floatValue)) {
 				writer.WriteNumberValue(floatValue);
 
 				return;
 			}
 
 			writer.WriteStringValue(vdf.Value);
-		}
-	}
-
-	public sealed class ListKVConverter : JsonConverter<List<KeyValue>> {
-		public override List<KeyValue> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-			throw new NotImplementedException();
-		}
-
-		public override void Write(Utf8JsonWriter writer, List<KeyValue> value, JsonSerializerOptions options) {
-			if (value == null) {
-				writer.WriteNullValue();
-				return;
-			}
-
-			writer.WriteStartArray();
-
-			foreach (KeyValue data in value) {
-				KVConverter.ConvertKVObjectToJson(ref writer, data);
-			}
-
-			writer.WriteEndArray();
 		}
 	}
 }

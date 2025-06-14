@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-// using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -9,19 +8,19 @@ using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
 using ArchiSteamFarm.Steam;
-// using Microsoft.AspNetCore.Http;
-// EndpointSummary and Description lines commented out temporarily to allow plugin to work with generic/non-generic ASF V6.1.2.0 and V6.1.1.3
+using CS2Interface.Localization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SteamKit2.GC.CSGO.Internal;
 
-namespace CS2Interface {
+namespace CS2Interface.IPC {
 	[Route("Api/CS2Interface")]
 	public sealed class CS2InterfaceController : ArchiController {
 		[HttpGet("{botNames:required}/Start")]
-		// [EndpointSummary("Starts the CS2 Interface")]
-		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
+		[EndpointSummary("Starts the CS2 Interface")]
+		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public async Task<ActionResult<GenericResponse>> Start(string botNames) {
+		public async Task<ActionResult<GenericResponse>> Start(string botNames, [FromQuery] uint autoStop = 0) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -32,16 +31,26 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			IList<(bool Success, string Message)> results = await Utilities.InParallel(bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Run())).ConfigureAwait(false);
+			IEnumerable<(Bot Bot, GenericResponse Response)> results = await Utilities.InParallel(bots.Select(
+				async bot => {
+					(bool success, string message) = await ClientHandler.ClientHandlers[bot.BotName].Run().ConfigureAwait(false);
 
-			return Ok(new GenericResponse(results.All(static result => result.Success), string.Join(Environment.NewLine, results.Select(static result => result.Message))));
+					if (success) {
+						ClientHandler.ClientHandlers[bot.BotName].UpdateAutoStopTimer(autoStop);
+					}
+
+					return (bot, new GenericResponse(success, message));
+				}
+			)).ConfigureAwait(false);
+
+			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(results.All(static result => result.Response.Success), results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
 
 		[HttpGet("{botNames:required}/Stop")]
-		// [EndpointSummary("Stops the CS2 Interface")]
-		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
+		[EndpointSummary("Stops the CS2 Interface")]
+		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Stop(string botNames) {
+		public async Task<ActionResult<GenericResponse>> Stop(string botNames) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -52,40 +61,51 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
 			}
 
-			IEnumerable<string> results = bots.Select(static bot => ClientHandler.ClientHandlers[bot.BotName].Stop());
+			IEnumerable<(Bot Bot, GenericResponse Response)> results = await Utilities.InParallel(bots.Select(
+				async bot => {
+					string message = await ClientHandler.ClientHandlers[bot.BotName].Stop().ConfigureAwait(false);
 
-			return Ok(new GenericResponse(true, string.Join(Environment.NewLine, results)));
+					return (bot, new GenericResponse(true, message));
+				}
+			)).ConfigureAwait(false);
+
+			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
+		}
+
+		[HttpGet("{botNames:required}/Status")]
+		[EndpointSummary("Get the status of the CS2 Interface")]
+		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, ClientStatus>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public ActionResult<GenericResponse> Status(string botNames, [FromQuery] bool refreshAutoStop = false) {
+			if (string.IsNullOrEmpty(botNames)) {
+				throw new ArgumentNullException(nameof(botNames));
+			}
+			
+			HashSet<Bot>? bots = Bot.GetBots(botNames);
+
+			if ((bots == null) || (bots.Count == 0)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			if (refreshAutoStop) {
+				foreach (Bot bot in bots) {
+					ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+				}
+			}
+
+			IEnumerable<(Bot Bot, ClientStatus Response)> results = bots.Select(
+				static bot => (bot, new ClientStatus(ClientHandler.ClientHandlers[bot.BotName]))
+			);
+
+			return Ok(new GenericResponse<IReadOnlyDictionary<string, ClientStatus>>(true, results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
 
 		[HttpGet("{botNames:required}/InspectItem")]
-		// [EndpointSummary("Inspect a CS2 Item")]
+		[EndpointSummary("Inspect a CS2 Item")]
 		[ProducesResponseType(typeof(GenericResponse<InspectItem>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> InspectItem(
-			string botNames, 
-			[FromQuery]
-			// [Description("The item's inspect link")] 
-			string? url = null, 
-			[FromQuery] 
-			// [Description("The S value from the item's inspect link (not needed if using the url parameter)")] 
-			ulong s = 0, 
-			[FromQuery] 
-			// [Description("The A value from the item's inspect link (not needed if using the url parameter)")] 
-			ulong a = 0, 
-			[FromQuery] 
-			// [Description("The D value from the item's inspect link (not needed if using the url parameter)")] 
-			ulong d = 0, 
-			[FromQuery] 
-			// [Description("The M value from the item's inspect link (not needed if using the url parameter)")] 
-			ulong m = 0, 
-			[FromQuery] 
-			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
-			bool minimal = false, 
-			[FromQuery] 
-			// [Description("If true, additional raw item information will be provided")] 
-			bool showDefs = false
-		) {
+		public async Task<ActionResult<GenericResponse>> InspectItem(string botNames, [FromQuery] string? url = null, [FromQuery] ulong s = 0, [FromQuery] ulong a = 0, [FromQuery] ulong d = 0, [FromQuery] ulong m = 0, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -93,11 +113,19 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 			if ((bots == null) || (bots.Count == 0)) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			foreach (Bot b in bots) {
+				ClientHandler.ClientHandlers[b.BotName].RefreshAutoStopTimer();
 			}
 
 			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
 			if (bot == null || client == null) {
-				return BadRequest(new GenericResponse(false, status));
+				(bot, client, status) = ClientHandler.GetAvailableClient(bots, EClientStatus.Connected);
+
+				if (bot == null || client == null) {
+					return BadRequest(new GenericResponse(false, status));
+				}
 			}
 
 			if (url != null) {
@@ -131,17 +159,17 @@ namespace CS2Interface {
 			}
 
 			var item = new InspectItem(inspect, s, a, d, m);
-			Item.SetSerializationProperties(!minimal, showDefs);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<InspectItem>(true, item));
 		}
 
-		[HttpGet("{botName:required}/PlayerProfile/{steamID:required}")]
-		// [EndpointSummary("Get a friend's CS2 player profile")]
+		[HttpGet("{botName:required}/PlayerProfile/{steamID?}")]
+		[EndpointSummary("Get a friend's CS2 player profile")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_PlayersProfile>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> PlayerProfile(string botName, ulong steamID) {
+		public async Task<ActionResult<GenericResponse>> PlayerProfile(string botName, ulong? steamID = null) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -151,14 +179,16 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
 
 			CMsgGCCStrike15_v2_PlayersProfile player;
 			try {
-				player = await client.RequestPlayerProfile(steamID).ConfigureAwait(false);
+				player = await client.RequestPlayerProfile(steamID ?? bot.SteamID).ConfigureAwait(false);
 			} catch (ClientException e) {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
@@ -167,18 +197,10 @@ namespace CS2Interface {
 		}
 
 		[HttpGet("{botName:required}/Inventory/")]
-		// [EndpointSummary("Get the given bot's CS2 inventory")]
+		[EndpointSummary("Get the given bot's CS2 inventory")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public ActionResult<GenericResponse> Inventory(
-			string botName, 
-			[FromQuery] 
-			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
-			bool minimal = false, 
-			[FromQuery] 
-			// [Description("If true, additional raw item information will be provided")] 
-			bool showDefs = false
-		) {
+		public ActionResult<GenericResponse> Inventory(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -187,6 +209,8 @@ namespace CS2Interface {
 			if (bot == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
 
 			(Client? client, string status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
@@ -197,27 +221,18 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, "Inventory not loaded yet"));
 			}
 
-			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsValid()).ToList();
-			Item.SetSerializationProperties(!minimal, showDefs);
+			List<InventoryItem> inventory = client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null).OrderByDescending(x => x.ItemInfo.id).ToList();
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
 			return Ok(new GenericResponse<List<InventoryItem>>(true, inventory));
 		}
 
 		[HttpGet("{botName:required}/GetCrateContents/{crateID:required}")]
-		// [EndpointSummary("Get the contents of the given bot's crate")]
+		[EndpointSummary("Get the contents of the given bot's crate")]
 		[ProducesResponseType(typeof(GenericResponse<List<InventoryItem>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> GetCrateContents(
-			string botName,			
-			ulong crateID, 
-			[FromQuery] 
-			// [Description("If true, only the data recieved from the CS2 client will be provided")] 
-			bool minimal = false, 
-			[FromQuery] 
-			// [Description("If true, additional raw item information will be provided")] 
-			bool showDefs = false
-		) {
+		public async Task<ActionResult<GenericResponse>> GetCrateContents(string botName,	ulong crateID, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -226,8 +241,10 @@ namespace CS2Interface {
 			if (bot == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
-			
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -239,13 +256,13 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 			
-			Item.SetSerializationProperties(!minimal, showDefs);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
 
-			return Ok(new GenericResponse<List<InventoryItem>>(true, contents));
+			return Ok(new GenericResponse<List<InventoryItem>>(true, contents.OrderByDescending(x => x.ItemInfo.id).ToList()));
 		}
 
 		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]
-		// [EndpointSummary("Stores an item into the specified crate")]
+		[EndpointSummary("Stores an item into the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -259,7 +276,9 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
@@ -270,11 +289,11 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			return Ok(new GenericResponse(true, "Item successfully added to storage unit"));	
+			return Ok(new GenericResponse(true));	
 		}
 
 		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
-		// [EndpointSummary("Retrieves an item from the specified crate")]
+		[EndpointSummary("Retrieves an item from the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
@@ -288,10 +307,12 @@ namespace CS2Interface {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
 			}
 
-			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient();
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
 			if (client == null) {
 				return BadRequest(new GenericResponse(false, client_status));
 			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
 
 			try {
 				await client.RemoveItemFromCasket(crateID, itemID).ConfigureAwait(false);
@@ -299,14 +320,120 @@ namespace CS2Interface {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			return Ok(new GenericResponse(true, "Item successfully removed from storage unit"));
+			return Ok(new GenericResponse(true));
+		}
+
+		[HttpGet("{botName:required}/CraftItem/{recipeID:required}")]
+		[EndpointSummary("Crafts an item using the specified trade up recipe")]
+		[ProducesResponseType(typeof(GenericResponse<GCMsg.MsgCraftResponse>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> CraftItem(string botName, ushort recipeID, [FromQuery] string itemIDs) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+			
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			List<ulong> item_ids = new();
+			foreach (string itemIDString in itemIDs.Split(",")) {
+				if (!ulong.TryParse(itemIDString, out ulong item_id)) {
+					return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(itemIDs))));
+				}
+
+				item_ids.Add(item_id);
+			}
+
+			GCMsg.MsgCraftResponse craftResponse;
+			try {
+				craftResponse = await client.Craft(recipeID, item_ids).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse<GCMsg.MsgCraftResponse>(true, craftResponse));
+		}
+
+		[HttpGet("Recipes")]
+		[EndpointSummary("Get a list of crafting recipes")]
+		[ProducesResponseType(typeof(GenericResponse<GameData<List<Recipe>>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> Recipes([FromQuery] bool showDefs = false) {
+			List<Recipe> recipes;
+			try {
+				recipes = await Recipe.GetAll().ConfigureAwait(false);
+			} catch (ClientException e) {
+				return BadRequest(new GenericResponse(false, e.Message));
+			}
+
+			GameObject.SetSerializationProperties(true, showDefs);
+
+			return Ok(new GenericResponse<GameData<List<Recipe>>>(true, new GameData<List<Recipe>>(recipes)));
+		}
+
+		[HttpGet("items_game.txt")]
+		[EndpointSummary("Get the contents of items_game.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameDataKV>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> ItemsGame() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.ItemsGame.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameDataKV>(true, new GameDataKV(GameData.ItemsGame.Data)));
+		}
+
+		[HttpGet("items_game_cdn.txt")]
+		[EndpointSummary("Get the contents of items_game_cdn.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameData<Dictionary<string, string>>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> ItemsGameCDN() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.ItemsGameCdn.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameData<Dictionary<string, string>>>(true, new GameData<Dictionary<string, string>>(GameData.ItemsGameCdn.Data)));
+		}
+
+		[HttpGet("csgo_english.txt")]
+		[EndpointSummary("Get the contents of csgo_english.txt")]
+		[ProducesResponseType(typeof(GenericResponse<GameDataKV>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> CSGOEnglish() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.CsgoEnglish.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameDataKV>(true, new GameDataKV(GameData.CsgoEnglish.Data)));
+		}
+
+		[HttpGet("steam.inf")]
+		[EndpointSummary("Get the contents of steam.inf")]
+		[ProducesResponseType(typeof(GenericResponse<GameData<Dictionary<string, string>>>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse>> SteamINF() {
+			if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.GameVersion.Data == null) {
+				return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+			}
+
+			return Ok(new GenericResponse<GameData<Dictionary<string, string>>>(true, new GameData<Dictionary<string, string>>(GameData.GameVersion.Data)));
 		}
 
 		private async Task<ActionResult<GenericResponse>> HandleClientException(Bot bot, ClientException e) {
 			bot.ArchiLogger.LogGenericError(e.Message);
 			if (e.Type == EClientExceptionType.Timeout) {
 				// On timeout, verify that the client is still connected
-				(bool connected, string status, _) = await ClientHandler.ClientHandlers[bot.BotName].VerifyConnection().ConfigureAwait(false);
+				(bool connected, string status, _) = await ClientHandler.ClientHandlers[bot.BotName].VerifyClientConnection().ConfigureAwait(false);
 				if (!connected) {
 					bot.ArchiLogger.LogGenericError(status);
 

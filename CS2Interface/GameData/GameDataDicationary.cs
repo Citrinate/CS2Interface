@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArchiSteamFarm.Core;
+using CS2Interface.Localization;
 
 namespace CS2Interface {
-	internal class GameDataItemsCDN : GameDataResource {
-		private Dictionary<string, string>? Data;
+	internal class GameDataDictionary : GameDataResource {
+		internal Dictionary<string, string>? Data {get; private set;}
 
-		internal GameDataItemsCDN(string url) : base(url) {}
+		internal GameDataDictionary(string url) : base(url) {}
 
-		internal async Task<bool> Update() {
+		internal override async Task<bool> Update() {
 			Dictionary<string, string>? data = await FetchCDNResource().ConfigureAwait(false);
 			if (data == null) {
-				ASF.ArchiLogger.LogGenericError(String.Format("Couldn't load game data from: {0}", Url));
+				ASF.ArchiLogger.LogGenericError(String.Format(Strings.GameDataSourceFailed, Url));
 
 				return false;
 			}
