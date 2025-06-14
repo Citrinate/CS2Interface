@@ -6,6 +6,10 @@
 
 This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's [IPC interface](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/IPC).
 
+#### Projects that use this plugin
+
+  - **[CS2Script](https://github.com/Citrinate/CS2Script)**, A userscript for managing your storage units and viewing detailed item information
+
 ## Installation
 
 - Download the .zip file from the [latest release](https://github.com/Citrinate/CS2Interface/releases/latest)
