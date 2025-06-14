@@ -8,7 +8,7 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 
 #### Projects that use this plugin
 
-  - **[CS2Script](https://github.com/Citrinate/CS2Script)**, A userscript for managing your storage units and viewing detailed item information
+  - **[CS2Script](https://github.com/Citrinate/CS2Script)**, A userscript for managing your storage units and inspecting items
 
 ## Installation
 
