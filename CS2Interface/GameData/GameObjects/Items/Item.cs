@@ -201,6 +201,13 @@ namespace CS2Interface {
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
 			ItemName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)];
+			if (Quality == 13) {
+				// Highlight items have a special naming convention for strings
+				string? highlightName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value) + "^highlight"];
+				if (highlightName != null) {
+					ItemName = highlightName;
+				}
+			}
 
 			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
 			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
@@ -248,7 +255,7 @@ namespace CS2Interface {
 			}
 
 			{ // Set the full name and type
-				string? displayQualityName = Quality == 4 ? "" : QualityName; // Hide "Unique" quality from item names and types
+				string? displayQualityName = (Quality == 4 || Quality == 13) ? "" : QualityName; // Hide "Unique" and "Highlight" quality from item names and types
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
