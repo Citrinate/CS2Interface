@@ -42,6 +42,8 @@ Property | Type | Description
 `item_name` | `string` | The item's name
 `tool_name` | `string` | What type of tool this is (usually the same as `type_name`, except for Sealed Graffiti)
 `tint_name` | `string` | The item's tint
+`highlight_reel_name` | `string` | The name of the highlight
+`highlight_reel_video_url` | `string` | A video of the highlight
 `weapon_image_url` | `string` | An image of the item (if one exists in [items_game_cdn.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md))
 `weapon_name` | `string` | The weapon this applies to
 `wear_name` | `string` | The name for the float range this item falls into
@@ -63,6 +65,7 @@ Property | Type | Description
 `defs.sticker_kit_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `sticker_kits`
 `defs.music_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `music_definitions`
 `defs.keychain_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `keychain_definitions`
+`defs.highlight_reel_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `highlight_reels`
 
 ## Example Responses
 

@@ -24,6 +24,7 @@ namespace CS2Interface {
 			PaintIndex = ItemInfo.paintindex;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;
 			KeychainID = ItemInfo.keychains.FirstOrDefault()?.sticker_id;
+			HighlightReel = (ItemInfo.keychains.FirstOrDefault()?.ShouldSerializehighlight_reel() ?? false) ? ItemInfo.keychains.FirstOrDefault()?.highlight_reel : null;
 			Quality = ItemInfo.quality;
 			Rarity = ItemInfo.rarity;
 			Origin = ItemInfo.origin;

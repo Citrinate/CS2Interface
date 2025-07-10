@@ -13,6 +13,7 @@ namespace CS2Interface {
 		public uint? TintID;
 		public uint? MusicID;
 		public uint? KeychainID;
+		public uint? HighlightReel;
 		public uint Quality;
 		public uint Rarity;
 		public uint? Origin;
@@ -52,6 +53,14 @@ namespace CS2Interface {
 		[JsonInclude]
 		[JsonPropertyName("tint_name")]
 		public string? TintName { get; private set; }
+
+		[JsonInclude]
+		[JsonPropertyName("highlight_reel_name")]
+		public string? HighlightReelName { get; private set; }
+
+		[JsonInclude]
+		[JsonPropertyName("highlight_reel_video_url")]
+		public string? HighlightReelVideoURL { get; private set; }
 		
 		[JsonInclude]
 		[JsonPropertyName("weapon_image_url")]
@@ -130,6 +139,8 @@ namespace CS2Interface {
 		public bool ShouldSerializeItemName() => ItemName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeToolName() => ToolName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeTintName() => TintName != null && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeHighlightReelName() => HighlightReelName != null && ShouldSerializeAdditionalProperties;
+		public bool ShouldSerializeHighlightReelVideoURL() => HighlightReelVideoURL != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWeaponImageURL() => WeaponImageURL != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWeaponName() => WeaponName != null && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeWearName() => WearName != null && ShouldSerializeAdditionalProperties;
@@ -201,6 +212,19 @@ namespace CS2Interface {
 				TintName = GameData.CsgoEnglish[String.Format("Attrib_SprayTintValue_{0}", TintID)];
 			}
 
+			// Set the highlight name and url
+			if (ItemData.HighlightReelDef != null) {
+				HighlightReelName = GameData.CsgoEnglish[String.Format("HighlightReel_{0}", ItemData.HighlightReelDef["id"].Value)];
+				HighlightReelVideoURL = String.Format("https://cdn.steamstatic.com/apps/csgo/videos/highlightreels/{0}/{1}v{2}_{3}/{0}_{1}v{2}_{3}_{4}_{5}_ww_480p.webm", 
+					ItemData.HighlightReelDef["tournament event id"].Value?.PadLeft(3, '0'),
+					ItemData.HighlightReelDef["tournament event team0 id"].Value?.PadLeft(3, '0'),
+					ItemData.HighlightReelDef["tournament event team1 id"].Value?.PadLeft(3, '0'),
+					ItemData.HighlightReelDef["tournament event stage id"].Value?.PadLeft(3, '0'),
+					ItemData.HighlightReelDef["map"].Value,
+					ItemData.HighlightReelDef["id"].Value
+				);
+			}
+
 			// Set various weapon-only attributes
 			if (ItemData.PaintKitDef != null) {
 				WeaponName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
@@ -233,7 +257,11 @@ namespace CS2Interface {
 				} else if (WearName != null || (TintName != null && TintID != 0)) {
 					FullName = String.Format("{0} {1} | {2} ({3})", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName).Trim(); // Weapon Skins, Gloves, Graffiti
 				} else if (ItemName != null) {
-					FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers
+					if (HighlightReelName != null) {
+						FullName = String.Format("{0} {1} | {2} | {3}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, HighlightReelName).Trim(); // Highlights
+					} else {
+						FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers, Charms
+					}
 				} else {
 					FullName = String.Format("{0} {1}", displayQualityName, WeaponName ?? ToolName ?? TypeName).Trim(); // Agents, Cases
 				}
@@ -264,6 +292,11 @@ namespace CS2Interface {
 							Commodity = false;
 						}
 					}
+
+					if (IsKeychain() && HighlightReel != null) {
+						// Highlight reel charms are commodities
+						Commodity = true;
+					}
 				}
 			}
 
@@ -271,7 +304,7 @@ namespace CS2Interface {
 			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 				NameID = ItemData.ItemDef["name"].Value; // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", (ItemData.KeychainDef ?? ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
+				NameID = String.Format("[{0}]{1}", ItemData.HighlightReelDef?["id"].Value ?? (ItemData.KeychainDef ?? ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
 			}
 
 			if (NameID != null) {
@@ -310,6 +343,13 @@ namespace CS2Interface {
 						}
 					}
 				}
+
+				{ // Determine what highlight set, if any, this item belongs to
+					if (ItemData.HighlightReelDef != null && ItemData.KeychainDef != null && SetNameID == null) {
+						SetNameID = ItemData.KeychainDef["tags"]["KeychainCapsule"]["tag_value"].Value;
+						SetName = GameData.CsgoEnglish[ItemData.KeychainDef["tags"]["KeychainCapsule"]["tag_text"].Value];
+					}
+				}
 			}
 
 			// Also set details for any attached stickers, patches, or keychains
@@ -340,7 +380,8 @@ namespace CS2Interface {
 					DefIndex = 1355,
 					PaintIndex = 0,
 					KeychainID = KeychainID,
-					Quality = 4
+					HighlightReel = HighlightReel,
+					Quality = (uint) (HighlightReel != null ? 12 : 4)
 				};
 
 				keychain.SetDefs();

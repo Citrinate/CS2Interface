@@ -32,11 +32,17 @@ namespace CS2Interface {
 		[JsonConverter(typeof(KVConverter))]
 		public KeyValue? KeychainDef { get; private init; }
 
+		[JsonInclude]
+		[JsonPropertyName("highlight_reel_def")]
+		[JsonConverter(typeof(KVConverter))]
+		public KeyValue? HighlightReelDef { get; private init; }
+
 		public bool ShouldSerializeItemDef() => ItemDef != null;
 		public bool ShouldSerializePaintKitDef() => PaintKitDef != null;
 		public bool ShouldSerializeStickerKitDef() => StickerKitDef != null;
 		public bool ShouldSerializeMusicDef() => MusicDef != null;
 		public bool ShouldSerializeKeychainDef() => KeychainDef != null;
+		public bool ShouldSerializeHighlightReelDef() => HighlightReelDef != null;
 
 		internal ItemData(Item item) {
 			ItemDef = CreateItemDef(item);
@@ -44,6 +50,7 @@ namespace CS2Interface {
 			StickerKitDef = CreateStickerKitDef(item);
 			MusicDef = CreateMusicDef(item);
 			KeychainDef = CreateKeychainDef(item);
+			HighlightReelDef = CreateHighlightReelDef(item);
 		}
 
 		private KeyValue CreateItemDef(Item item) {
@@ -177,7 +184,6 @@ namespace CS2Interface {
 			return musicDef.Clone();
 		}
 
-
 		private KeyValue? CreateKeychainDef(Item item) {
 			if (item.KeychainID == null || !item.IsKeychain()) {
 				// This item has no keychain definition
@@ -192,6 +198,22 @@ namespace CS2Interface {
 			}
 
 			return keychainDef.Clone();
+		}
+
+		private KeyValue? CreateHighlightReelDef(Item item) {
+			if (item.HighlightReel == null || !item.IsKeychain()) {
+				// This item has no highlight definition
+				return null;
+			}
+
+			KeyValue highlightreelDef = GameData.ItemsGame["highlight_reels"][item.HighlightReel.ToString()!];
+			if (highlightreelDef == KeyValue.Invalid) {
+				ASF.ArchiLogger.LogGenericError(String.Format("{0}: highlight_reels[{1}]", Strings.GameDataDefinitionUndefined, item.HighlightReel));
+
+				throw new Exception();
+			}
+
+			return highlightreelDef.Clone();
 		}
 	}
 }
