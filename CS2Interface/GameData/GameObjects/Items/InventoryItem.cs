@@ -95,6 +95,11 @@ namespace CS2Interface {
 				return false;
 			}
 
+			// Trade protected items
+			if (Attributes.GetValueOrDefault("trade protected escrow date")?.ToUInt32() != null) {
+				return false;
+			}
+
 			// Modified stock items that appear in inventory, untested, might not be necessary
 			if (ItemInfo.rarity == 0) {
 				return false;
