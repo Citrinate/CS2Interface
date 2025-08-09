@@ -64,7 +64,7 @@ namespace CS2Interface {
 						break;
 
 					case "float":
-					case null when attribute_def["stored_as_integer"].Value == "0":
+					case null when attribute_def["stored_as_integer"].Value == "0" || attribute_def["stored_as_integer"].Value == "float_floor_to_integer":
 						parsedAttributes.Add(attribute_name, new Attribute<float>(attribute_name, BitConverter.ToSingle(attribute.value_bytes.ToArray())));
 						break;
 
