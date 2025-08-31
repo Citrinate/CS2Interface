@@ -8,7 +8,7 @@ using CS2Interface.Localization;
 namespace CS2Interface {
 	internal static class GameData {
 		internal static GameDataItems ItemsGame {get; private set;} = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game.txt");
-		internal static GameDataDictionary ItemsGameCdn {get; private set;} = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/scripts/items/items_game_cdn.txt");
+		internal static GameDataDictionary ItemsGameCdn {get; private set;} = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/5d339d0fce93ad9d96f6385410f21453304ad4e0/game/csgo/pak01_dir/scripts/items/items_game_cdn.txt");
 		internal static GameDataText CsgoEnglish {get; private set;} = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/pak01_dir/resource/csgo_english.txt");
 		internal static GameDataDictionary GameVersion {get; private set;} = new("https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/game/csgo/steam.inf");
 		internal static uint? ClientVersion {get; private set;}
