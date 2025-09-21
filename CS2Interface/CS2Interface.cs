@@ -61,7 +61,7 @@ namespace CS2Interface {
 		}
 
 		public Task<IReadOnlyCollection<ClientMsgHandler>?> OnBotSteamHandlersInit(Bot bot) {
-			return Task.FromResult<IReadOnlyCollection<ClientMsgHandler>?>(new HashSet<ClientMsgHandler> { });
+			return Task.FromResult<IReadOnlyCollection<ClientMsgHandler>?>([ new SteamCallback.SteamHandler() ]);
 		}
 
 		public async Task OnBotDisconnected(Bot bot, EResult reason) {

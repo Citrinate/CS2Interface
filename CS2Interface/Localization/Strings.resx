@@ -379,4 +379,22 @@
     <value>CS2 Interface is connected and will auto-stop in {0} minutes</value>
     <comment>{0} will be replaced by a number</comment>
   </data>
+  <data name="InitializingPurchase" xml:space="preserve">
+    <value>Initializing purchase: {0} of {1} ({2}) for {3}</value>
+    <comment>{0} will be replaced by a quantity, {1} will be replaced by an id number, {2} will be replaced by an id number, {3} will be replaced by a cost number</comment>
+  </data>
+  <data name="ResponseMismatch" xml:space="preserve">
+    <value>Response mismatch</value>
+    <comment>
+</comment>
+  </data>
+  <data name="InvalidPurchase" xml:space="preserve">
+    <value>Invalid Purchase</value>
+    <comment>
+</comment>
+  </data>
+  <data name="PurchaseFailed" xml:space="preserve">
+    <value>Purchase failed with error: {0}</value>
+    <comment>{0} will be replaced by a number</comment>
+  </data>
 </root>

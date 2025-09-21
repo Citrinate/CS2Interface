@@ -19,6 +19,7 @@ namespace CS2Interface {
 		internal readonly SteamGameCoordinator GameCoordinator;
 		internal CallbackManager CallbackManager;
 		internal event Action<SteamGameCoordinator.MessageCallback>? OnGCMessageRecieved;
+		internal event Action<SteamCallback.ClientMicroTxnAuthRequestCallback>? OnClientMicroTxnAuthRequestRecieved;
 		private bool HasGCSession = false;
 		private const int MaxSimultaneousGCRequests = 1;
 		private SemaphoreSlim GCSemaphore = new SemaphoreSlim(MaxSimultaneousGCRequests, MaxSimultaneousGCRequests);
@@ -34,6 +35,7 @@ namespace CS2Interface {
 			CallbackManager = callbackManager;
 			GameCoordinator = Bot.GetHandler<SteamGameCoordinator>() ?? throw new InvalidOperationException(nameof(SteamGameCoordinator));
 			callbackManager.Subscribe<SteamGameCoordinator.MessageCallback>(OnGCMessage);
+			callbackManager.Subscribe<SteamCallback.ClientMicroTxnAuthRequestCallback>(OnClientMicroTxnAuthRequestCallback);
 		}
 
 		internal async Task<bool> Run() {
@@ -146,7 +148,7 @@ namespace CS2Interface {
 			}
 			
 #if DEBUG
-			Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: {1}", Strings.MessageRecieved, callback.EMsg));
+			Bot.ArchiLogger.LogGenericDebug(String.Format("GC {0}: {1}", Strings.MessageRecieved, callback.EMsg));
 #endif
 
 			OnGCMessageRecieved?.Invoke(callback);
@@ -168,6 +170,10 @@ namespace CS2Interface {
 			}
 
 			func(callback.Message);
+		}
+
+		private void OnClientMicroTxnAuthRequestCallback(SteamCallback.ClientMicroTxnAuthRequestCallback callback) {
+			OnClientMicroTxnAuthRequestRecieved?.Invoke(callback);
 		}
 
 		private void OnClientWelcome(IPacketGCMsg packetMsg) {
@@ -544,7 +550,7 @@ namespace CS2Interface {
 			return true;
 		}
 		
-		internal async Task<GCMsg.MsgCraftResponse> Craft(ushort recipe, List<ulong> item_ids) {
+		internal async Task<SteamMessage.GCCraftResponse> Craft(ushort recipe, List<ulong> item_ids) {
 			if (!HasGCSession) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
@@ -583,7 +589,7 @@ namespace CS2Interface {
 			await GCSemaphore.WaitAsync().ConfigureAwait(false);
 			
 			try {
-				var msg = new ClientGCMsg<GCMsg.MsgCraft>() {
+				var msg = new ClientGCMsg<SteamMessage.GCCraft>() {
 					Body = {
 						Recipe = recipe,
 						ItemCount = (ushort) item_ids.Count,
@@ -594,24 +600,105 @@ namespace CS2Interface {
 				var fetcher = new GCFetcher{
 					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCCraftResponse,
 					VerifyResponse = message => {
-						var response = new ClientGCMsg<GCMsg.MsgCraftResponse>(message);
+						var response = new ClientGCMsg<SteamMessage.GCCraftResponse>(message);
 
-						return response.Body.Recipe == recipe || response.Body.Recipe == GCMsg.MsgCraft.UnknownRecipe;
+						return response.Body.Recipe == recipe || response.Body.Recipe == SteamMessage.GCCraft.UnknownRecipe;
 					}
 				};
 
 				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.CraftingItem, recipe, String.Join(", ", item_ids)));
 
-				var response = await fetcher.RawFetch<GCMsg.MsgCraftResponse>(this, msg).ConfigureAwait(false);
+				var response = await fetcher.RawFetch<SteamMessage.GCCraftResponse>(this, msg).ConfigureAwait(false);
 				if (response == null) {
 					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
-				if (response.Body.Recipe == GCMsg.MsgCraft.UnknownRecipe) {
+				if (response.Body.Recipe == SteamMessage.GCCraft.UnknownRecipe) {
 					throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidCraftRecipe);
 				}
 
 				return response.Body;
+			} finally {
+				GCSemaphore.Release();
+			}
+		}
+
+		internal async Task<SteamMessage.ClientMicroTxnAuthRequest> InitializePurchase(uint item_id, uint quantity, uint cost, ulong supplemental_data = 0) {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+
+			try {
+				var msg = new ClientGCMsgProtobuf<CMsgGCStorePurchaseInit>((uint) EGCItemMsg.k_EMsgGCStorePurchaseInit) { Body = {
+					country = "", // not sure that this is used, testing revealed a value of "" sent by client
+					language = 0, // not sure that this is used, testing revealed a value of 0 sent by client
+					currency = 0, // not sure that this is used, testing revealed a value of 0 sent by client
+					line_items = { new CGCStorePurchaseInit_LineItem {
+						item_def_id = item_id,
+						quantity = quantity,
+						cost_in_local_currency = cost,
+						// purchase_type = 0, // not sure that this is used, testing revealed this property wasn't sent by client, defaulting to 0
+						supplemental_data = supplemental_data
+					}}
+				}};
+
+				// There are two responses from this request that will be recieved:
+				//   1. ClientFromGC : GCStorePurchaseInitResponse
+				//   2. ClientMicroTxnAuthRequest (does not come from game coordinator)
+
+				var fetcher = new GCFetcher{
+					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCStorePurchaseInitResponse,
+					TTLSeconds = 5
+				};
+
+				SteamCallback.ClientMicroTxnAuthRequestCallback? clientMicroTxnAuthRequestResponse = null;
+
+				void handler(SteamCallback.ClientMicroTxnAuthRequestCallback callback) {
+					try {
+						clientMicroTxnAuthRequestResponse = callback;
+					} finally {
+						OnClientMicroTxnAuthRequestRecieved -= handler;
+					}
+				}
+
+				OnClientMicroTxnAuthRequestRecieved += handler;
+
+				try {
+					Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.InitializingPurchase, quantity, item_id, supplemental_data, cost));
+
+					var response = await fetcher.Fetch<CMsgGCStorePurchaseInitResponse>(this, msg).ConfigureAwait(false);
+					if (response == null) {
+						throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+					}
+
+					if (response.Body.result != 1) {
+						throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.PurchaseFailed, response.Body.result));
+					}
+
+					if (clientMicroTxnAuthRequestResponse == null) {
+						await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+						if (clientMicroTxnAuthRequestResponse == null) {
+							// This response being missing means that the line_items purchase parameters are invalid
+							throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidPurchase);
+						}
+					}
+
+					// Verify both responses match
+					if (response.Body.txn_id != clientMicroTxnAuthRequestResponse.Body.OrderDetails["orderid"].AsUnsignedLong()
+						|| item_id != clientMicroTxnAuthRequestResponse.Body.OrderDetails["lineitems"]["0"]["gameitemid"].AsUnsignedLong()
+						|| cost != clientMicroTxnAuthRequestResponse.Body.OrderDetails["lineitems"]["0"]["amount"].AsUnsignedLong()
+						|| quantity != clientMicroTxnAuthRequestResponse.Body.OrderDetails["lineitems"]["0"]["quantity"].AsUnsignedInteger()
+					) {
+						throw new ClientException(EClientExceptionType.BadRequest, Strings.ResponseMismatch);
+					}
+
+					return clientMicroTxnAuthRequestResponse.Body;
+				} finally {
+					OnClientMicroTxnAuthRequestRecieved -= handler;
+				}
 			} finally {
 				GCSemaphore.Release();
 			}

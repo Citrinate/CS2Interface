@@ -325,7 +325,7 @@ namespace CS2Interface.IPC {
 
 		[HttpGet("{botName:required}/CraftItem/{recipeID:required}")]
 		[EndpointSummary("Crafts an item using the specified trade up recipe")]
-		[ProducesResponseType(typeof(GenericResponse<GCMsg.MsgCraftResponse>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse<SteamMessage.GCCraftResponse>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
 		public async Task<ActionResult<GenericResponse>> CraftItem(string botName, ushort recipeID, [FromQuery] string itemIDs) {
@@ -354,14 +354,14 @@ namespace CS2Interface.IPC {
 				item_ids.Add(item_id);
 			}
 
-			GCMsg.MsgCraftResponse craftResponse;
+			SteamMessage.GCCraftResponse craftResponse;
 			try {
 				craftResponse = await client.Craft(recipeID, item_ids).ConfigureAwait(false);
 			} catch (ClientException e) {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			return Ok(new GenericResponse<GCMsg.MsgCraftResponse>(true, craftResponse));
+			return Ok(new GenericResponse<SteamMessage.GCCraftResponse>(true, craftResponse));
 		}
 
 		[HttpGet("Recipes")]
@@ -444,6 +444,38 @@ namespace CS2Interface.IPC {
 			}
 
 			return BadRequest(new GenericResponse(false, e.Message));
+		}
+
+		[HttpGet("{botName:required}/InitializePurchase")]
+		[EndpointSummary("Begin a purchase from the in-game store")]
+		[ProducesResponseType(typeof(GenericResponse<SteamMessage.ClientMicroTxnAuthRequest>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> InitializePurchase(string botName, [FromQuery] uint itemID, [FromQuery] uint quantity, [FromQuery] uint cost, [FromQuery] ulong supplementalData = 0) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			SteamMessage.ClientMicroTxnAuthRequest purchaseResponse;
+			try {
+				purchaseResponse = await client.InitializePurchase(itemID, quantity, cost, supplementalData).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse<SteamMessage.ClientMicroTxnAuthRequest>(true, purchaseResponse));
 		}
 	}
 }

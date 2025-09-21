@@ -81,6 +81,13 @@ API | Method | Parameters | Description
 --- | --- | --- | ---
 [`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](/CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's player profile
 
+
+#### Store
+
+API | Method | Parameters | Description
+--- | --- | --- | ---
+[`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`GET`|`itemID`, `quantity`, `cost`, `supplementalData`|Begin a purchase from the in-game store
+
 #### Data
 
 API | Method | Parameters | Description
