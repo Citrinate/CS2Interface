@@ -21,39 +21,6 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 
 ## Usage
 
-### Commands
-
-Command | Access | Description
---- | --- | ---
-`cs2interface`|`Master`|Prints the current version of the plugin
-`cstart [Bots] [Minutes]`|`Master`|Starts the CS2 Interface.  Optinally, automatically stop the interface after `Minutes` of inactivity
-`cstop [Bots]`|`Master`|Stops the CS2 Interface
-`cstatus [Bots]`|`Master`|Displays the status of the CS2 Interface
-
-#### Command Aliases
-
-Command | Alias |
---- | --- |
-`cstatus asf`|`csa`
-
----
-
-### AutoStartCS2Interface
-
-`bool` type with default value of `false`.  This configuration setting can be added to your individual bot config files.  If set to `true`, the CS2 Interface will automatically start after the bot comes online.  When used, [`FarmingPreferences`](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/Configuration#farmingpreferences) should also have the `FarmingPausedByDefault` flag enabled.
-
-```json
-"AutoStartCS2Interface": true,
-"FarmingPreferences": 1,
-```
-
-> [!NOTE]
-> It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also enable the `FarmingPausedByDefault` flag.  This will prevent ASF's CardFarmer module from starting automatically.
-> 
-> If you want to farm cards you can still do so using ASF's `resume` command, and the CS2 Interface will automatically resume when ASF stops farming.  There are events however that will cause ASF to stop farming even if ASF isn't actually finished farming (such as when a new game is added to your bot's account).  To guarantee that ASF fishishes farming cards you should use the `cstop` command, and then manually resume the interface when card farming is complete using the `cstart` command.
-
----
-
 ### IPC Interface
 
 #### Interface
@@ -97,3 +64,36 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/items_game_cdn.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md)|`GET`| |Get the contents of `items_game_cdn.txt`
 [`/Api/CS2Interface/csgo_english.txt`](/CS2Interface/IPC/Documentation/Data/CsgoEnglishTxt.md)|`GET`| |Get the contents of `csgo_english.txt`
 [`/Api/CS2Interface/steam.inf`](/CS2Interface/IPC/Documentation/Data/SteamInf.md)|`GET`| |Get the contents of `steam.inf`
+
+---
+
+### Commands
+
+Command | Access | Description
+--- | --- | ---
+`cs2interface`|`Master`|Prints the current version of the plugin
+`cstart [Bots] [Minutes]`|`Master`|Starts the CS2 Interface.  Optinally, automatically stop the interface after `Minutes` of inactivity
+`cstop [Bots]`|`Master`|Stops the CS2 Interface
+`cstatus [Bots]`|`Master`|Displays the status of the CS2 Interface
+
+#### Command Aliases
+
+Command | Alias |
+--- | --- |
+`cstatus asf`|`csa`
+
+---
+
+### AutoStartCS2Interface
+
+`bool` type with default value of `false`.  This configuration setting can be added to your individual bot config files.  If set to `true`, the CS2 Interface will automatically start after the bot comes online.  When used, [`FarmingPreferences`](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/Configuration#farmingpreferences) should also have the `FarmingPausedByDefault` flag enabled.
+
+```json
+"AutoStartCS2Interface": true,
+"FarmingPreferences": 1,
+```
+
+> [!NOTE]
+> It's not possible for a bot to farm non-CS2 cards and use the CS2 Interface at the same time.  These two operations can interfere with one another on startup, and so it's important to also enable the `FarmingPausedByDefault` flag.  This will prevent ASF's CardFarmer module from starting automatically.
+> 
+> If you want to farm cards you can still do so using ASF's `resume` command, and the CS2 Interface will automatically resume when ASF stops farming.  There are events however that will cause ASF to stop farming even if ASF isn't actually finished farming (such as when a new game is added to your bot's account).  To guarantee that ASF fishishes farming cards you should use the `cstop` command, and then manually resume the interface when card farming is complete using the `cstart` command.
