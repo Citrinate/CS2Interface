@@ -20,7 +20,7 @@ Name | Required | Description
 `itemID` | Yes | The definition index for the item you want to purchase
 `quantity` | Yes | Number of copies to purchase.  Maximum value of `20`
 `cost` | Yes | The current total price for `quantity` items (before taxes).  If the item is on sale, the sale price is used instead of the base price
-`supplementalData` | No | An additional id needed for certain values of `itemID`.  Souvenir Packages for example use this to specify which match the package is associated with by using the match id
+`supplementalData` | No | Additional data needed for certain values of `itemID`.  Souvenir Packages for example use this to specify which match the package is associated with
 
 ## Response Result
 
