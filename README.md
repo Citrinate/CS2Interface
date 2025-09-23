@@ -42,12 +42,17 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Take an item out of a storage unit
 [`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Place an item into a storage unit
 
+#### Matches
+
+API | Method | Parameters | Description
+--- | --- | --- | ---
+[`/Api/CS2Interface/{botNames}/GetTournamentInfo/{eventID}`](/CS2Interface/IPC/Documentation/Matches/GetTournamentInfo.md)|`GET`| |Get match information for a tournament
+
 #### Players
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
 [`/Api/CS2Interface/{botName}/PlayerProfile/{steamID}`](/CS2Interface/IPC/Documentation/Players/PlayerProfile.md)|`GET`| |Get a friend's player profile
-
 
 #### Store
 

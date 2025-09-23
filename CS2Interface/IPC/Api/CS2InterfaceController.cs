@@ -477,5 +477,43 @@ namespace CS2Interface.IPC {
 
 			return Ok(new GenericResponse<SteamMessage.ClientMicroTxnAuthRequest>(true, purchaseResponse));
 		}
+
+		[HttpGet("{botNames:required}/GetTournamentInfo/{eventID:required}")]
+		[EndpointSummary("Get match information for a given tournament")]
+		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_MatchList>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> InitializePurchase(string botNames, int eventID) {
+			if (string.IsNullOrEmpty(botNames)) {
+				throw new ArgumentNullException(nameof(botNames));
+			}
+			
+			HashSet<Bot>? bots = Bot.GetBots(botNames);
+			if ((bots == null) || (bots.Count == 0)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			foreach (Bot b in bots) {
+				ClientHandler.ClientHandlers[b.BotName].RefreshAutoStopTimer();
+			}
+
+			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
+			if (bot == null || client == null) {
+				(bot, client, status) = ClientHandler.GetAvailableClient(bots, EClientStatus.Connected);
+
+				if (bot == null || client == null) {
+					return BadRequest(new GenericResponse(false, status));
+				}
+			}
+
+			CMsgGCCStrike15_v2_MatchList response;
+			try {
+				response = await client.GetTournamentInfo(eventID).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse<CMsgGCCStrike15_v2_MatchList>(true, response));
+		}
 	}
 }

@@ -703,6 +703,35 @@ namespace CS2Interface {
 				GCSemaphore.Release();
 			}
 		}
+
+		internal async Task<CMsgGCCStrike15_v2_MatchList> GetTournamentInfo(int event_id) {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+
+			try {
+				var msg = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_MatchListRequestTournamentGames>((uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchListRequestTournamentGames) { Body = {
+					eventid = event_id
+				}};
+
+				var fetcher = new GCFetcher{
+					GCResponseMsgType = (uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_MatchList,
+				};
+
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RequestingTournamentGames, event_id));
+
+				var response = await fetcher.Fetch<CMsgGCCStrike15_v2_MatchList>(this, msg).ConfigureAwait(false);
+				if (response == null) {
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+				}
+
+				return response.Body;
+			} finally {
+				GCSemaphore.Release();
+			}
+		}
 	}
 
 	[Flags]
