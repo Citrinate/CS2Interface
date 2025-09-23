@@ -39,6 +39,7 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](/CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get a storage unit's contents
 [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect an item
 [`/Api/CS2Interface/{botName}/Inventory`](/CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
+[`/Api/CS2Interface/Recipes`](/CS2Interface/IPC/Documentation/Items/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
 [`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Take an item out of a storage unit
 [`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Place an item into a storage unit
 
@@ -64,7 +65,6 @@ API | Method | Parameters | Description
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/Recipes`](/CS2Interface/IPC/Documentation/Data/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
 [`/Api/CS2Interface/items_game.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md)|`GET`| |Get the contents of `items_game.txt`
 [`/Api/CS2Interface/items_game_cdn.txt`](/CS2Interface/IPC/Documentation/Data/ItemsGameCdnTxt.md)|`GET`| |Get the contents of `items_game_cdn.txt`
 [`/Api/CS2Interface/csgo_english.txt`](/CS2Interface/IPC/Documentation/Data/CsgoEnglishTxt.md)|`GET`| |Get the contents of `csgo_english.txt`
