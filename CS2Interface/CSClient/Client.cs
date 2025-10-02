@@ -732,6 +732,35 @@ namespace CS2Interface {
 				GCSemaphore.Release();
 			}
 		}
+
+		internal async Task<StoreData> GetStoreData() {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+
+			try {
+				var msg = new ClientGCMsgProtobuf<CMsgStoreGetUserData>((uint) EGCItemMsg.k_EMsgGCStoreGetUserData) { Body = {
+					currency = 0 // not sure that this is used, testing revealed a value of 0 sent by client
+				}};
+
+				var fetcher = new GCFetcher{
+					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCStoreGetUserDataResponse,
+				};
+
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RequestingStoreData));
+
+				var response = await fetcher.Fetch<CMsgStoreGetUserDataResponse>(this, msg).ConfigureAwait(false);
+				if (response == null) {
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+				}
+
+				return new StoreData(response.Body);
+			} finally {
+				GCSemaphore.Release();
+			}
+		}
 	}
 
 	[Flags]

@@ -14,7 +14,7 @@ Name | Required | Description
 `botNames` | Yes | One or more ASF [bot names](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/Commands#bots-argument)
 
 > [!NOTE]
-> Responses are not dependent on the account used to inspect an item. You may provide multiple `botNames`, and the first available bot will be used to make the request.
+> Responses are not dependent on the account. You may provide multiple `botNames`, and the first available bot will be used to make the request.
 
 ## Query Parameters
 

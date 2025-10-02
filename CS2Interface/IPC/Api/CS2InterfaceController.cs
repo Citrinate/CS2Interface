@@ -376,7 +376,7 @@ namespace CS2Interface.IPC {
 				return BadRequest(new GenericResponse(false, e.Message));
 			}
 
-			GameObject.SetSerializationProperties(true, showDefs);
+			GameObject.SetSerializationProperties(should_serialize_defs: showDefs);
 
 			return Ok(new GenericResponse<GameData<List<Recipe>>>(true, new GameData<List<Recipe>>(recipes)));
 		}
@@ -514,6 +514,46 @@ namespace CS2Interface.IPC {
 			}
 
 			return Ok(new GenericResponse<CMsgGCCStrike15_v2_MatchList>(true, response));
+		}
+
+		[HttpGet("{botNames:required}/GetStoreData")]
+		[EndpointSummary("Get information about the in-game store")]
+		[ProducesResponseType(typeof(GenericResponse<StoreData>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> GetStoreData(string botNames, [FromQuery] bool showDefs = false) {
+			if (string.IsNullOrEmpty(botNames)) {
+				throw new ArgumentNullException(nameof(botNames));
+			}
+			
+			HashSet<Bot>? bots = Bot.GetBots(botNames);
+			if ((bots == null) || (bots.Count == 0)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			foreach (Bot b in bots) {
+				ClientHandler.ClientHandlers[b.BotName].RefreshAutoStopTimer();
+			}
+
+			(Bot? bot, Client? client, string status) = ClientHandler.GetAvailableClient(bots);
+			if (bot == null || client == null) {
+				(bot, client, status) = ClientHandler.GetAvailableClient(bots, EClientStatus.Connected);
+
+				if (bot == null || client == null) {
+					return BadRequest(new GenericResponse(false, status));
+				}
+			}
+
+			StoreData response;
+			try {
+				response = await client.GetStoreData().ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			GameObject.SetSerializationProperties(should_serialize_defs: showDefs);
+
+			return Ok(new GenericResponse<StoreData>(true, response));
 		}
 	}
 }

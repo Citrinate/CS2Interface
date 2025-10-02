@@ -3,7 +3,7 @@ namespace CS2Interface {
 		protected static bool ShouldSerializeAdditionalProperties { get; private set; } = true;
 		protected static bool ShouldSerializeDefs { get; private set; } = true ; 
 
-		internal static void SetSerializationProperties(bool should_serialize_additional_properties, bool should_serialize_defs) {
+		internal static void SetSerializationProperties(bool should_serialize_additional_properties = true, bool should_serialize_defs = true) {
 			ShouldSerializeAdditionalProperties = should_serialize_additional_properties;
 			ShouldSerializeDefs = should_serialize_defs;
 		}

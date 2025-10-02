@@ -19,8 +19,11 @@ Name | Required | Description
 --- | --- | ---
 `itemID` | Yes | The definition index for the item you want to purchase
 `quantity` | Yes | Number of copies to purchase.  Maximum value of `20`
-`cost` | Yes | The current total price for `quantity` items (before taxes).  If the item is on sale, the sale price is used instead of the base price
-`supplementalData` | No | Additional data needed for certain values of `itemID`.  Souvenir Packages for example use this to specify which match the package is associated with
+`cost` | Yes | The total price (before taxes) for `quantity` items in the currency used by `botName` on the Steam store.  This value should be an integer representing an amount in that currency’s lowest unit (ex: 250 cents, not 2.50 dollars).  If the item is on sale, the sale price is used instead of the base price
+`supplementalData` | No | Additional data needed for certain values of `itemID`.  Souvenir Packages for example use the `matchid` of a tournament match to determine the kind of Souvenir Package
+
+> [!NOTE]
+> `itemID` and `cost` can be determined using the [GetStoreData](/CS2Interface/IPC/Documentation/Store/GetStoreData.md) API.  `supplementalData` can be determined using the [GetTournamentInfo](/CS2Interface/IPC/Documentation/Matches/GetTournamentInfo.md) API.
 
 ## Response Result
 
@@ -55,7 +58,7 @@ Property | Type | Description
 ## Example Response
 
 ```
-http://127.0.0.1:1242/Api/CS2Interface/Bot1/InitializePurchase?itemID=5116&quantity=1&cost=299&supplementalData=3757746979820535809
+http://127.0.0.1:1242/Api/CS2Interface/Bot1/InitializePurchase?itemID=5116&quantity=1&cost=299&supplementalData=3759444260701602000
 ```
 
 ```json
@@ -105,7 +108,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/InitializePurchase?itemID=5116&quant
 The following is an example of an invalid purchase due to incorrect cost (`199` instead of `299`)
 
 ```
-http://127.0.0.1:1242/Api/CS2Interface/Bot1/InitializePurchase?itemID=5116&quantity=1&cost=199&supplementalData=3757746979820535809
+http://127.0.0.1:1242/Api/CS2Interface/Bot1/InitializePurchase?itemID=5116&quantity=1&cost=199&supplementalData=3759444260701602000
 ```
 
 ```json

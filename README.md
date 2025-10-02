@@ -59,6 +59,7 @@ API | Method | Parameters | Description
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
+[`/Api/CS2Interface/{botNames}/GetStoreData`](/CS2Interface/IPC/Documentation/Store/GetStoreData.md)|`GET`|`showDefs`|Get information about the in-game store
 [`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`GET`|`itemID`, `quantity`, `cost`, `supplementalData`|Begin a purchase from the in-game store
 
 #### Data
