@@ -90,6 +90,12 @@ namespace CS2Interface {
 			// Ex: "valve weapon_case_key": "valve" isn't valid, but "weapon_case_key" is
 			// Ex: "antwerp2022_sticker_capsule_prefab antwerp2022_sellable_item_with_payment_rules": "antwerp2022_sticker_capsule_prefab" is valid, but "antwerp2022_sellable_item_with_payment_rules" isn't
 			string[] prefabNames = prefab.Split(" ");
+
+			// Some items ("volatile_pricing" prefab through Sealed Genesis Terminal) have only a "valve" prefab, which we can't do anything with
+			if (prefabNames.First() == "valve" && prefabNames.Length == 1) {
+				return true;
+			}
+
 			// Consider the merge successfull if at least one valid prefab was found
 			bool foundValid = false;
 
