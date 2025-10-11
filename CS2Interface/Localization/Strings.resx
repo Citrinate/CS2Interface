@@ -406,4 +406,8 @@
     <comment>
 </comment>
   </data>
+  <data name="NamingItem" xml:space="preserve">
+    <value>Naming item {0} using {1} to "{2}"</value>
+    <comment>{0} will be replaced by an id number, {1} will be replaced by an id number, {2} will be replaced by a string</comment>
+  </data>
 </root>

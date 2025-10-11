@@ -761,6 +761,57 @@ namespace CS2Interface {
 				GCSemaphore.Release();
 			}
 		}
+		
+		internal async Task<bool> NameItem(ulong item_id, string name, ulong nametag_item_id = 0) {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			if (!InventoryLoaded || Inventory == null) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
+			}
+
+			{
+				InventoryItem? item = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == item_id);
+				if (item == null) {
+					throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemNotFound, item_id));
+				}
+			}
+
+			if (nametag_item_id != 0) {
+				InventoryItem? nametag = Inventory.Values.FirstOrDefault(x => x.ItemInfo.id == nametag_item_id);
+				if (nametag == null) {
+					throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InventoryItemNotFound, nametag_item_id));
+				}
+			}
+
+			var msg = new ClientGCMsg<SteamMessage.GCNameItem>() {
+				Body = {
+					NameTagItemID = nametag_item_id,
+					ItemID = item_id,
+					Name = name
+				}
+			};
+
+			var fetcher = new GCFetcher{
+				GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
+				TTLSeconds = 5,
+				VerifyResponse = message => {
+					var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
+
+					return response.Body.item_id.FirstOrDefault() == item_id && response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_NameItem;
+				}
+			};
+
+			Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.NamingItem, item_id, nametag_item_id, name));
+
+			var response = await fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg).ConfigureAwait(false);
+			if (response == null) {
+				throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+			}
+
+			return true;
+		}
 	}
 
 	[Flags]

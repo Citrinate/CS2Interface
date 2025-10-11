@@ -555,5 +555,36 @@ namespace CS2Interface.IPC {
 
 			return Ok(new GenericResponse<StoreData>(true, response));
 		}
+
+		[HttpGet("{botName:required}/NameItem")]
+		[EndpointSummary("Add a nametag to an item")]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> NameItem(string botName, [FromQuery] ulong itemID, [FromQuery] string name, [FromQuery] ulong nameTagID = 0) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			try {
+				await client.NameItem(itemID, name, nameTagID).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse(true));
+		}
 	}
 }

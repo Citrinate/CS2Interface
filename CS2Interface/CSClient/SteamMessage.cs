@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.Json.Serialization;
 using SteamKit2;
 using SteamKit2.GC.CSGO.Internal;
@@ -117,6 +118,49 @@ namespace CS2Interface {
 				if (OrderID != 0 && TransID != 0) {
 					PurchaseUrl = String.Format("https://checkout.steampowered.com/checkout/approvetxn/{0}/?returnurl=https%3A%2F%2Fstore.steampowered.com%2Fbuyitem%2F730%2Ffinalize%2F{1}%3Fcanceledurl%3Dhttps%253A%252F%252Fstore.steampowered.com%252F%26returnhost%3Dstore.steampowered.com&canceledurl=https%3A%2F%2Fstore.steampowered.com%2F", TransID, OrderID);
 				}
+			}
+		}
+
+		public class GCNameItem : IGCSerializableMessage {
+			[JsonInclude]
+			[JsonPropertyName("nametag_itemid")]
+			public ulong NameTagItemID;
+
+			[JsonInclude]
+			[JsonPropertyName("itemid")]
+			public ulong ItemID;
+
+			[JsonInclude]
+			[JsonPropertyName("unknown")]
+			public byte Unknown;
+
+			[JsonInclude]
+			[JsonPropertyName("name")]
+			public string Name;
+
+			public GCNameItem() {
+				NameTagItemID = 0;
+				ItemID = 0;
+				Unknown = 0;
+				Name = "";
+			}
+
+			public uint GetEMsg() {
+				return (uint) EGCItemMsg.k_EMsgGCNameItem;
+			}
+
+			public void Serialize(Stream stream) {
+				BinaryWriter bw = new BinaryWriter(stream);
+
+				bw.Write(NameTagItemID);
+				bw.Write(ItemID);
+				bw.Write(Unknown);
+				bw.Write(Encoding.UTF8.GetBytes(Name)); // c-style string encoding
+				bw.Write((byte) 0x00); // string null terminator
+			}
+
+			public void Deserialize(Stream stream) {
+				throw new NotImplementedException();
 			}
 		}
 	}
