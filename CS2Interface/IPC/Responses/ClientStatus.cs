@@ -33,6 +33,10 @@ namespace CS2Interface.IPC {
 		[JsonPropertyName("Message")]
 		public string Message;
 
+		[JsonInclude]
+		[JsonPropertyName("Version")]
+		public string Version;
+
 		public bool ShouldSerializeInventorySize() => InventorySize != null;
 		public bool ShouldSerializeUnprotectedInventorySize() => UnprotectedInventorySize != null;
 		public bool ShouldSerializeAutoStopAt() => AutoStopAt != null;
@@ -49,6 +53,7 @@ namespace CS2Interface.IPC {
 			InventorySize = !InventoryLoaded || client?.Inventory == null ? null : client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null).Count();
 			UnprotectedInventorySize = !InventoryLoaded || client?.Inventory == null ? null : client.Inventory.Values.Where(x => x.IsVisible() && x.CasketID == null && x.Attributes?.GetValueOrDefault("trade protected escrow date")?.ToUInt32() == null).Count();
 			Message = message;
+			Version = (typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0")).ToString();
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace CS2Interface {
 				var callback = GetCallback(packetMsg);
 
 #if DEBUG
-				ASF.ArchiLogger.LogGenericDebug(String.Format("Steam {0}: {1}", Strings.MessageRecieved, packetMsg.MsgType));
+				// ASF.ArchiLogger.LogGenericDebug(String.Format("Steam {0}: {1}", Strings.MessageRecieved, packetMsg.MsgType));
 #endif
 
 				if (callback == null) {

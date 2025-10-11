@@ -27,6 +27,7 @@ Property | Type | Description
 `botName.UnprotectedInventorySize` | `int` | When `InventoryLoaded`, the number of items in the inventory of `botName` that are not trade protected
 `botName.AutoStopAt` | `string` | When the inteface is started with an `autoStop` value for `botName`, contains a date and time string in ISO 8601 format representing when the interface will auto-stop
 `botName.Message` | `string` | A description of the status for `botName`
+`botName.Version` | `string` | The current version of the plugin
 
 ## Example Response
 
@@ -46,7 +47,8 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/Status
       "InventorySize": 3,
       "UnprotectedInventorySize": 3,
       "AutoStopAt": "2025-06-09T19:25:50.3509119Z",
-      "Message": "CS2 Interface is connected and will auto-stop in 14.33 minutes"
+      "Message": "CS2 Interface is connected and will auto-stop in 14.33 minutes",
+      "Version": "1.2.0.0"
     }
   }
 }
