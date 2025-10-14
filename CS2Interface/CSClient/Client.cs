@@ -380,7 +380,12 @@ namespace CS2Interface {
 
 			uint? items_count = casket.Attributes?.GetValueOrDefault("items count")?.ToUInt32();
 			if (items_count == null) {
-				throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
+				if (casket.Attributes == null || casket.Attributes.Values.Count == 0) {
+					// New unlabeled storage unit
+					items_count = 0;
+				} else {
+					throw new ClientException(EClientExceptionType.Failed, Strings.CasketContentsUndefined);
+				}
 			}
 
 			if (items_count == 0) {
