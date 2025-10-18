@@ -790,32 +790,39 @@ namespace CS2Interface {
 				}
 			}
 
-			var msg = new ClientGCMsg<SteamMessage.GCNameItem>() {
-				Body = {
-					NameTagItemID = nametag_item_id,
-					ItemID = item_id,
-					Name = name
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+
+			try {
+				var msg = new ClientGCMsg<SteamMessage.GCNameItem>() {
+					Body = {
+						NameTagItemID = nametag_item_id,
+						ItemID = item_id,
+						Name = name
+					}
+				};
+
+				var fetcher = new GCFetcher{
+					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
+					TTLSeconds = 5,
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
+
+						// Note: naming an item that didn't already have a name deletes the original and creates a new copy (with a new id)
+						return response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_NameItem;
+					}
+				};
+
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.NamingItem, item_id, nametag_item_id, name));
+
+				var response = await fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg).ConfigureAwait(false);
+				if (response == null) {
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
-			};
 
-			var fetcher = new GCFetcher{
-				GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
-				TTLSeconds = 5,
-				VerifyResponse = message => {
-					var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
-
-					return response.Body.item_id.FirstOrDefault() == item_id && response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_NameItem;
-				}
-			};
-
-			Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.NamingItem, item_id, nametag_item_id, name));
-
-			var response = await fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg).ConfigureAwait(false);
-			if (response == null) {
-				throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
+				return true;
+			} finally {
+				GCSemaphore.Release();
 			}
-
-			return true;
 		}
 	}
 

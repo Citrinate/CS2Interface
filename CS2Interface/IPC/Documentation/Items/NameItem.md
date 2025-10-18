@@ -4,6 +4,9 @@
 
 Adds a name to an item
 
+> [!NOTE]
+> Each bot can only process 1 `NameItem` request at a time.
+
 ## Path Parameters
 
 Name | Required | Description
