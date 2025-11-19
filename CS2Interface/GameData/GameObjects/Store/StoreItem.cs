@@ -41,6 +41,10 @@ namespace CS2Interface {
 
 			DefIndex = uint.Parse(itemDef.Name!);
 
+			if (itemDef["attributes"]["display case keychain id"].Value != null) {
+				KeychainID = uint.Parse(itemDef["attributes"]["display case keychain id"].Value!);
+			}
+
 			SetDefs();
 
 			ID = DefIndex;
@@ -49,7 +53,7 @@ namespace CS2Interface {
 				return;
 			}
 
-			Name = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
+			Name = GameData.CsgoEnglish[ItemData.KeychainDef?["loc_name"].Value ?? ItemData.ItemDef["item_name"].Value];
 
 			// Get information related to InitializePurchase supplementalData parameter 
 			{

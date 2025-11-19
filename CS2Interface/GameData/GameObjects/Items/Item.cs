@@ -169,7 +169,7 @@ namespace CS2Interface {
 
 		public bool IsSticker() => DefIndex == StickerDefIndex || DefIndex == PatchDefIndex;
 		public bool IsGraffiti() => DefIndex == SealedGraffitiDefIndex || DefIndex == GraffitiDefIndex;
-		public bool IsKeychain() => DefIndex == CharmDefIndex;
+		public bool IsKeychain(KeyValue? itemDef = null) => DefIndex == CharmDefIndex || itemDef?["item_name"].Value == "#CSGO_Tool_Keychain";
 
 		protected override bool SetDefs() {
 			try {

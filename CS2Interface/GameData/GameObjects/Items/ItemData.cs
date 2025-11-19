@@ -191,7 +191,7 @@ namespace CS2Interface {
 		}
 
 		private KeyValue? CreateKeychainDef(Item item) {
-			if (item.KeychainID == null || !item.IsKeychain()) {
+			if (item.KeychainID == null || !item.IsKeychain(ItemDef)) {
 				// This item has no keychain definition
 				return null;
 			}
