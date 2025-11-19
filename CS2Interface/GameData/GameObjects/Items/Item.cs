@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using SteamKit2;
 
 namespace CS2Interface {
@@ -159,7 +160,16 @@ namespace CS2Interface {
 		public bool ShouldSerializeKeychains() => Keychains.Count > 0 && ShouldSerializeAdditionalProperties;
 		public bool ShouldSerializeItemData() => ItemData != null && ShouldSerializeDefs;
 
-		public const uint NumStickerSlots = 6;
+		public const uint NumStickerSlots = 6; // Maximum number of stickers that may be placed on a skin
+		public const uint StickerDefIndex = 1209; // The item definition index for a base sticker
+		public const uint PatchDefIndex = 4609; // The item definition index for a base patch
+		public const uint SealedGraffitiDefIndex = 1348; // The item definition index for a base sealed graffiti
+		public const uint GraffitiDefIndex = 1349; // The item definition index for a base graffiti
+		public const uint CharmDefIndex = 1355; // The item definition index for a base charm
+
+		public bool IsSticker() => DefIndex == StickerDefIndex || DefIndex == PatchDefIndex;
+		public bool IsGraffiti() => DefIndex == SealedGraffitiDefIndex || DefIndex == GraffitiDefIndex;
+		public bool IsKeychain() => DefIndex == CharmDefIndex;
 
 		protected override bool SetDefs() {
 			try {
@@ -215,7 +225,7 @@ namespace CS2Interface {
 			}
 
 			// Set the graffiti color
-			if ((DefIndex == 1348 || DefIndex == 1349) && TintID != null) {
+			if ((DefIndex == SealedGraffitiDefIndex || DefIndex == GraffitiDefIndex) && TintID != null) {
 				TintName = GameData.CsgoEnglish[String.Format("Attrib_SprayTintValue_{0}", TintID)];
 			}
 
@@ -361,21 +371,20 @@ namespace CS2Interface {
 
 			// Also set details for any attached stickers, patches, or keychains
 			if (StickerIDs.Count > 0 && !IsSticker()) {
-				uint stickerDefIndex = 1209; // Sticker
+				uint stickerDefIndex = StickerDefIndex;
 				if (ItemData.ItemDef["stickers"].Value == "agent") {
-					stickerDefIndex = 4609; // Patch
+					stickerDefIndex = PatchDefIndex;
 				}
 
 				foreach (uint stickerID in StickerIDs) {
 					Item sticker = new Item() {
 						DefIndex = stickerDefIndex,
-						PaintIndex = 0,
 						StickerIDs = [stickerID],
 						Quality = 4
 					};
 
 					sticker.SetDefs();
-					sticker.Rarity = GameData.ItemsGame["rarities"][sticker.ItemData?.StickerKitDef?["item_rarity"].Value ?? "default"]["value"].AsUnsignedInteger();
+					sticker.Rarity = GameData.ItemsGame["rarities"][sticker.ItemData?.StickerKitDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
 					sticker.SetAdditionalProperties();
 
 					Stickers[stickerID] = sticker;
@@ -384,15 +393,14 @@ namespace CS2Interface {
 
 			if (KeychainID != null && !IsKeychain()) {
 				Item keychain = new Item() {
-					DefIndex = 1355,
-					PaintIndex = 0,
+					DefIndex = CharmDefIndex,
 					KeychainID = KeychainID,
-					HighlightReel = HighlightReel,
-					Quality = (uint) (HighlightReel != null ? 12 : 4)
+					HighlightReel = HighlightReel
 				};
 
 				keychain.SetDefs();
-				keychain.Rarity = GameData.ItemsGame["rarities"][keychain.ItemData?.KeychainDef?["item_rarity"].Value ?? "default"]["value"].AsUnsignedInteger();
+				keychain.Rarity = GameData.ItemsGame["rarities"][keychain.ItemData?.KeychainDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
+				keychain.Quality = GameData.ItemsGame["qualities"][keychain.ItemData?.KeychainDef?["item_quality"].Value ?? "unique"]["value"].AsUnsignedInteger();
 				keychain.SetAdditionalProperties();
 
 				Keychains[KeychainID.Value] = keychain;
@@ -401,18 +409,109 @@ namespace CS2Interface {
 			return true;
 		}
 
-		public bool IsSticker() {
-			return DefIndex == 1209 // Sticker
-				|| DefIndex == 4609; // Patch
-		}
+		internal static Item? GetItemFromNameID(string nameID, bool isStatTrak = false) {
+			Regex reg = new Regex(@"\[(?<skin>[^\]]+)\](?<base>.+)|(?<base>.+)"); // Match examples: "[kc_missinglink_ava]keychain", "crate_sticker_pack_team_roles_capsule"
+			Match match = reg.Match(nameID);
+			if (!match.Success) {
+				return null;
+			}
 
-		public bool IsGraffiti() {
-			return DefIndex == 1348 // Sealed Graffiti
-				|| DefIndex == 1349; // Graffiti
-		}
+			string baseName = match.Groups["base"].Value;
+			string skinName = match.Groups["skin"].Value;
+			string skinIndex = baseName switch {
+				"sticker" or "patch" => "sticker_kits",
+				"musickit" => "music_definitions",
+				"keychain" => "keychain_definitions",
+				_ => "paint_kits"
+			};
 
-		public bool IsKeychain() {
-			return DefIndex == 1355; // Charm
+			KeyValue? baseDef = GameData.ItemsGame["items"].Children.FirstOrDefault(x => x["name"].Value == baseName);
+			if (baseDef == null) {
+				return null;
+			}
+
+			uint baseDefIndex = uint.Parse(baseDef.Name!);
+
+			if (skinName == "") {
+				// ex: "crate_sticker_pack_team_roles_capsule",
+				Item item = new Item() {
+					DefIndex = baseDefIndex,
+					StatTrak = isStatTrak
+				};
+
+				item.SetDefs();
+				item.Rarity = GameData.ItemsGame["rarities"][item.ItemData?.ItemDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
+				item.Quality = GameData.ItemsGame["qualities"][item.ItemData?.ItemDef?["item_quality"].Value ?? "unique"]["value"].AsUnsignedInteger();
+				item.SetAdditionalProperties();
+
+				return item;
+			}
+
+			KeyValue? skinDef = GameData.ItemsGame[skinIndex].Children.FirstOrDefault(x => x["name"].Value == skinName);
+
+			if (skinDef == null) {
+				return null;
+			}
+
+			uint skinDefIndex = uint.Parse(skinDef.Name!);
+			
+			if (skinIndex == "sticker_kits") {
+				// ex: [neluthebear]sticker
+				Item sticker = new Item() {
+					DefIndex = baseDefIndex,
+					StickerIDs = [skinDefIndex],
+					Quality = 4
+				};
+
+				sticker.SetDefs();
+				sticker.Rarity = GameData.ItemsGame["rarities"][sticker.ItemData?.StickerKitDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
+				sticker.SetAdditionalProperties();
+
+				return sticker;
+			} else if (skinIndex == "music_definitions") {
+				// ex: [darude_01]musickit
+				Item musicKit = new Item() {
+					DefIndex = baseDefIndex,
+					MusicID = skinDefIndex,
+					StatTrak = isStatTrak,
+					Quality = (uint) (isStatTrak ? 9 : 4),
+					Rarity = 3
+				};
+
+				musicKit.SetDefs();
+				musicKit.SetAdditionalProperties();
+
+				return musicKit;
+			} else if (skinIndex == "keychain_definitions") {
+				// ex: [kc_missinglink_ava]keychain
+				Item keychain = new Item() {
+					DefIndex = baseDefIndex,
+					KeychainID = skinDefIndex,
+					Quality = 4
+				};
+
+				keychain.SetDefs();
+				keychain.Rarity = GameData.ItemsGame["rarities"][keychain.ItemData?.KeychainDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
+				keychain.SetAdditionalProperties();
+
+				return keychain;
+			} else if (skinIndex == "paint_kits") {
+				// ex: [cu_ak47_cobra]weapon_ak47
+				Item weaponSkin = new Item() {
+					DefIndex = baseDefIndex,
+					PaintIndex = skinDefIndex,
+					StatTrak = isStatTrak,
+					Quality = (uint) (isStatTrak ? 9 : 4)
+				};
+
+				weaponSkin.SetDefs();
+				weaponSkin.Rarity = GameData.ItemsGame["rarities"][GameData.ItemsGame["paint_kits_rarity"][skinName].Value ?? weaponSkin.ItemData?.ItemDef?["item_rarity"].Value ?? "common"]["value"].AsUnsignedInteger();
+				weaponSkin.SetAdditionalProperties();
+
+				return weaponSkin;
+			} else {
+				return null;
+			}
 		}
 	}
 }

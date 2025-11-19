@@ -40,6 +40,8 @@ Property | Type | Description
 `price_sheet_items[].def_index` | `uint` | The item's definition index
 `price_sheet_items[].name` | `string` | The name of the item
 `price_sheet_items[].tournament_id` | `uint` | For items related to a tournament, the `eventid` of that tournament
+`price_sheet_items[].requires_supplemental_data` | `boolean` | Whether or not an [InitializePurchase](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md) request for this item requires a `supplementalData` parameter
+`price_sheet_items[].loot_list` | `array` | For items that have loot lists, all of the items in the loot list.  The objects in this array are a stripped down version of the response result from [InspectItem](/CS2Interface/IPC/Documentation/Items/InspectItem.md)
 `price_sheet_items[].defs.item_def` | `object` | Related game data found in [items_game.txt](/CS2Interface/IPC/Documentation/Data/ItemsGameTxt.md) under `items`
 
 ## Example Response
@@ -168,6 +170,49 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/GetStoreData
             "QAR": 729,
             "UYU": 8100,
             "USD": 199
+          }
+        },
+        "coupon - darude_01": {
+          "item_link": "coupon - darude_01",
+          "category_tags": "Misc",
+          "prices": {
+            "GBP": 369,
+            "EUR": 439,
+            "RUB": 40500,
+            "BRL": 2849,
+            "JPY": 71500,
+            "NOK": 4900,
+            "IDR": 8199900,
+            "MYR": 2125,
+            "PHP": 28000,
+            "SGD": 660,
+            "THB": 16200,
+            "VND": 12500000,
+            "KRW": 689000,
+            "UAH": 20000,
+            "MXN": 9599,
+            "CAD": 679,
+            "AUD": 770,
+            "NZD": 835,
+            "CNY": 3500,
+            "TWD": 15000,
+            "HKD": 3800,
+            "INR": 42500,
+            "AED": 1900,
+            "SAR": 1895,
+            "ZAR": 8995,
+            "COP": 2024000,
+            "PEN": 1795,
+            "CLP": 480000,
+            "CHF": 409,
+            "CRC": 255000,
+            "ILS": 1735,
+            "KZT": 262000,
+            "KWD": 150,
+            "PLN": 1885,
+            "QAR": 1799,
+            "UYU": 20300,
+            "USD": 499
           }
         },
         "tournament_pass_aus2025_charge": {
@@ -340,21 +385,43 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/GetStoreData
     "price_sheet_items": {
       "Name Tag": {
         "def_index": 1200,
-        "name": "Name Tag"
+        "name": "Name Tag",
+        "requires_supplemental_data": false
       },
       "casket": {
         "def_index": 1201,
-        "name": "Storage Unit"
+        "name": "Storage Unit",
+        "requires_supplemental_data": false
+      },
+      "coupon - darude_01": {
+        "def_index": 20093,
+        "name": "Music Kit | Darude, Moments CS:GO",
+        "requires_supplemental_data": false,
+        "loot_list": [
+          {
+            "full_name": "Music Kit | Darude, Moments CSGO",
+            "full_type_name": "High Grade Music Kit",
+            "rarity_name": "High Grade",
+            "quality_name": "Unique",
+            "type_name": "Music Kit",
+            "item_name": "Darude, Moments CSGO",
+            "stattrak": false,
+            "commodity": true,
+            "name_id": "[darude_01]musickit",
+          }
+        ]
       },
       "tournament_pass_aus2025_charge": {
         "def_index": 5116,
         "name": "Austin 2025 Souvenir Package",
-        "tournament_id": 24
+        "tournament_id": 24,
+        "requires_supplemental_data": true
       },
       "crate_sticker_pack_aus2025_legends": {
         "def_index": 5117,
         "name": "Austin 2025 Legends Sticker Capsule",
-        "tournament_id": 24
+        "tournament_id": 24,
+        "requires_supplemental_data": false
       },
       // ...
     }
