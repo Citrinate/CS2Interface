@@ -22,7 +22,7 @@ Name | Required | Description
 
 ## Response Result
 
-This response is the same as in [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md), but with the following additions and changes:
+This response is an array of objects, the same object as in [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md), but with the following additions and changes:
 
 Property | Type | Description
 --- | --- | ---
