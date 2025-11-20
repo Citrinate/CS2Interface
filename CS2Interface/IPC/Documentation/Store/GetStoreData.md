@@ -3,9 +3,6 @@
 Get information about the items currently available for purchase in the in-game store
 
 > [!NOTE]
-> An alternate source for this information would be Steam's [ISteamEconomy/GetAssetPrices](https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetPrices) and [ISteamEconomy/GetAssetClassInfo](https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetClassInfo) APIs.
-
-> [!NOTE]
 > Each bot can only process 1 `GetStoreData` request at a time.
 
 ## Path Parameters

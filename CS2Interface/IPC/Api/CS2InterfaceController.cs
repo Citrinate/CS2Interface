@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using ArchiSteamFarm.Core;
 using ArchiSteamFarm.IPC.Controllers.Api;
 using ArchiSteamFarm.IPC.Responses;
 using ArchiSteamFarm.Steam;
+using ArchiSteamFarm.Web;
+using ArchiSteamFarm.Web.Responses;
 using CS2Interface.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -585,6 +589,154 @@ namespace CS2Interface.IPC {
 			}
 
 			return Ok(new GenericResponse(true));
+		}
+
+		// https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetPrices
+		[HttpGet("{botNames:required}/GetAssetPrices")]
+		[EndpointSummary("Get prices and categories for items that users are able to purchase")]
+		[ProducesResponseType(typeof(GenericResponse<JsonObject>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse<JsonObject>>> GetAssetPrices(string botNames, [FromQuery] ulong appID = Client.AppID, [FromQuery] string? currency = null, [FromQuery] string? language = null) {
+			if (string.IsNullOrEmpty(botNames)) {
+				throw new ArgumentNullException(nameof(botNames));
+			}
+
+			HashSet<Bot>? bots = Bot.GetBots(botNames);
+
+			if ((bots == null) || (bots.Count == 0)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			Bot? bot = bots.FirstOrDefault(static bot => bot.IsConnectedAndLoggedOn);
+
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotConnected, botNames)));
+			}
+
+			string? accessToken = bot.AccessToken;
+
+			if (string.IsNullOrEmpty(accessToken)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(accessToken))));
+			}
+
+			Dictionary<string, object> arguments = new(StringComparer.Ordinal) {
+				{ "access_token", accessToken },
+				{ "appid", appID }
+			};
+
+			if (currency != null) {
+				arguments["currency"] = currency;
+			}
+
+			if (language != null) {
+				arguments["language"] = language;
+			}
+
+			string queryString = string.Join('&', arguments.Select(static argument => $"{argument.Key}={HttpUtility.UrlEncode(argument.Value.ToString())}"));
+
+			Uri request = new(bot.SteamConfiguration.WebAPIBaseAddress, $"/ISteamEconomy/GetAssetPrices/v1?{queryString}");
+
+			ObjectResponse<JsonObject>? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToJsonObject<JsonObject>(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
+
+			if (response == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response))));
+			}
+
+			if (!response.StatusCode.IsSuccessCode()) {
+				return BadRequest(new GenericResponse(false, response.StatusCode.ToString()));
+			}
+
+			return Ok(new GenericResponse<JsonObject>(true, response.Content));
+		}
+
+		// https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetClassInfo
+		[HttpGet("{botNames:required}/GetAssetClassInfo")]
+		[EndpointSummary("Get item details for items specified by their classIDs")]
+		[ProducesResponseType(typeof(GenericResponse<JsonObject>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public async Task<ActionResult<GenericResponse<JsonObject>>> GetAssetClassInfo(string botNames, [FromQuery] string classIDs, [FromQuery] ulong appID = Client.AppID, [FromQuery] string? language = null) {
+			if (string.IsNullOrEmpty(botNames)) {
+				throw new ArgumentNullException(nameof(botNames));
+			}
+
+			HashSet<Bot>? bots = Bot.GetBots(botNames);
+
+			if ((bots == null) || (bots.Count == 0)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)));
+			}
+
+			Bot? bot = bots.FirstOrDefault(static bot => bot.IsConnectedAndLoggedOn);
+
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotConnected, botNames)));
+			}
+
+			List<ulong> classIDsToFetch = new();
+			List<ulong> instanceIDsToFetch = new();
+			foreach (string classIDString in classIDs.Split(",", StringSplitOptions.RemoveEmptyEntries)) {
+				// classIDString will either be in the format of "classID" (impled instanceID of 0) or "classID_instanceID"
+				string[] parts = classIDString.Split("_");
+
+				if (parts.Length == 1) {
+					if (!ulong.TryParse(parts[0], out ulong classID)) {
+						return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(classIDs))));
+					}
+
+					classIDsToFetch.Add(classID);
+					instanceIDsToFetch.Add(0);	
+				} else if (parts.Length == 2) {
+					if (!ulong.TryParse(parts[0], out ulong classID) || !ulong.TryParse(parts[1], out ulong instanceID)) {
+						return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(classIDs))));
+					}
+
+					classIDsToFetch.Add(classID);
+					instanceIDsToFetch.Add(instanceID);	
+				} else {
+					return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(classIDs))));
+				}
+			}
+
+			string? accessToken = bot.AccessToken;
+
+			if (string.IsNullOrEmpty(accessToken)) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(accessToken))));
+			}
+
+			Dictionary<string, object> arguments = new(StringComparer.Ordinal) {
+				{ "access_token", accessToken },
+				{ "appid", appID },
+				{ "class_count", classIDsToFetch.Count }
+			};
+
+			for (int i = 0; i < classIDsToFetch.Count; i++) {
+				ulong classID = classIDsToFetch[i];
+				ulong instanceID = instanceIDsToFetch[i];
+
+				arguments.Add($"classid{i}", classID);
+				if (instanceID != 0) {
+					arguments.Add($"instanceid{i}", instanceID);
+				}
+			}
+
+			if (language != null) {
+				arguments["language"] = language;
+			}
+
+			string queryString = string.Join('&', arguments.Select(static argument => $"{argument.Key}={HttpUtility.UrlEncode(argument.Value.ToString())}"));
+
+			Uri request = new(bot.SteamConfiguration.WebAPIBaseAddress, $"/ISteamEconomy/GetAssetClassInfo/v1?{queryString}");
+
+			ObjectResponse<JsonObject>? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToJsonObject<JsonObject>(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
+
+			if (response == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response))));
+			}
+
+			if (!response.StatusCode.IsSuccessCode()) {
+				return BadRequest(new GenericResponse(false, response.StatusCode.ToString()));
+			}
+
+			return Ok(new GenericResponse<JsonObject>(true, response.Content));
 		}
 	}
 }
