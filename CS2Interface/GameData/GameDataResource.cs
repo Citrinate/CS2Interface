@@ -33,10 +33,10 @@ namespace CS2Interface {
 			Dictionary<string, string> kvp = new();
 			using (Stream response = await httpClient.GetStreamAsync(Url).ConfigureAwait(false)) {
 				using (StreamReader sr = new StreamReader(response)) {
-					// https://github.com/dotnet/runtime/issues/68983
-					while (!sr.EndOfStream) {
-						string[]? kv = sr.ReadLine()?.Split("=");
-						if (kv?.Length == 2) {
+					string? line;
+					while ((line = await sr.ReadLineAsync().ConfigureAwait(false)) != null) {
+						string[] kv = line.Split("=");
+						if (kv.Length == 2) {
 							kvp[kv[0]] = kv[1];
 						}
 					}
