@@ -594,9 +594,9 @@ namespace CS2Interface.IPC {
 		// https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetPrices
 		[HttpGet("{botNames:required}/GetAssetPrices")]
 		[EndpointSummary("Get prices and categories for items that users are able to purchase")]
-		[ProducesResponseType(typeof(GenericResponse<JsonObject>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse<JsonNode>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
-		public async Task<ActionResult<GenericResponse<JsonObject>>> GetAssetPrices(string botNames, [FromQuery] ulong appID = Client.AppID, [FromQuery] string? currency = null, [FromQuery] string? language = null) {
+		public async Task<ActionResult<GenericResponse<JsonNode>>> GetAssetPrices(string botNames, [FromQuery] ulong appID = Client.AppID, [FromQuery] string? currency = null, [FromQuery] string? language = null) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -636,17 +636,24 @@ namespace CS2Interface.IPC {
 
 			Uri request = new(bot.SteamConfiguration.WebAPIBaseAddress, $"/ISteamEconomy/GetAssetPrices/v1?{queryString}");
 
-			ObjectResponse<JsonObject>? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToJsonObject<JsonObject>(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
+			// Requesting as stream to convert to JsonNode because this API sometimes returns json objects with duplicate keys
+			StreamResponse? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToStream(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
 
 			if (response == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response))));
 			}
 
-			if (!response.StatusCode.IsSuccessCode()) {
-				return BadRequest(new GenericResponse(false, response.StatusCode.ToString()));
-			}
+			await using (response.ConfigureAwait(false)) {
+				if (!response.StatusCode.IsSuccessCode()) {
+					return BadRequest(new GenericResponse(false, response.StatusCode.ToString()));
+				}
 
-			return Ok(new GenericResponse<JsonObject>(true, response.Content));
+				if (response.Content == null) {
+					return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response.Content))));
+				}
+
+				return Ok(new GenericResponse<JsonNode>(true, JsonNode.Parse(response.Content)));
+			}
 		}
 
 		// https://partner.steamgames.com/doc/webapi/ISteamEconomy#GetAssetClassInfo
