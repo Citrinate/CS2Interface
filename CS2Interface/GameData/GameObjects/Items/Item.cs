@@ -188,7 +188,8 @@ namespace CS2Interface {
 				return false;
 			}
 
-			{ // Set rarity name, which differs based on the type of item
+			// Set rarity name, which differs based on the type of item
+			if (Rarity != 0) {
 				string locKey = "loc_key"; // General rarities
 				if (ItemData.ItemDef["taxonomy"]["weapon"].Value == "1" || ItemData.ItemDef["taxonomy"]["equipment"].Value == "1") {
 					locKey = "loc_key_weapon"; // Weapon skin rarities
@@ -199,7 +200,11 @@ namespace CS2Interface {
 			}
 
 			TypeName = GameData.CsgoEnglish[ItemData.ItemDef["item_type_name"].Value];
-			QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
+
+			if (Quality != 0) {
+				QualityName = GameData.CsgoEnglish[GameData.ItemsGame["qualities"].Children.FirstOrDefault(x => x["value"].Value == Quality.ToString())?.Name];
+			}
+
 			if (Quality != 9 && StatTrak == true) {
 				// account for ★ StatTrak™ items
 				QualityName = String.Format("{0} {1}", QualityName, GameData.CsgoEnglish["strange"]);
@@ -263,8 +268,9 @@ namespace CS2Interface {
 				}
 				WeaponImageURL = GameData.ItemsGameCdn[cdnNameID];
 			}
-
-			{ // Set the full name and type
+ 
+ 			// Set the full name and type
+			if (Rarity != 0 && Quality != 0) {
 				string? displayQualityName = (Quality == 4 || Quality == 13) ? "" : QualityName; // Hide "Unique" and "Highlight" quality from item names and types
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();

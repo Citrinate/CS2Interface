@@ -13,10 +13,6 @@ namespace CS2Interface {
 		public uint ID;
 
 		[JsonInclude]
-		[JsonPropertyName("name")]
-		public string? Name;
-
-		[JsonInclude]
 		[JsonPropertyName("tournament_id")]
 		public uint? TournamentID;
 
@@ -46,14 +42,13 @@ namespace CS2Interface {
 			}
 
 			SetDefs();
+			SetAdditionalProperties();
 
 			ID = DefIndex;
 
 			if (ItemData == null) {
 				return;
 			}
-
-			Name = GameData.CsgoEnglish[ItemData.KeychainDef?["loc_name"].Value ?? ItemData.ItemDef["item_name"].Value];
 
 			// Get information related to InitializePurchase supplementalData parameter 
 			{

@@ -33,9 +33,8 @@ Property | Type | Description
 `price_sheet.entries[].prices` | `object` | The original price of the item
 `price_sheet.entries[].sale_prices` | `object` | If the item is on sale, the sale price of the item
 `price_sheet.currencies` | `object` | 
-`price_sheet_items` | `object` | Additional information about the items in `price_sheet.entries`, using `price_sheet.entries[].item_link` as an index
+`price_sheet_items` | `object` | Additional information about the items in `price_sheet.entries`, using `price_sheet.entries[].item_link` as an index.  The objects here are a stripped down version of the response result from [InspectItem](/CS2Interface/IPC/Documentation/Items/InspectItem.md)
 `price_sheet_items[].def_index` | `uint` | The item's definition index
-`price_sheet_items[].name` | `string` | The name of the item
 `price_sheet_items[].tournament_id` | `uint` | For items related to a tournament, the `eventid` of that tournament
 `price_sheet_items[].requires_supplemental_data` | `boolean` | Whether or not an [InitializePurchase](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md) request for this item requires a `supplementalData` parameter
 `price_sheet_items[].loot_list` | `array` | For items that have loot lists, all of the items in the loot list.  The objects in this array are a stripped down version of the response result from [InspectItem](/CS2Interface/IPC/Documentation/Items/InspectItem.md)
@@ -382,17 +381,22 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/GetStoreData
     "price_sheet_items": {
       "Name Tag": {
         "def_index": 1200,
-        "name": "Name Tag",
-        "requires_supplemental_data": false
+        "requires_supplemental_data": false,
+        "type_name": "Tag",
+        "item_name": "Name Tag",
+        "commodity": true,
+        "name_id": "Name Tag"
       },
       "casket": {
         "def_index": 1201,
-        "name": "Storage Unit",
-        "requires_supplemental_data": false
+        "requires_supplemental_data": false,
+        "type_name": "Tool",
+        "item_name": "Storage Unit",
+        "commodity": true,
+        "name_id": "casket"
       },
       "coupon - darude_01": {
         "def_index": 20093,
-        "name": "Music Kit | Darude, Moments CS:GO",
         "requires_supplemental_data": false,
         "loot_list": [
           {
@@ -406,19 +410,29 @@ http://127.0.0.1:1242/Api/CS2Interface/asf/GetStoreData
             "commodity": true,
             "name_id": "[darude_01]musickit",
           }
-        ]
+        ],
+        "type_name": "Container",
+        "item_name": "Music Kit | Darude, Moments CS:GO",
+        "commodity": true,
+        "name_id": "coupon - darude_01"
       },
       "tournament_pass_aus2025_charge": {
         "def_index": 5116,
-        "name": "Austin 2025 Souvenir Package",
         "tournament_id": 24,
-        "requires_supplemental_data": true
+        "requires_supplemental_data": true,
+        "type_name": "Pass",
+        "item_name": "Austin 2025 Souvenir Package",
+        "commodity": true,
+        "name_id": "tournament_pass_aus2025_charge"
       },
       "crate_sticker_pack_aus2025_legends": {
         "def_index": 5117,
-        "name": "Austin 2025 Legends Sticker Capsule",
         "tournament_id": 24,
-        "requires_supplemental_data": false
+        "requires_supplemental_data": false,
+        "type_name": "Container",
+        "item_name": "Austin 2025 Legends Sticker Capsule",
+        "commodity": true,
+        "name_id": "crate_sticker_pack_aus2025_legends"
       },
       // ...
     }
