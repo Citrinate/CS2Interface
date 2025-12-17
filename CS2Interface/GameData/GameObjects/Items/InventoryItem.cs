@@ -54,6 +54,13 @@ namespace CS2Interface {
 					StickerIDs.Add(stickerID.Value);
 				}
 
+				{
+					uint? stickerID = Attributes.GetValueOrDefault("keychain slot 0 sticker")?.ToUInt32();
+					if (stickerID != null) {
+						StickerIDs.Add(stickerID.Value);
+					}
+				}
+
 				SetDefs();
 
 				{
@@ -102,6 +109,11 @@ namespace CS2Interface {
 
 			// Modified stock items that appear in inventory, untested, might not be necessary
 			if (ItemInfo.rarity == 0) {
+				return false;
+			}
+
+			// Sticker slab tool
+			if (DefIndex == 4000) {
 				return false;
 			}
 

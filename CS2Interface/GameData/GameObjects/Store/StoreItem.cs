@@ -37,10 +37,6 @@ namespace CS2Interface {
 
 			DefIndex = uint.Parse(itemDef.Name!);
 
-			if (itemDef["attributes"]["display case keychain id"].Value != null) {
-				KeychainID = uint.Parse(itemDef["attributes"]["display case keychain id"].Value!);
-			}
-
 			SetDefs();
 			SetAdditionalProperties();
 

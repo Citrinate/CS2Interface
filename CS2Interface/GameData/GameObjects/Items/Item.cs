@@ -169,7 +169,7 @@ namespace CS2Interface {
 
 		public bool IsSticker() => DefIndex == StickerDefIndex || DefIndex == PatchDefIndex;
 		public bool IsGraffiti() => DefIndex == SealedGraffitiDefIndex || DefIndex == GraffitiDefIndex;
-		public bool IsKeychain(KeyValue? itemDef = null) => DefIndex == CharmDefIndex || itemDef?["item_name"].Value == "#CSGO_Tool_Keychain";
+		public bool IsKeychain() => DefIndex == CharmDefIndex;
 
 		protected override bool SetDefs() {
 			try {
@@ -215,7 +215,7 @@ namespace CS2Interface {
 
 			// Set the item name, which will be something like: what kind of sticker it is, or the name of the weapon skin, or the type of pin/coin
 			// If an item has a wear value, but uses the default paint_kit (vanilla knives for example), this will be "-"
-			ItemName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value)];
+			ItemName = GameData.CsgoEnglish[ItemData.StickerKitDef?["item_name"].Value ?? ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value];
 			if (Quality == 13) {
 				// Highlight items have a special naming convention for strings
 				string? highlightName = GameData.CsgoEnglish[(ItemData.KeychainDef?["loc_name"].Value ?? ItemData.MusicDef?["loc_name"].Value ?? ItemData.StickerKitDef?["item_name"].Value ?? ItemData.PaintKitDef?["description_tag"].Value ?? ItemData.ItemDef["item_name"].Value) + "^highlight"];
@@ -224,9 +224,17 @@ namespace CS2Interface {
 				}
 			}
 
-			// Set the tool named, used for various things like differentiating between Graffiti and Sealed Graffiti
-			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
-				ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
+			// Set the tool name, used for various things like differentiating between Graffiti and Sealed Graffiti
+			if (ItemData.ItemDef["prefab"].Value != null && ItemData.ItemDef["prefab"].Value!.Contains("csgo_tool")) {
+				if (DefIndex == 4000) {
+					// Sticker Slab tool
+					ToolName = 	GameData.CsgoEnglish["#keychain_kc_sticker_display_case"];
+				} else if (IsKeychain() && StickerIDs.Count > 0) {
+					// Slabbed Sticker
+					ToolName = GameData.CsgoEnglish[ItemData.KeychainDef?["loc_name"].Value];
+				} else {
+					ToolName = GameData.CsgoEnglish[ItemData.ItemDef["item_name"].Value];
+				}
 			}
 
 			// Set the graffiti color
@@ -271,7 +279,7 @@ namespace CS2Interface {
  
  			// Set the full name and type
 			if (Rarity != 0 && Quality != 0) {
-				string? displayQualityName = (Quality == 4 || Quality == 13) ? "" : QualityName; // Hide "Unique" and "Highlight" quality from item names and types
+				string? displayQualityName = (Quality == 4 || Quality == 8 || Quality == 13) ? "" : QualityName; // Hide "Unique", "Customized" and "Highlight" quality from item names and types
 
 				FullTypeName = String.Format("{0} {1} {2}", displayQualityName, RarityName, TypeName).Trim();
 
@@ -283,7 +291,7 @@ namespace CS2Interface {
 					if (HighlightReelName != null) {
 						FullName = String.Format("{0} {1} | {2} | {3}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, HighlightReelName).Trim(); // Highlights
 					} else {
-						FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers, Charms
+						FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers, Charms, Slabbed stickers
 					}
 				} else {
 					FullName = String.Format("{0} {1}", displayQualityName, WeaponName ?? ToolName ?? TypeName).Trim(); // Agents, Cases
@@ -316,8 +324,8 @@ namespace CS2Interface {
 						}
 					}
 
-					if (IsKeychain() && HighlightReel != null) {
-						// Highlight reel charms are commodities
+					// Some keychains are commodities (Highlight Reel Charms and Slabbed Stickers)
+					if (ItemData.KeychainDef?["is commodity"].Value == "1") {
 						Commodity = true;
 					}
 				}
@@ -327,7 +335,7 @@ namespace CS2Interface {
 			if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 				NameID = ItemData.ItemDef["name"].Value; // Collectibles, Vanilla Knives
 			} else {
-				NameID = String.Format("[{0}]{1}", ItemData.HighlightReelDef?["id"].Value ?? (ItemData.KeychainDef ?? ItemData.MusicDef ?? ItemData.StickerKitDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
+				NameID = String.Format("[{0}]{1}", ItemData.HighlightReelDef?["id"].Value ?? (ItemData.StickerKitDef ?? ItemData.KeychainDef ?? ItemData.MusicDef ?? ItemData.PaintKitDef)?["name"].Value, ItemData.ItemDef["name"].Value); // Everything else
 			}
 
 			if (NameID != null) {

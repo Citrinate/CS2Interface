@@ -147,7 +147,7 @@ namespace CS2Interface {
 		}
 
 		private KeyValue? CreateStickerKitDef(Item item) {
-			if (item.StickerIDs.Count != 1 || !(item.IsSticker() || item.IsGraffiti())) {
+			if (item.StickerIDs.Count != 1 || !(item.IsSticker() || item.IsGraffiti() || item.IsKeychain())) {
 				// This item has no sticker kit
 				return null;
 			}
@@ -191,7 +191,7 @@ namespace CS2Interface {
 		}
 
 		private KeyValue? CreateKeychainDef(Item item) {
-			if (item.KeychainID == null || !item.IsKeychain(ItemDef)) {
+			if (item.KeychainID == null) {
 				// This item has no keychain definition
 				return null;
 			}
