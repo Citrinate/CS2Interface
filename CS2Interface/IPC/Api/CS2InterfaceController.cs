@@ -455,7 +455,7 @@ namespace CS2Interface.IPC {
 		[ProducesResponseType(typeof(GenericResponse<SteamMessage.ClientMicroTxnAuthRequest>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> InitializePurchase(string botName, [FromQuery] uint itemID, [FromQuery] uint quantity, [FromQuery] uint cost, [FromQuery] ulong supplementalData = 0) {
+		public async Task<ActionResult<GenericResponse>> InitializePurchase(string botName, [FromQuery] uint itemID, [FromQuery] uint quantity, [FromQuery] uint cost, [FromQuery] int? currency = null, [FromQuery] int? language = null, [FromQuery] ulong supplementalData = 0) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -474,7 +474,7 @@ namespace CS2Interface.IPC {
 
 			SteamMessage.ClientMicroTxnAuthRequest purchaseResponse;
 			try {
-				purchaseResponse = await client.InitializePurchase(itemID, quantity, cost, supplementalData).ConfigureAwait(false);
+				purchaseResponse = await client.InitializePurchase(itemID, quantity, cost, currency, language, supplementalData).ConfigureAwait(false);
 			} catch (ClientException e) {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}

@@ -20,6 +20,8 @@ Name | Required | Description
 `itemID` | Yes | The definition index for the item you want to purchase
 `quantity` | Yes | Number of copies to purchase.  Maximum value of `20`
 `cost` | Yes | The total price (before taxes) for `quantity` items in the currency used by `botName` on the Steam store.  This value should be an integer representing an amount in that currency’s lowest unit (ex: 250 cents, not 2.50 dollars).  If the item is on sale, the sale price is used instead of the base price
+`currency` | No | The ID for the currency used by `botName` on the Steam store.  If not provided, the plugin will attempt to determine this value.  When this value is incorrectly defined, an error value of 8 will be returned
+`language` | No | The ID for the language that any strings in the result will appear in.  If not provided, the plugin will attempt to determine this value, and default to english if not possible
 `supplementalData` | No | Additional data needed for certain values of `itemID`.  Souvenir Packages for example use the `matchid` of a tournament match to determine the kind of Souvenir Package
 
 > [!NOTE]

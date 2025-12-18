@@ -63,7 +63,7 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botNames}/GetAssetPrices`](/CS2Interface/IPC/Documentation/Store/GetAssetPrices.md)|`GET`|`appID`, `currency`|Get prices and categories for items that users are able to purchase
 [`/Api/CS2Interface/{botNames}/GetAssetClassInfo`](/CS2Interface/IPC/Documentation/Store/GetAssetClassInfo.md)|`GET`|`classIDs`, `appID`, `language`|Get item details for items specified by their classIDs
 [`/Api/CS2Interface/{botNames}/GetStoreData`](/CS2Interface/IPC/Documentation/Store/GetStoreData.md)|`GET`|`showDefs`|Get information about the in-game store
-[`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`GET`|`itemID`, `quantity`, `cost`, `supplementalData`|Begin a purchase from the in-game store
+[`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`GET`|`itemID`, `quantity`, `cost`, `currency`, `language`, `supplementalData`|Begin a purchase from the in-game store
 
 #### Data
 

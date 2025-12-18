@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -26,6 +27,7 @@ namespace CS2Interface {
 		private SemaphoreSlim ConnectionSemaphore = new SemaphoreSlim(1, 1);
 		internal ConcurrentDictionary<ulong, InventoryItem>? Inventory = null;
 		internal bool InventoryLoaded = false;
+		private int Currency;
 		private bool OwnsApp = false;
 		private bool AppRunning = false;
 		private bool FatalError = false;
@@ -84,7 +86,8 @@ namespace CS2Interface {
 				Bot.ArchiLogger.LogGenericDebug(Strings.SendingHello);
 				InventoryLoaded = false;
 
-				if (await fetcher.Fetch<CMsgClientWelcome>(this, msg).ConfigureAwait(false) == null) {
+				var response = await fetcher.Fetch<CMsgClientWelcome>(this, msg).ConfigureAwait(false);
+				if (response == null) {
 					if (!OwnsApp) {
 						Dictionary<uint, string>? gamesOwned = await Bot.ArchiHandler.GetOwnedGames(Bot.SteamID).ConfigureAwait(false);
 						if (gamesOwned != null && gamesOwned.ContainsKey(AppID)) {
@@ -99,6 +102,7 @@ namespace CS2Interface {
 
 				OwnsApp = true;
 				HasGCSession = true;
+				Currency = (int) response.Body.currency;
 
 				return true;
 			} finally {
@@ -628,7 +632,7 @@ namespace CS2Interface {
 			}
 		}
 
-		internal async Task<SteamMessage.ClientMicroTxnAuthRequest> InitializePurchase(uint item_id, uint quantity, uint cost, ulong supplemental_data = 0) {
+		internal async Task<SteamMessage.ClientMicroTxnAuthRequest> InitializePurchase(uint item_id, uint quantity, uint cost, int? currency = null, int? language = null, ulong supplemental_data = 0) {
 			if (!HasGCSession) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}
@@ -637,14 +641,14 @@ namespace CS2Interface {
 
 			try {
 				var msg = new ClientGCMsgProtobuf<CMsgGCStorePurchaseInit>((uint) EGCItemMsg.k_EMsgGCStorePurchaseInit) { Body = {
-					country = "", // not sure that this is used, testing revealed a value of "" sent by client
-					language = 0, // not sure that this is used, testing revealed a value of 0 sent by client
-					currency = 0, // not sure that this is used, testing revealed a value of 0 sent by client
+					country = "", // doesn't seem to be used, testing revealed a value of "" sent by client
+					language = language ?? CultureInfo.CurrentCulture.ToGCLanguageID(), // https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/DumpSource2/schemas/client/ELanguage.h
+					currency = currency ?? Currency, // Uses a different currency enum from ECurrencyCode, similar to the one here: https://github.com/MeowBoy326/SourceEngineRebuild/blob/384dcd07a1be6620ba8531ded6db4dd60179be4a/src/Engine/game/shared/econ/econ_store.h#L108
 					line_items = { new CGCStorePurchaseInit_LineItem {
 						item_def_id = item_id,
 						quantity = quantity,
 						cost_in_local_currency = cost,
-						// purchase_type = 0, // not sure that this is used, testing revealed this property wasn't sent by client, defaulting to 0
+						// purchase_type = 0, // doesn't seem to be used, testing revealed this property wasn't sent by client, defaulting to 0
 						supplemental_data = supplemental_data
 					}}
 				}};
