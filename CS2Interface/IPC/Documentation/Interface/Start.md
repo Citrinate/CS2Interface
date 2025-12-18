@@ -1,4 +1,4 @@
-# GET /Api/CS2Interface/{botNames}/Start
+# POST /Api/CS2Interface/{botNames}/Start
 
 ## Description
 

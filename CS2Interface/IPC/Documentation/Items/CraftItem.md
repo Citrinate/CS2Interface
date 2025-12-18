@@ -1,4 +1,4 @@
-# GET /Api/CS2Interface/{botName}/CraftItem/{recipeID}
+# POST /Api/CS2Interface/{botName}/CraftItem/{recipeID}
 
 ## Description
 

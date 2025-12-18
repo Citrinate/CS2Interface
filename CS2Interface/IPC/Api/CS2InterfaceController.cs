@@ -20,7 +20,8 @@ using SteamKit2.GC.CSGO.Internal;
 namespace CS2Interface.IPC {
 	[Route("Api/CS2Interface")]
 	public sealed class CS2InterfaceController : ArchiController {
-		[HttpGet("{botNames:required}/Start")]
+		[HttpPost("{botNames:required}/Start")]
+		[HttpGet("{botNames:required}/Start")] // Todo: delete on next major release
 		[EndpointSummary("Starts the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -50,7 +51,8 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<IReadOnlyDictionary<string, GenericResponse>>(results.All(static result => result.Response.Success), results.ToDictionary(static result => result.Bot.BotName, static result => result.Response)));
 		}
 
-		[HttpGet("{botNames:required}/Stop")]
+		[HttpPost("{botNames:required}/Stop")]
+		[HttpGet("{botNames:required}/Stop")] // Todo: delete on next major release
 		[EndpointSummary("Stops the CS2 Interface")]
 		[ProducesResponseType(typeof(GenericResponse<IReadOnlyDictionary<string, GenericResponse>>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -265,7 +267,8 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<List<InventoryItem>>(true, contents.OrderByDescending(x => x.ItemInfo.id).ToList()));
 		}
 
-		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]
+		[HttpPost("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")]
+		[HttpGet("{botName:required}/StoreItem/{crateID:required}/{itemID:required}")] // Todo: delete on next major release
 		[EndpointSummary("Stores an item into the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -296,7 +299,8 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse(true));	
 		}
 
-		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
+		[HttpPost("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")]
+		[HttpGet("{botName:required}/RetrieveItem/{crateID:required}/{itemID:required}")] // Todo: delete on next major release
 		[EndpointSummary("Retrieves an item from the specified crate")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -327,7 +331,8 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse(true));
 		}
 
-		[HttpGet("{botName:required}/CraftItem/{recipeID:required}")]
+		[HttpPost("{botName:required}/CraftItem/{recipeID:required}")]
+		[HttpGet("{botName:required}/CraftItem/{recipeID:required}")] // Todo: delete on next major release
 		[EndpointSummary("Crafts an item using the specified trade up recipe")]
 		[ProducesResponseType(typeof(GenericResponse<SteamMessage.GCCraftResponse>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -450,7 +455,8 @@ namespace CS2Interface.IPC {
 			return BadRequest(new GenericResponse(false, e.Message));
 		}
 
-		[HttpGet("{botName:required}/InitializePurchase")]
+		[HttpPost("{botName:required}/InitializePurchase")]
+		[HttpGet("{botName:required}/InitializePurchase")] // Todo: delete on next major release
 		[EndpointSummary("Begin a purchase from the in-game store")]
 		[ProducesResponseType(typeof(GenericResponse<SteamMessage.ClientMicroTxnAuthRequest>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
@@ -487,7 +493,7 @@ namespace CS2Interface.IPC {
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCCStrike15_v2_MatchList>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> InitializePurchase(string botNames, int eventID) {
+		public async Task<ActionResult<GenericResponse>> GetTournamentInfo(string botNames, int eventID) {
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -560,7 +566,8 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<StoreData>(true, response));
 		}
 
-		[HttpGet("{botName:required}/NameItem")]
+		[HttpPost("{botName:required}/NameItem")]
+		[HttpGet("{botName:required}/NameItem")] // Todo: delete on next major release
 		[EndpointSummary("Add a nametag to an item")]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]

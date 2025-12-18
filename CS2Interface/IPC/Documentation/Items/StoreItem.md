@@ -1,4 +1,4 @@
-# GET /Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}
+# POST /Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}
 
 ## Description
 

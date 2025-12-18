@@ -27,22 +27,22 @@ This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's 
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/{botNames}/Start`](/CS2Interface/IPC/Documentation/Interface/Start.md)|`GET`| |Starts the CS2 Interface
+[`/Api/CS2Interface/{botNames}/Start`](/CS2Interface/IPC/Documentation/Interface/Start.md)|`POST`| |Starts the CS2 Interface
 [`/Api/CS2Interface/{botNames}/Status`](/CS2Interface/IPC/Documentation/Interface/Status.md)|`GET`| |Get the CS2 Interface status
-[`/Api/CS2Interface/{botNames}/Stop`](/CS2Interface/IPC/Documentation/Interface/Stop.md)|`GET`| |Stops the CS2 Interface
+[`/Api/CS2Interface/{botNames}/Stop`](/CS2Interface/IPC/Documentation/Interface/Stop.md)|`POST`| |Stops the CS2 Interface
 
 #### Items
 
 API | Method | Parameters | Description
 --- | --- | --- | ---
-[`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](/CS2Interface/IPC/Documentation/Items/CraftItem.md)|`GET`|`itemIDs`|Craft an item
+[`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](/CS2Interface/IPC/Documentation/Items/CraftItem.md)|`POST`|`itemIDs`|Craft an item
 [`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](/CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get a storage unit's contents
 [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect an item
 [`/Api/CS2Interface/{botName}/Inventory`](/CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
-[`/Api/CS2Interface/{botName}/NameItem`](/CS2Interface/IPC/Documentation/Items/NameItem.md)|`GET`|`itemID`, `nameTagID`, `name`|Add a name tag to an item
+[`/Api/CS2Interface/{botName}/NameItem`](/CS2Interface/IPC/Documentation/Items/NameItem.md)|`POST`|`itemID`, `nameTagID`, `name`|Add a name tag to an item
 [`/Api/CS2Interface/Recipes`](/CS2Interface/IPC/Documentation/Items/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
-[`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`GET`| |Take an item out of a storage unit
-[`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/StoreItem.md)|`GET`| |Place an item into a storage unit
+[`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`POST`| |Take an item out of a storage unit
+[`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/StoreItem.md)|`POST`| |Place an item into a storage unit
 
 #### Matches
 
@@ -63,7 +63,7 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botNames}/GetAssetPrices`](/CS2Interface/IPC/Documentation/Store/GetAssetPrices.md)|`GET`|`appID`, `currency`|Get prices and categories for items that users are able to purchase
 [`/Api/CS2Interface/{botNames}/GetAssetClassInfo`](/CS2Interface/IPC/Documentation/Store/GetAssetClassInfo.md)|`GET`|`classIDs`, `appID`, `language`|Get item details for items specified by their classIDs
 [`/Api/CS2Interface/{botNames}/GetStoreData`](/CS2Interface/IPC/Documentation/Store/GetStoreData.md)|`GET`|`showDefs`|Get information about the in-game store
-[`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`GET`|`itemID`, `quantity`, `cost`, `currency`, `language`, `supplementalData`|Begin a purchase from the in-game store
+[`/Api/CS2Interface/{botName}/InitializePurchase`](/CS2Interface/IPC/Documentation/Store/InitializePurchase.md)|`POST`|`itemID`, `quantity`, `cost`, `currency`, `language`, `supplementalData`|Begin a purchase from the in-game store
 
 #### Data
 

@@ -1,4 +1,4 @@
-# GET /Api/CS2Interface/{botName}/InitializePurchase
+# POST /Api/CS2Interface/{botName}/InitializePurchase
 
 ## Description
 
