@@ -223,13 +223,14 @@ namespace CS2Interface {
 					ItemName = highlightName;
 				}
 			}
+			if (DefIndex == 4000) {
+				// Special case for the Sticker Slab tool, which would otherwise be named "Charm"
+				ItemName = GameData.CsgoEnglish["#keychain_kc_sticker_display_case"];
+			}
 
 			// Set the tool name, used for various things like differentiating between Graffiti and Sealed Graffiti
-			if (ItemData.ItemDef["prefab"].Value != null && ItemData.ItemDef["prefab"].Value!.Contains("csgo_tool")) {
-				if (DefIndex == 4000) {
-					// Sticker Slab tool
-					ToolName = 	GameData.CsgoEnglish["#keychain_kc_sticker_display_case"];
-				} else if (IsKeychain() && StickerIDs.Count > 0) {
+			if (ItemData.ItemDef["prefab"].Value == "csgo_tool") {
+				if (IsKeychain() && StickerIDs.Count > 0) {
 					// Slabbed Sticker
 					ToolName = GameData.CsgoEnglish[ItemData.KeychainDef?["loc_name"].Value];
 				} else {
