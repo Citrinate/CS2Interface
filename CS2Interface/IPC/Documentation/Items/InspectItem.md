@@ -2,10 +2,7 @@
 
 ## Description
 
-Inspect a CS2 Item
-
-> [!NOTE]
-> Each bot can only process 1 `InspectItem` request at a time.
+Inspect a CS2 Item.
 
 ## Path Parameters
 
@@ -14,7 +11,7 @@ Name | Required | Description
 `botNames` | Yes | One or more ASF [bot names](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/Commands#bots-argument)
 
 > [!NOTE]
-> Responses are not dependent on the account used to inspect an item. You may provide multiple `botNames`, and the first available bot will be used to make the request.
+> Responses are not dependent on the account used to inspect an item. You may provide multiple `botNames`, and the first available bot will be used to make the request.  If inspecting using a `url` in the new `steam://run/` format, this parameter is not used and can be set to anything.
 
 ## Query Parameters
 
@@ -27,6 +24,9 @@ Name | Required | Description
 `m` | No | The `M` value from the item's inspect link (not needed if using the `url` parameter)
 `minimal` | No | If set to true, the response will only contain the data recieved from CS2
 `showDefs` | No | If set to true, the response will include a `defs` property containing additional game data
+
+> [!NOTE]
+> When using a `url` in the old `steam://rungame/` format, or when setting the `s`, `a`, `d`, or `m` parameters, each bot can only process 1 `InspectItem` request at a time.
 
 ## Response Result
 

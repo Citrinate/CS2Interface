@@ -1,5 +1,8 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net;
 using System.Text.Json.Nodes;
@@ -15,6 +18,7 @@ using ArchiSteamFarm.Web.Responses;
 using CS2Interface.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProtoBuf;
 using SteamKit2.GC.CSGO.Internal;
 
 namespace CS2Interface.IPC {
@@ -112,6 +116,56 @@ namespace CS2Interface.IPC {
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
 		public async Task<ActionResult<GenericResponse>> InspectItem(string botNames, [FromQuery] string? url = null, [FromQuery] ulong s = 0, [FromQuery] ulong a = 0, [FromQuery] ulong d = 0, [FromQuery] ulong m = 0, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
+			// Check for new inspect url format which already has all of an item's information, avoiding the need to talk to the GC
+			if (url != null) {
+				// https://github.com/DoctorMcKay/node-globaloffensive/blob/fe165d320188240a9af7358a3293329510764a3c/lib/inspect-link.js#L14
+				Regex reg = new Regex(@"csgo_econ_action_preview (?<hex>[0-9a-fA-F]+)"); // Match example: csgo_econ_action_preview 4858A7BADCE1F449506C68CE4E604B784C7092A7F4A44B08AD4B2052385F0E2FCAA0
+				Match match = reg.Match(url);
+				if (match.Success) {
+					try {
+						byte[] buffer = Convert.FromHexString(match.Groups["hex"].Value);
+
+						byte mask = buffer[0];
+						for (int i =1; i < buffer.Length; i++) {
+							buffer[i] ^= mask;
+						}
+
+						if (buffer.Length < 6) {
+							throw new Exception("Buffer length is too short");
+						}
+
+						uint expectedChecksum = BinaryPrimitives.ReadUInt32BigEndian(buffer.AsSpan(buffer.Length - 4));
+						uint crc = Crc32.HashToUInt32(buffer.AsSpan(0, buffer.Length - 4));
+						int protoLen = buffer.Length - 5;
+						uint actualChecksum;
+						unchecked
+						{
+							actualChecksum = (crc & 0xFFFF) ^ ((uint) protoLen * crc);
+						}
+
+						if (actualChecksum != expectedChecksum) {
+							throw new Exception("Checksum mismatch");
+						}
+						
+						using (var ms = new MemoryStream(buffer, 1, protoLen)) {
+							var itemInfo = Serializer.Deserialize<CEconItemPreviewDataBlock>(ms);
+
+							if (!await GameData.IsLoaded(update: false).ConfigureAwait(false) || GameData.ItemsGame.Data == null) {
+								return BadRequest(new GenericResponse(false, Strings.GameDataLoadingFailed));
+							}
+
+							GameObject.SetSerializationProperties(!minimal, showDefs);
+
+							return Ok(new GenericResponse<InspectItem>(true, new InspectItem(itemInfo)));
+						}
+					} catch (Exception e) {
+						ASF.ArchiLogger.LogGenericException(e);
+
+						return BadRequest(new GenericResponse(false, Strings.InvalidUrl));
+					}
+				}
+			}
+
 			if (string.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -139,7 +193,7 @@ namespace CS2Interface.IPC {
 				Regex reg = new Regex(@"(?<SMlabel>[SM])(?<SM>\d+)A(?<A>\d+)D(?<D>\d+)");
 				Match match = reg.Match(url);
 				if (!match.Success) {
-					return BadRequest(new GenericResponse(false, "Invalid url"));
+					return BadRequest(new GenericResponse(false, Strings.InvalidUrl));
 				}
 				
 				a = ulong.Parse(match.Groups["A"].Value);
@@ -154,7 +208,7 @@ namespace CS2Interface.IPC {
 			if ((s != 0 && m != 0) // Either s or m must be non-zero
 				|| (s == 0 && m == 0) // But not both at the same time
 			) {
-				return BadRequest(new GenericResponse(false, "Missing inputs"));
+				return BadRequest(new GenericResponse(false, Strings.MissingInputs));
 			}
 
 			CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse inspect;
@@ -164,10 +218,9 @@ namespace CS2Interface.IPC {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}
 
-			var item = new InspectItem(inspect, s, a, d, m);
 			GameObject.SetSerializationProperties(!minimal, showDefs);
 
-			return Ok(new GenericResponse<InspectItem>(true, item));
+			return Ok(new GenericResponse<InspectItem>(true, new InspectItem(inspect)));
 		}
 
 		[HttpGet("{botName:required}/PlayerProfile/{steamID?}")]

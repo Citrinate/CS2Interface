@@ -8,18 +8,20 @@ namespace CS2Interface {
 		[JsonInclude]
 		[JsonPropertyName("iteminfo")]
 		public CEconItemPreviewDataBlock ItemInfo { get; private init; }
-		public string s;
-		public string a;
-		public string d;
-		public string m;
 
-		internal InspectItem(CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse item, ulong param_s, ulong param_a, ulong param_d, ulong param_m) {
+		internal InspectItem(CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse item) {
 			ItemInfo = item.iteminfo;
-			s = param_s.ToString();
-			a = param_a.ToString();
-			d = param_d.ToString();
-			m = param_m.ToString();
 
+			BuildItem();
+		}
+
+		internal InspectItem(CEconItemPreviewDataBlock itemInfo) {
+			ItemInfo = itemInfo;
+
+			BuildItem();
+		}
+
+		private void BuildItem() {
 			DefIndex = ItemInfo.defindex;
 			PaintIndex = ItemInfo.paintindex;
 			TintID = ItemInfo.stickers.FirstOrDefault()?.tint_id;

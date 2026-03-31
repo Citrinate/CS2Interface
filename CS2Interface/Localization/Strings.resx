@@ -414,4 +414,14 @@
     <value>Failed to resolve NameID: {0}</value>
     <comment>{0} will be replaced by a string</comment>
   </data>
+  <data name="InvalidUrl" xml:space="preserve">
+    <value>Invalid URL</value>
+    <comment>
+</comment>
+  </data>
+  <data name="MissingInputs" xml:space="preserve">
+    <value>Missing inputs</value>
+    <comment>
+</comment>
+  </data>
 </root>
