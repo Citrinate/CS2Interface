@@ -246,14 +246,14 @@ namespace CS2Interface {
 			// Set the highlight name and url
 			if (ItemData.HighlightReelDef != null) {
 				HighlightReelName = GameData.CsgoEnglish[String.Format("HighlightReel_{0}", ItemData.HighlightReelDef["id"].Value)];
-				HighlightReelVideoURL = String.Format("https://cdn.steamstatic.com/apps/csgo/videos/highlightreels/{0}/{1}v{2}_{3}/{0}_{1}v{2}_{3}_{4}_{5}_ww_480p.webm", 
+				HighlightReelVideoURL = String.Format("https://cdn.steamstatic.com/apps/csgo/videos/highlightreels/{0}/{1}v{2}_{3}/{0}_{1}v{2}_{3}_{4}_{5}_ww_480p.webm", new object?[] {
 					ItemData.HighlightReelDef["tournament event id"].Value?.PadLeft(3, '0'),
 					ItemData.HighlightReelDef["tournament event team0 id"].Value?.PadLeft(3, '0'),
 					ItemData.HighlightReelDef["tournament event team1 id"].Value?.PadLeft(3, '0'),
 					ItemData.HighlightReelDef["tournament event stage id"].Value?.PadLeft(3, '0'),
 					ItemData.HighlightReelDef["map"].Value,
 					ItemData.HighlightReelDef["id"].Value
-				);
+				});
 			}
 
 			// Set various weapon-only attributes
@@ -287,10 +287,10 @@ namespace CS2Interface {
 				if (PaintIndex == 0 && ItemData.StickerKitDef == null && ItemData.MusicDef == null && ItemData.KeychainDef == null) {
 					FullName = String.Format("{0} {1}", displayQualityName, ToolName ?? WeaponName ?? ItemName).Trim(); // Collectibles (Pins, Coins), Vanilla Knives
 				} else if (WearName != null || (TintName != null && TintID != 0)) {
-					FullName = String.Format("{0} {1} | {2} ({3})", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName).Trim(); // Weapon Skins, Gloves, Graffiti
+					FullName = String.Format("{0} {1} | {2} ({3})", new object?[] { displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, WearName ?? TintName }).Trim(); // Weapon Skins, Gloves, Graffiti
 				} else if (ItemName != null) {
 					if (HighlightReelName != null) {
-						FullName = String.Format("{0} {1} | {2} | {3}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, HighlightReelName).Trim(); // Highlights
+						FullName = String.Format("{0} {1} | {2} | {3}", new object?[] { displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName, HighlightReelName }).Trim(); // Highlights
 					} else {
 						FullName = String.Format("{0} {1} | {2}", displayQualityName, WeaponName ?? ToolName ?? TypeName, ItemName).Trim(); // Stickers, Charms, Slabbed stickers
 					}

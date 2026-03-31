@@ -307,7 +307,7 @@ namespace CS2Interface {
 					}
 				};
 
-				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", Strings.InspectingItem, param_s, param_a, param_d, param_m));
+				Bot.ArchiLogger.LogGenericDebug(String.Format("{0}: s {1} a {2} d {3} m {4}", new object?[] { Strings.InspectingItem, param_s, param_a, param_d, param_m }));
 
 				startTime = DateTime.UtcNow;
 				var response = await fetcher.Fetch<CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockResponse>(this, msg).ConfigureAwait(false);
@@ -675,7 +675,7 @@ namespace CS2Interface {
 				OnClientMicroTxnAuthRequestRecieved += handler;
 
 				try {
-					Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.InitializingPurchase, quantity, item_id, supplemental_data, cost));
+					Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.InitializingPurchase, new object?[] { quantity, item_id, supplemental_data, cost }));
 
 					var response = await fetcher.Fetch<CMsgGCStorePurchaseInitResponse>(this, msg).ConfigureAwait(false);
 					if (response == null) {
