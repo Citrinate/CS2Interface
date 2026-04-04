@@ -163,7 +163,7 @@ namespace CS2Interface {
 				{(uint) ESOMsg.k_ESOMsg_Create, OnItemCreated},
 				{(uint) ESOMsg.k_ESOMsg_Destroy, OnItemDestroyed},
 				{(uint) ESOMsg.k_ESOMsg_Update, OnItemUpdated},
-				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultiItemUpdated},
+				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultipleUpdated},
 				{(uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientLogonFatalError, OnFatalLogonError}
 			};
 
@@ -265,21 +265,22 @@ namespace CS2Interface {
 			}
 		}
 
-		private void OnMultiItemUpdated(IPacketGCMsg packetMsg) {
+		private void OnMultipleUpdated(IPacketGCMsg packetMsg) {
 			if (Inventory == null) {
 				return;
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOMultipleObjects>(packetMsg);
 			foreach (var object_modified in msg.Body.objects_modified) {
-				if (object_modified.type_id != (uint) ESOType.CSOEconItem) {
-					// Ignore non-inventory changes
-					continue;
-				}
-
-				using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
-					var item = Serializer.Deserialize<CSOEconItem>(ms);
-					Inventory[item.id] = new InventoryItem(item);
+				if (object_modified.type_id == (uint) ESOType.CSOEconItem) {
+					using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
+						var item = Serializer.Deserialize<CSOEconItem>(ms);
+						Inventory[item.id] = new InventoryItem(item);
+					}
+				} else if (object_modified.type_id == (uint) ESOType.CSOAccountItemPersonalStore) {
+					using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
+						PersonalStore = Serializer.Deserialize<CSOAccountItemPersonalStore>(ms);
+					}
 				}
 			}
 		}
