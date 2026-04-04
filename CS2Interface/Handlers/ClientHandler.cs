@@ -174,8 +174,8 @@ namespace CS2Interface {
 		}
 
 		internal static (Bot?, Client?, string) GetAvailableClient(HashSet<Bot> bots, EClientStatus desiredStatus = EClientStatus.Connected | EClientStatus.Ready) {
-			Span<Bot> shuffledBots = new Span<Bot>([.. bots]);
-			Random.Shared.Shuffle(shuffledBots);
+			List<Bot> shuffledBots = new List<Bot>(bots);
+			shuffledBots.Shuffle();
 
 			foreach (Bot bot in shuffledBots) {
 				(Client? client, string status) = ClientHandlers[bot.BotName].GetClient(desiredStatus);
