@@ -424,4 +424,25 @@
     <comment>
 </comment>
   </data>
+  <data name="PersonalStoreLoaded" xml:space="preserve">
+    <value>CS2 personal store loaded</value>
+  </data>
+  <data name="PersonalStoreNotLoaded" xml:space="preserve">
+    <value>Personal store not loaded yet</value>
+  </data>
+  <data name="PersonalStoreItemNotFound" xml:space="preserve">
+    <value>Item not found in personal store: {0}</value>
+    <comment>{0} will be replaced by an id number</comment>
+  </data>
+  <data name="InvalidWeeklyRewardMissingInputs" xml:space="preserve">
+    <value>No weekly reward inputs given</value>
+  </data>
+  <data name="InvalidWeeklyRewardTooManyInputs" xml:space="preserve">
+    <value>Too many weekly reward inputs given: {0}, but only {1} are allowed</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
+  </data>
+  <data name="RedeemingWeeklyReward" xml:space="preserve">
+    <value>Redeeming weekly reward items: {0}</value>
+    <comment>{0} will be replaced by a list of id numbers</comment>
+  </data>
 </root>
