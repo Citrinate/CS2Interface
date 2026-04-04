@@ -426,12 +426,12 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<SteamMessage.GCCraftResponse>(true, craftResponse));
 		}
 
-		[HttpPost("{botName:required}/RedeemWeeklyReward")]
+		[HttpPost("{botName:required}/RedeemFreeReward")]
 		[EndpointSummary("Redeem weekly care package rewards")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCItemCustomizationNotification>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
-		public async Task<ActionResult<GenericResponse>> RedeemWeeklyReward(string botName, [FromQuery] string itemIDs) {
+		public async Task<ActionResult<GenericResponse>> RedeemFreeReward(string botName, [FromQuery] string itemIDs) {
 			if (string.IsNullOrEmpty(botName)) {
 				throw new ArgumentNullException(nameof(botName));
 			}
@@ -459,7 +459,7 @@ namespace CS2Interface.IPC {
 
 			CMsgGCItemCustomizationNotification notification;
 			try {
-				notification = await client.RedeemWeeklyReward(item_ids).ConfigureAwait(false);
+				notification = await client.RedeemFreeReward(item_ids).ConfigureAwait(false);
 			} catch (ClientException e) {
 				return await HandleClientException(bot, e).ConfigureAwait(false);
 			}

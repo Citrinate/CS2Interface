@@ -635,7 +635,7 @@ namespace CS2Interface {
 			}
 		}
 
-		internal async Task<CMsgGCItemCustomizationNotification> RedeemWeeklyReward(HashSet<ulong> item_ids) {
+		internal async Task<CMsgGCItemCustomizationNotification> RedeemFreeReward(HashSet<ulong> item_ids) {
 			if (!HasGCSession) {
 				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
 			}

@@ -1,4 +1,4 @@
-# POST /Api/CS2Interface/{botName}/RedeemWeeklyReward
+# POST /Api/CS2Interface/{botName}/RedeemFreeReward
 
 ## Description
 
@@ -31,7 +31,7 @@ Property | Type | Description
 ## Example Response
 
 ```
-http://127.0.0.1:1242/Api/CS2Interface/Bot1/RedeemWeeklyReward?itemIDs=50834586538,50834586537
+http://127.0.0.1:1242/Api/CS2Interface/Bot1/RedeemFreeReward?itemIDs=50834586538,50834586537
 ```
 
 ```javascript
@@ -52,7 +52,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/RedeemWeeklyReward?itemIDs=508345865
 ---
 
 ```
-http://127.0.0.1:1242/Api/CS2Interface/Bot1/RedeemWeeklyReward?itemIDs=50834586538,50834586537
+http://127.0.0.1:1242/Api/CS2Interface/Bot1/RedeemFreeReward?itemIDs=50834586538,50834586537
 ```
 
 ```
