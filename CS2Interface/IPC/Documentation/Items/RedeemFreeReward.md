@@ -17,8 +17,7 @@ Name | Required | Description
 `itemIDs` | Yes | A comma separated list of item IDs to redeem
 
 > [!NOTE]
-> Available redeemable item IDs can be found using the [Inventory](/CS2Interface/IPC/Documentation/Items/Inventory.md) API.
-> They are distinguished by having `"attributes": { "free reward status": 1 }`
+> Available redeemable item IDs can be found using the [FreeRewards](/CS2Interface/IPC/Documentation/Items/FreeRewards.md) API
 
 ## Response Result
 
