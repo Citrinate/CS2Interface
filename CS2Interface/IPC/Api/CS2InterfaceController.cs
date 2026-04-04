@@ -426,6 +426,41 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<SteamMessage.GCCraftResponse>(true, craftResponse));
 		}
 
+		[HttpGet("{botName:required}/FreeRewards")]
+		[EndpointSummary("Get the list of free rewards from weekly care package")]
+		[ProducesResponseType(typeof(GenericResponse<FreeRewards>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public ActionResult<GenericResponse> FreeRewards(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+			
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			(Client? client, string status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, status));
+			}
+
+			if (client.Inventory == null) {
+				return BadRequest(new GenericResponse(false, Strings.InventoryNotLoaded));
+			}
+
+			if (client.PersonalStore == null) {
+				return BadRequest(new GenericResponse(false, Strings.PersonalStoreNotLoaded));
+			}
+
+			FreeRewards rewards = new(client.Inventory, client.PersonalStore);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
+
+			return Ok(new GenericResponse<FreeRewards>(true, rewards));
+		}
+
 		[HttpPost("{botName:required}/RedeemFreeReward")]
 		[EndpointSummary("Redeem weekly care package rewards")]
 		[ProducesResponseType(typeof(GenericResponse<CMsgGCItemCustomizationNotification>), (int) HttpStatusCode.OK)]
