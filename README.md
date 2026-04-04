@@ -40,6 +40,7 @@ API | Method | Parameters | Description
 [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect an item
 [`/Api/CS2Interface/{botName}/Inventory`](/CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
 [`/Api/CS2Interface/{botName}/NameItem`](/CS2Interface/IPC/Documentation/Items/NameItem.md)|`POST`|`itemID`, `nameTagID`, `name`|Add a name tag to an item
+[`/Api/CS2Interface/{botName}/RedeemWeeklyReward`](/CS2Interface/IPC/Documentation/Items/RedeemWeeklyReward.md)|`POST`|`itemIDs`|Redeem weekly care package rewards
 [`/Api/CS2Interface/Recipes`](/CS2Interface/IPC/Documentation/Items/Recipes.md)|`GET`|`showDefs`|Get a list of crafting recipes
 [`/Api/CS2Interface/{botName}/RetrieveItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/RetrieveItem.md)|`POST`| |Take an item out of a storage unit
 [`/Api/CS2Interface/{botName}/StoreItem/{crateID}/{itemID}`](/CS2Interface/IPC/Documentation/Items/StoreItem.md)|`POST`| |Place an item into a storage unit
