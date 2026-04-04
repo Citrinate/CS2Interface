@@ -438,7 +438,7 @@
     <value>No weekly reward inputs given</value>
   </data>
   <data name="InvalidWeeklyRewardTooManyInputs" xml:space="preserve">
-    <value>Too many weekly reward inputs given: {0}, but only {1} are allowed</value>
+    <value>Too many weekly reward inputs provided ({0}). Only {1} is allowed</value>
     <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
   </data>
   <data name="RedeemingWeeklyReward" xml:space="preserve">

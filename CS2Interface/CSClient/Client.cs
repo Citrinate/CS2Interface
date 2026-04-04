@@ -653,7 +653,7 @@ namespace CS2Interface {
 			}
 
 			if (item_ids.Count > PersonalStore.redeemable_balance) {
-				throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidWeeklyRewardTooManyInputs);
+				throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InvalidWeeklyRewardTooManyInputs, item_ids.Count, PersonalStore.redeemable_balance));
 			}
 
 			foreach (ulong item_id in item_ids) {

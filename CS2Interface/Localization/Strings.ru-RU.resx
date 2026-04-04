@@ -393,7 +393,7 @@
     <value>Не заданы входные данные для еженедельной награды</value>
   </data>
   <data name="InvalidWeeklyRewardTooManyInputs" xml:space="preserve">
-    <value>Задано слишком много входных данных для еженедельной награды: {0}, допускается только {1}</value>
+    <value>Задано слишком много входных данных для еженедельной награды ({0}). Допускается только {1}</value>
     <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
   </data>
   <data name="RedeemingWeeklyReward" xml:space="preserve">
