@@ -220,7 +220,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -237,7 +237,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -254,7 +254,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -272,7 +272,7 @@ namespace CS2Interface {
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOMultipleObjects>(packetMsg);
 			foreach (var object_modified in msg.Body.objects_modified) {
-				if (object_modified.type_id != 1) {
+				if (object_modified.type_id != (uint) ESOType.CSOEconItem) {
 					// Ignore non-inventory changes
 					continue;
 				}
@@ -485,7 +485,7 @@ namespace CS2Interface {
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-					if (response.Body.type_id != 1) {
+					if (response.Body.type_id != (uint) ESOType.CSOEconItem) {
 						// Ignore non-inventory changes
 						return false;
 					}
@@ -536,7 +536,7 @@ namespace CS2Interface {
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-					if (response.Body.type_id != 1) {
+					if (response.Body.type_id != (uint) ESOType.CSOEconItem) {
 						// Ignore non-inventory changes
 						return false;
 					}
