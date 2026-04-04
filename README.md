@@ -36,6 +36,7 @@ API | Method | Parameters | Description
 API | Method | Parameters | Description
 --- | --- | --- | ---
 [`/Api/CS2Interface/{botName}/CraftItem/{recipeID}`](/CS2Interface/IPC/Documentation/Items/CraftItem.md)|`POST`|`itemIDs`|Craft an item
+[`/Api/CS2Interface/{botName}/FreeRewards`](/CS2Interface/IPC/Documentation/Items/FreeRewards.md)|`GET`|`minimal`, `showDefs`|Get information about a bot's weekly care package rewards
 [`/Api/CS2Interface/{botName}/GetCrateContents/{crateID}`](/CS2Interface/IPC/Documentation/Items/GetCrateContents.md)|`GET`|`minimal`, `showDefs`|Get a storage unit's contents
 [`/Api/CS2Interface/{botNames}/InspectItem`](/CS2Interface/IPC/Documentation/Items/InspectItem.md)|`GET`|`url`, `s`, `a`, `d`, `m`, `minimal`, `showDefs`|Inspect an item
 [`/Api/CS2Interface/{botName}/Inventory`](/CS2Interface/IPC/Documentation/Items/Inventory.md)|`GET`|`minimal`, `showDefs`|Get a bot's inventory
