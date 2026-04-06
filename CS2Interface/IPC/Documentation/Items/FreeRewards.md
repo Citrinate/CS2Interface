@@ -29,6 +29,9 @@ Property | Type | Description
 > [!NOTE]
 > Some values in `itemids` are of the type 0xF0000000XXXXXXXXXXXXXXXX and represent already redeemed rewards. Those entries are not included in `items`
 
+> [!NOTE]
+> An error message of "Personal store not loaded yet" usually means that `botName` isn't eligible for the weekly care package.
+
 ## Example Responses
 
 ```
@@ -211,7 +214,7 @@ http://127.0.0.1:1242/Api/CS2Interface/Bot1/FreeRewards
 
 ```json
 {
-  "Message": "Inventory not loaded yet",
+  "Message": "Personal store not loaded yet",
   "Success": false
 }
 ```

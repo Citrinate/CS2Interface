@@ -427,7 +427,7 @@ namespace CS2Interface.IPC {
 		}
 
 		[HttpGet("{botName:required}/FreeRewards")]
-		[EndpointSummary("Get information aboutthe given bot's weekly care package rewards")]
+		[EndpointSummary("Get information about the given bot's weekly care package rewards")]
 		[ProducesResponseType(typeof(GenericResponse<FreeRewards>), (int) HttpStatusCode.OK)]
 		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
 		public ActionResult<GenericResponse> FreeRewards(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
