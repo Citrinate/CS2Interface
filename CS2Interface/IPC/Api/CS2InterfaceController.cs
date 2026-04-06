@@ -426,6 +426,82 @@ namespace CS2Interface.IPC {
 			return Ok(new GenericResponse<SteamMessage.GCCraftResponse>(true, craftResponse));
 		}
 
+		[HttpGet("{botName:required}/FreeRewards")]
+		[EndpointSummary("Get information aboutthe given bot's weekly care package rewards")]
+		[ProducesResponseType(typeof(GenericResponse<FreeRewards>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		public ActionResult<GenericResponse> FreeRewards(string botName, [FromQuery] bool minimal = false, [FromQuery] bool showDefs = false) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+			
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			(Client? client, string status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, status));
+			}
+
+			if (client.Inventory == null) {
+				return BadRequest(new GenericResponse(false, Strings.InventoryNotLoaded));
+			}
+
+			if (client.PersonalStore == null) {
+				return BadRequest(new GenericResponse(false, Strings.PersonalStoreNotLoaded));
+			}
+
+			FreeRewards rewards = new(client.Inventory, client.PersonalStore);
+			GameObject.SetSerializationProperties(!minimal, showDefs);
+
+			return Ok(new GenericResponse<FreeRewards>(true, rewards));
+		}
+
+		[HttpPost("{botName:required}/RedeemFreeReward")]
+		[EndpointSummary("Redeem weekly care package rewards")]
+		[ProducesResponseType(typeof(GenericResponse<CMsgGCItemCustomizationNotification>), (int) HttpStatusCode.OK)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.BadRequest)]
+		[ProducesResponseType(typeof(GenericResponse), (int) HttpStatusCode.GatewayTimeout)]
+		public async Task<ActionResult<GenericResponse>> RedeemFreeReward(string botName, [FromQuery] string itemIDs) {
+			if (string.IsNullOrEmpty(botName)) {
+				throw new ArgumentNullException(nameof(botName));
+			}
+
+			Bot? bot = Bot.GetBot(botName);
+			if (bot == null) {
+				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botName)));
+			}
+
+			(Client? client, string client_status) = ClientHandler.ClientHandlers[bot.BotName].GetClient(EClientStatus.Connected);
+			if (client == null) {
+				return BadRequest(new GenericResponse(false, client_status));
+			}
+
+			ClientHandler.ClientHandlers[bot.BotName].RefreshAutoStopTimer();
+
+			HashSet<ulong> item_ids = new();
+			foreach (string itemIDString in itemIDs.Split(",")) {
+				if (!ulong.TryParse(itemIDString, out ulong item_id)) {
+					return BadRequest(new GenericResponse(false, String.Format(ArchiSteamFarm.Localization.Strings.ErrorParsingObject, nameof(itemIDs))));
+				}
+
+				item_ids.Add(item_id);
+			}
+
+			CMsgGCItemCustomizationNotification notification;
+			try {
+				notification = await client.RedeemFreeReward(item_ids).ConfigureAwait(false);
+			} catch (ClientException e) {
+				return await HandleClientException(bot, e).ConfigureAwait(false);
+			}
+
+			return Ok(new GenericResponse<CMsgGCItemCustomizationNotification>(true, notification));
+		}
+
 		[HttpGet("Recipes")]
 		[EndpointSummary("Get a list of crafting recipes")]
 		[ProducesResponseType(typeof(GenericResponse<GameData<List<Recipe>>>), (int) HttpStatusCode.OK)]

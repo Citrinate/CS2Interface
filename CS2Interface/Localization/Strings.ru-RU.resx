@@ -379,4 +379,25 @@
     <value>CS2 Интерфейс подключен и будет автоматически остановлен через {0} минут</value>
     <comment>{0} will be replaced by a number</comment>
   </data>
+  <data name="PersonalStoreLoaded" xml:space="preserve">
+    <value>Персональный магазин CS2 загружен</value>
+  </data>
+  <data name="PersonalStoreNotLoaded" xml:space="preserve">
+    <value>Персональный магазин ещё не загружен</value>
+  </data>
+  <data name="PersonalStoreItemNotFound" xml:space="preserve">
+    <value>Предмет не найден в персональном магазине: {0}</value>
+    <comment>{0} will be replaced by an id number</comment>
+  </data>
+  <data name="InvalidWeeklyRewardMissingInputs" xml:space="preserve">
+    <value>Не заданы входные данные для еженедельной награды</value>
+  </data>
+  <data name="InvalidWeeklyRewardTooManyInputs" xml:space="preserve">
+    <value>Задано слишком много входных данных для еженедельной награды ({0}). Допускается только {1}</value>
+    <comment>{0} will be replaced by a number, {1} will be replaced by a number</comment>
+  </data>
+  <data name="RedeemingWeeklyReward" xml:space="preserve">
+    <value>Получение предметы еженедельной награды: {0}</value>
+    <comment>{0} will be replaced by a list of id numbers</comment>
+  </data>
 </root>

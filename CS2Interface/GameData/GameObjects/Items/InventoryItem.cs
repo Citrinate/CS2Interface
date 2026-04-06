@@ -84,6 +84,11 @@ namespace CS2Interface {
 				return false;
 			}
 
+			if (Attributes?.GetValueOrDefault("free reward status")?.ToUInt32() == 1) {
+				// Uncollected free rewards from weekly care package
+				return false;
+			}
+
 			return true;
 		}
 

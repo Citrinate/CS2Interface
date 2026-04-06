@@ -27,6 +27,7 @@ namespace CS2Interface {
 		private SemaphoreSlim ConnectionSemaphore = new SemaphoreSlim(1, 1);
 		internal ConcurrentDictionary<ulong, InventoryItem>? Inventory = null;
 		internal bool InventoryLoaded = false;
+		internal CSOAccountItemPersonalStore? PersonalStore = null;
 		private int Currency;
 		private bool OwnsApp = false;
 		private bool AppRunning = false;
@@ -120,7 +121,7 @@ namespace CS2Interface {
 		}
 
 		internal EClientStatus Status() {
-			EClientStatus status = EClientStatus.None;			
+			EClientStatus status = EClientStatus.None;
 			if (HasGCSession) {
 				status |= EClientStatus.Connected;
 			}
@@ -162,7 +163,7 @@ namespace CS2Interface {
 				{(uint) ESOMsg.k_ESOMsg_Create, OnItemCreated},
 				{(uint) ESOMsg.k_ESOMsg_Destroy, OnItemDestroyed},
 				{(uint) ESOMsg.k_ESOMsg_Update, OnItemUpdated},
-				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultiItemUpdated},
+				{(uint) ESOMsg.k_ESOMsg_UpdateMultiple, OnMultipleUpdated},
 				{(uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientLogonFatalError, OnFatalLogonError}
 			};
 
@@ -181,26 +182,27 @@ namespace CS2Interface {
 		}
 
 		private void OnClientWelcome(IPacketGCMsg packetMsg) {
-			// Initialize the inventory
+			// Initialize the inventory and personal store
 			var msg = new ClientGCMsgProtobuf<CMsgClientWelcome>(packetMsg);
 			foreach (var cache in msg.Body.outofdate_subscribed_caches) {
 				foreach (var obj in cache.objects) {
-					if (obj.type_id != 1) {
-						// Ignore everything that isn't the inventory
-						continue;
-					}
+					if (obj.type_id == (uint) ESOType.CSOEconItem) {
+						Inventory = new(obj.object_data.Select(x => {
+							using (MemoryStream ms = new MemoryStream(x)) {
+								var item = Serializer.Deserialize<CSOEconItem>(ms);
+								return new KeyValuePair<ulong, InventoryItem>(item.id, new InventoryItem(item));
+							}
+						}));
 
-					Inventory = new(obj.object_data.Select(x => {
-						using (MemoryStream ms = new MemoryStream(x)) {
-							var item = Serializer.Deserialize<CSOEconItem>(ms);
-							return new KeyValuePair<ulong, InventoryItem>(item.id, new InventoryItem(item));
+						InventoryLoaded = true;
+						Bot.ArchiLogger.LogGenericDebug(Strings.InventoryLoaded);
+					} else if (obj.type_id == (uint) ESOType.CSOAccountItemPersonalStore) {
+						using (MemoryStream ms = new MemoryStream(obj.object_data.First())) {
+							PersonalStore = Serializer.Deserialize<CSOAccountItemPersonalStore>(ms);
 						}
-					}));
-					
-					InventoryLoaded = true;
-					Bot.ArchiLogger.LogGenericDebug(Strings.InventoryLoaded);
-					
-					return;
+
+						Bot.ArchiLogger.LogGenericDebug(Strings.PersonalStoreLoaded);
+					}
 				}
 			}
 		}
@@ -218,7 +220,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -235,7 +237,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -252,7 +254,7 @@ namespace CS2Interface {
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOSingleObject>(packetMsg);
-			if (msg.Body.type_id != 1) {
+			if (msg.Body.type_id != (uint) ESOType.CSOEconItem) {
 				// Ignore non-inventory changes
 				return;
 			}
@@ -263,21 +265,22 @@ namespace CS2Interface {
 			}
 		}
 
-		private void OnMultiItemUpdated(IPacketGCMsg packetMsg) {
+		private void OnMultipleUpdated(IPacketGCMsg packetMsg) {
 			if (Inventory == null) {
 				return;
 			}
 
 			var msg = new ClientGCMsgProtobuf<CMsgSOMultipleObjects>(packetMsg);
 			foreach (var object_modified in msg.Body.objects_modified) {
-				if (object_modified.type_id != 1) {
-					// Ignore non-inventory changes
-					continue;
-				}
-
-				using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
-					var item = Serializer.Deserialize<CSOEconItem>(ms);
-					Inventory[item.id] = new InventoryItem(item);
+				if (object_modified.type_id == (uint) ESOType.CSOEconItem) {
+					using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
+						var item = Serializer.Deserialize<CSOEconItem>(ms);
+						Inventory[item.id] = new InventoryItem(item);
+					}
+				} else if (object_modified.type_id == (uint) ESOType.CSOAccountItemPersonalStore) {
+					using (MemoryStream ms = new MemoryStream(object_modified.object_data)) {
+						PersonalStore = Serializer.Deserialize<CSOAccountItemPersonalStore>(ms);
+					}
 				}
 			}
 		}
@@ -483,7 +486,7 @@ namespace CS2Interface {
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-					if (response.Body.type_id != 1) {
+					if (response.Body.type_id != (uint) ESOType.CSOEconItem) {
 						// Ignore non-inventory changes
 						return false;
 					}
@@ -534,7 +537,7 @@ namespace CS2Interface {
 				VerifyResponse = message => {
 					var response = new ClientGCMsgProtobuf<CMsgSOSingleObject>(message);
 
-					if (response.Body.type_id != 1) {
+					if (response.Body.type_id != (uint) ESOType.CSOEconItem) {
 						// Ignore non-inventory changes
 						return false;
 					}
@@ -624,6 +627,76 @@ namespace CS2Interface {
 
 				if (response.Body.Recipe == SteamMessage.GCCraft.UnknownRecipe) {
 					throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidCraftRecipe);
+				}
+
+				return response.Body;
+			} finally {
+				GCSemaphore.Release();
+			}
+		}
+
+		internal async Task<CMsgGCItemCustomizationNotification> RedeemFreeReward(HashSet<ulong> item_ids) {
+			if (!HasGCSession) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.ClientNotConnectedToGC);
+			}
+
+			if (!InventoryLoaded || Inventory == null) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.InventoryNotLoaded);
+			}
+
+			if (PersonalStore == null) {
+				throw new ClientException(EClientExceptionType.Failed, Strings.PersonalStoreNotLoaded);
+			}
+
+			if (item_ids.Count == 0) {
+				throw new ClientException(EClientExceptionType.BadRequest, Strings.InvalidWeeklyRewardMissingInputs);
+			}
+
+			if (item_ids.Count > PersonalStore.redeemable_balance) {
+				throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.InvalidWeeklyRewardTooManyInputs, item_ids.Count, PersonalStore.redeemable_balance));
+			}
+
+			foreach (ulong item_id in item_ids) {
+				if (!PersonalStore.items.Contains(item_id)) {
+					throw new ClientException(EClientExceptionType.BadRequest, String.Format(Strings.PersonalStoreItemNotFound, item_id));
+				}
+			}
+
+			await GCSemaphore.WaitAsync().ConfigureAwait(false);
+
+			try {
+				var msg = new ClientGCMsgProtobuf<CMsgGCCstrike15_v2_ClientRedeemFreeReward>((uint) ECsgoGCMsg.k_EMsgGCCStrike15_v2_ClientRedeemFreeReward) { Body = {
+					generation_time = PersonalStore.generation_time,
+					redeemable_balance = PersonalStore.redeemable_balance,
+				}};
+
+				foreach (ulong item_id in item_ids) {
+					msg.Body.items.Add(item_id);
+				}
+
+				var fetcher = new GCFetcher {
+					GCResponseMsgType = (uint) EGCItemMsg.k_EMsgGCItemCustomizationNotification,
+					TTLSeconds = 10,
+					VerifyResponse = message => {
+						var response = new ClientGCMsgProtobuf<CMsgGCItemCustomizationNotification>(message);
+
+						return response.Body.request == (uint) EGCItemCustomizationNotification.k_EGCItemCustomizationNotification_ClientRedeemFreeReward;
+					}
+				};
+
+				// --> k_EMsgGCCStrike15_v2_ClientRedeemFreeReward
+				// <-- k_ESOMsg_Destroy
+				// <-- k_ESOMsg_Destroy
+				// <-- k_ESOMsg_Create
+				// <-- k_ESOMsg_Create
+				// <-- k_ESOMsg_UpdateMultiple
+				// <-- k_EMsgGCItemCustomizationNotification
+
+				Bot.ArchiLogger.LogGenericDebug(String.Format(Strings.RedeemingWeeklyReward, String.Join(", ", item_ids)));
+
+				var response = await fetcher.Fetch<CMsgGCItemCustomizationNotification>(this, msg).ConfigureAwait(false);
+				if (response == null) {
+					throw new ClientException(EClientExceptionType.Timeout, Strings.RequestTimeout);
 				}
 
 				return response.Body;
@@ -836,5 +909,12 @@ namespace CS2Interface {
 		Connected = 1,
 		Ready = 2,
 		BotOffline = 4
+	}
+
+	// https://github.com/nyrpqsqq35/nethook-analyzer-web/blob/6d1afd9e35233128c9448a1070c0c42de4118755/src/windows/MessageWindow/protoTree.tsx#L595-L614
+	// https://github.com/ValvePython/csgo/blob/ed81efa8c36122e882ffa5247be1b327dbd20850/csgo/common_enums.py#L3-L13
+	internal enum ESOType : uint {
+		CSOEconItem = 1,
+		CSOAccountItemPersonalStore = 4,
 	}
 }
