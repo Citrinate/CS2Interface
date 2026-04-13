@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This plugin allows you to interact with Counter-Strike 2 using ArchiSteamFarm's [IPC interface](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/IPC).
+This plugin allows you to interact with Counter-Strike 2's game coordinator using ArchiSteamFarm's [IPC interface](https://github.com/JustArchiNET/ArchiSteamFarm/wiki/IPC).
 
 #### Projects that use this plugin
 
