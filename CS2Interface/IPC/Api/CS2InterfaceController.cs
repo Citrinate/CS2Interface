@@ -773,7 +773,7 @@ namespace CS2Interface.IPC {
 			Uri request = new(bot.SteamConfiguration.WebAPIBaseAddress, $"/ISteamEconomy/GetAssetPrices/v1?{queryString}");
 
 			// Requesting as stream to convert to JsonNode because this API sometimes returns json objects with duplicate keys
-			StreamResponse? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToStream(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
+			StreamResponse? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToStream(request, requestOptions: EWebRequestOptions.ReturnClientErrors | EWebRequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
 
 			if (response == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response))));
@@ -869,7 +869,7 @@ namespace CS2Interface.IPC {
 
 			Uri request = new(bot.SteamConfiguration.WebAPIBaseAddress, $"/ISteamEconomy/GetAssetClassInfo/v1?{queryString}");
 
-			ObjectResponse<JsonObject>? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToJsonObject<JsonObject>(request, requestOptions: WebBrowser.ERequestOptions.ReturnClientErrors | WebBrowser.ERequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
+			ObjectResponse<JsonObject>? response = await bot.ArchiWebHandler.WebBrowser.UrlGetToJsonObject<JsonObject>(request, requestOptions: EWebRequestOptions.ReturnClientErrors | EWebRequestOptions.AllowInvalidBodyOnErrors).ConfigureAwait(false);
 
 			if (response == null) {
 				return BadRequest(new GenericResponse(false, string.Format(ArchiSteamFarm.Localization.Strings.ErrorObjectIsNull, nameof(response))));

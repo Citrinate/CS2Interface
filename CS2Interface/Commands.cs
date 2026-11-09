@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace CS2Interface {
 	internal static class Commands {
-		internal static async Task<string?> Response(Bot bot, EAccess access, ulong steamID, string message, string[] args) {
+		internal static async Task<string?> Response(Bot bot, EBotUserAccess access, ulong steamID, string message, string[] args) {
 			if (!Enum.IsDefined(access)) {
-				throw new InvalidEnumArgumentException(nameof(access), (int) access, typeof(EAccess));
+				throw new InvalidEnumArgumentException(nameof(access), (int) access, typeof(EBotUserAccess));
 			}
 
 			if (string.IsNullOrEmpty(message)) {
@@ -20,7 +20,7 @@ namespace CS2Interface {
 			switch (args.Length) {
 				case 1:
 					switch (args[0].ToUpperInvariant()) {
-						case "CS2INTERFACE" when access >= EAccess.Master:
+						case "CS2INTERFACE" when access >= EBotUserAccess.Master:
 							return String.Format("{0} {1}", nameof(CS2Interface), (typeof(CS2Interface).Assembly.GetName().Version ?? new Version("0")).ToString());
 
 						case "CSTART" or "CSSTART" or "CS2START" or "CRUN" or "CSRUN" or "CS2RUN":
@@ -56,8 +56,8 @@ namespace CS2Interface {
 			}
 		}
 
-		private static async Task<string?> ResponseRun(Bot bot, EAccess access, string? autoStopAfterMinutesText = null) {
-			if (access < EAccess.Master) {
+		private static async Task<string?> ResponseRun(Bot bot, EBotUserAccess access, string? autoStopAfterMinutesText = null) {
+			if (access < EBotUserAccess.Master) {
 				return null;
 			}
 
@@ -83,7 +83,7 @@ namespace CS2Interface {
 			return FormatBotResponse(bot, message);
 		}
 
-		private static async Task<string?> ResponseRun(EAccess access, ulong steamID, string botNames, string? autoStopAfterMinutesText = null) {
+		private static async Task<string?> ResponseRun(EBotUserAccess access, ulong steamID, string botNames, string? autoStopAfterMinutesText = null) {
 			if (String.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -91,7 +91,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
+				return access >= EBotUserAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseRun(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID), autoStopAfterMinutesText))).ConfigureAwait(false);
@@ -101,8 +101,8 @@ namespace CS2Interface {
 			return responses.Count > 0 ? string.Join(Environment.NewLine, responses) : null;
 		}
 
-		private static async Task<string?> ResponseStop(Bot bot, EAccess access) {
-			if (access < EAccess.Master) {
+		private static async Task<string?> ResponseStop(Bot bot, EBotUserAccess access) {
+			if (access < EBotUserAccess.Master) {
 				return null;
 			}
 
@@ -115,7 +115,7 @@ namespace CS2Interface {
 			return FormatBotResponse(bot, message);
 		}
 
-		private static async Task<string?> ResponseStop(EAccess access, ulong steamID, string botNames) {
+		private static async Task<string?> ResponseStop(EBotUserAccess access, ulong steamID, string botNames) {
 			if (String.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -123,7 +123,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
+				return access >= EBotUserAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseStop(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)))).ConfigureAwait(false);
@@ -133,8 +133,8 @@ namespace CS2Interface {
 			return responses.Count > 0 ? string.Join(Environment.NewLine, responses) : null;
 		}
 
-		private static string? ResponseStatus(Bot bot, EAccess access) {
-			if (access < EAccess.Master) {
+		private static string? ResponseStatus(Bot bot, EBotUserAccess access) {
+			if (access < EBotUserAccess.Master) {
 				return null;
 			}
 
@@ -147,7 +147,7 @@ namespace CS2Interface {
 			return FormatBotResponse(bot, message);
 		}
 
-		private static string? ResponseStatus(EAccess access, ulong steamID, string botNames) {
+		private static string? ResponseStatus(EBotUserAccess access, ulong steamID, string botNames) {
 			if (String.IsNullOrEmpty(botNames)) {
 				throw new ArgumentNullException(nameof(botNames));
 			}
@@ -155,7 +155,7 @@ namespace CS2Interface {
 			HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 			if ((bots == null) || (bots.Count == 0)) {
-				return access >= EAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
+				return access >= EBotUserAccess.Owner ? FormatStaticResponse(String.Format(ArchiSteamFarm.Localization.Strings.BotNotFound, botNames)) : null;
 			}
 
 			IEnumerable<string?> results = bots.Select(bot => ResponseStatus(bot, ArchiSteamFarm.Steam.Interaction.Commands.GetProxyAccess(bot, access, steamID)));

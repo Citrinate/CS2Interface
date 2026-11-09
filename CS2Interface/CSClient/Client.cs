@@ -36,7 +36,7 @@ namespace CS2Interface {
 		internal Client(Bot bot, CallbackManager callbackManager) {
 			Bot = bot;
 			CallbackManager = callbackManager;
-			GameCoordinator = Bot.GetHandler<SteamGameCoordinator>() ?? throw new InvalidOperationException(nameof(SteamGameCoordinator));
+			GameCoordinator = Bot.GetRequiredHandler<SteamGameCoordinator>() ?? throw new InvalidOperationException(nameof(SteamGameCoordinator));
 			callbackManager.Subscribe<SteamGameCoordinator.MessageCallback>(OnGCMessage);
 			callbackManager.Subscribe<SteamCallback.ClientMicroTxnAuthRequestCallback>(OnClientMicroTxnAuthRequestCallback);
 		}
